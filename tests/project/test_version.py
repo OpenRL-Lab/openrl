@@ -16,8 +16,6 @@
 
 """"""
 
-import pytest
-
 
 def test_version():
     from openrl import __version__

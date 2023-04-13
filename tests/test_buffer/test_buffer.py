@@ -15,8 +15,8 @@
 # limitations under the License.
 
 """"""
-import sys
 import os
+import sys
 
 import numpy as np
 import pytest
