@@ -17,8 +17,9 @@
 """"""
 
 import os
-from setuptools import setup
+
 import setuptools
+from setuptools import setup
 
 
 def get_install_requires() -> list:
@@ -30,7 +31,12 @@ def get_extra_requires() -> dict:
         "test": [
             "pytest",
             "pytest-cov",
+            "mypy",
+            "isort",
+            "black",
+            "ruff",
         ],
+        "mpe": ["pyglet==1.5.27"],
     }
     return req
 
@@ -48,7 +54,7 @@ setup(
     long_description=open("README.md", encoding="utf8").read(),
     long_description_content_type="text/markdown",
     author="openrl contributors",
-    author_email="contact@openrl.cn",
+    author_email="huangshiyu@4paradigm.com",
     url="https://github.com/OpenRL-Lab/openrl",
     packages=setuptools.find_packages(),
     entry_points={"console_scripts": ["openrl=openrl.cli.cli:run"]},
@@ -65,9 +71,11 @@ setup(
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
     ],
-    keywords="reinforcement-learning multi-agent "
-    "reinforcement-learning-algorithms pytorch machine-learning "
-    "baselines toolbox python data-science gym gymnasium",
+    keywords=(
+        "reinforcement-learning multi-agent "
+        "reinforcement-learning-algorithms pytorch machine-learning "
+        "baselines toolbox python data-science gym gymnasium"
+    ),
     python_requires=">=3.8",
     install_requires=get_install_requires(),
     extras_require=get_extra_requires(),

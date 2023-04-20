@@ -1,0 +1,21 @@
+name: "❓ Question"
+description: How to ask a question regarding Stable-Baselines3
+title: "[Question] question title"
+labels: ["question"]
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: ❓ Question
+      description: Your question. This can be e.g. questions regarding confusing or unclear behaviour of functions or a question if X can be done using OpenRL. Make sure to check out the documentation first.
+    validations:
+      required: true
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Checklist
+      options:
+        - label: I have checked that there is no similar [issues](https://github.com/OpenRL-Lab/openrl/issues) in the repo
+          required: true
+        - label: I have read the [documentation](https://openrl-docs.readthedocs.io/)
+          required: true
