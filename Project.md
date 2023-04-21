@@ -11,4 +11,14 @@ Description: TiZero is a reinforcement learning agent for Google Research Footba
 - Authors: Fanqi Lin, Shiyu Huang, Tim Pearce, Wenze Chen, Wei-Wei Tu
 - Github: https://github.com/OpenRL-Lab/TiZero
 
+### DGPO
+
+Description: Recent algorithms designed for reinforcement learning tasks focus on finding a single optimal solution. 
+However, in many practical applications, it is important to develop reasonable agents with diverse strategies. 
+In this paper, we propose an on-policy framework for discovering multiple strategies for the same task.
+Experimental results show that our method efficiently finds diverse strategies in a wide variety of reinforcement learning tasks.
+
+- Paper: [DGPO: Discovering Multiple Strategies with Diversity-Guided Policy Optimization](https://arxiv.org/abs/2207.05631)(AAMAS Extended Abstract 2023)
+- Authors: Wenze Chen, Shiyu Huang, Yuan Chiang, Ting Chen, Jun Zhu
+
 
