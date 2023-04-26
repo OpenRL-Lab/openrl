@@ -36,6 +36,7 @@ def get_install_requires() -> list:
         "seaborn",
         "jsonargparse",
         "imageio",
+        "python-opencv",
     ]
 
 
