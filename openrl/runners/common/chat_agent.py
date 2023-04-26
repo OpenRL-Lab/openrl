@@ -3,10 +3,8 @@ import pathlib
 from typing import List, Optional, Type, Union
 
 import torch
-from transformers import AutoTokenizer
 
-from openrl.envs.nlp.utils.custom_text_generation_pools import DailyDialog
-from openrl.envs.nlp.utils.evaluation_utils import generate
+
 from openrl.runners.common.base_agent import BaseAgent, SelfAgent
 
 
@@ -15,6 +13,9 @@ class ChatAgent(BaseAgent):
         self.model = model
         self.tokenizer = tokenizer
         self.device = device
+        from openrl.envs.nlp.utils.custom_text_generation_pools import DailyDialog
+
+        self.EOU_TOKEN = DailyDialog.EOU_TOKEN
 
     @classmethod
     def load(
@@ -27,6 +28,8 @@ class ChatAgent(BaseAgent):
             agent_path = pathlib.Path(agent_path)
 
         assert agent_path.exists(), f"{agent_path} does not exist"
+
+        from transformers import AutoTokenizer
 
         if tokenizer is None:
             tokenizer = AutoTokenizer.from_pretrained(agent_path)
@@ -71,9 +74,9 @@ class ChatAgent(BaseAgent):
         return cls(model, tokenizer, device)
 
     def chat(self, input: str, history: List[str]):
-        intput_text = (
-            DailyDialog.EOU_TOKEN.join(history + [input]) + DailyDialog.EOU_TOKEN
-        )
+        from openrl.envs.nlp.utils.evaluation_utils import generate
+
+        intput_text = self.EOU_TOKEN.join(history + [input]) + self.EOU_TOKEN
         response = generate(
             self.model,
             self.tokenizer,
@@ -88,7 +91,7 @@ class ChatAgent(BaseAgent):
             },
             device=self.device,
         )[0]
-        response = response.split(DailyDialog.EOU_TOKEN)[0].strip()
+        response = response.split(self.EOU_TOKEN)[0].strip()
         return response
 
     def save(
