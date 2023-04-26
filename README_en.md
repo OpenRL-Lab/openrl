@@ -26,7 +26,7 @@
 [![Contributors](https://img.shields.io/github/contributors/OpenRL-Lab/openrl)](https://github.com/OpenRL-Lab/openrl/graphs/contributors)
 [![GitHub license](https://img.shields.io/github/license/OpenRL-Lab/openrl)](https://github.com/OpenRL-Lab/openrl/blob/master/LICENSE)
 
-OpenRL-v0.0.3 is updated on April 21, 2023 
+OpenRL-v0.0.5 is updated on April 26, 2023 
 
 ## Welcome to OpenRL
 
