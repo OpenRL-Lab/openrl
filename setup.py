@@ -49,6 +49,7 @@ def get_extra_requires() -> dict:
             "black",
             "ruff",
         ],
+        "dev": ["build"],
         "mpe": ["pyglet==1.5.27"],
         "nlp": [
             "stable-baselines3==1.5.1a5",
