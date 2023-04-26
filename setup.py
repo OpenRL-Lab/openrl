@@ -23,7 +23,21 @@ from setuptools import setup
 
 
 def get_install_requires() -> list:
-    return ["setuptools>=50.0", "treevalue", "numpy"]
+    return [
+        "setuptools>=50.0",
+        "gymnasium",
+        "click",
+        "termcolor",
+        "gym",
+        "torch",
+        "treevalue",
+        "rich",
+        "wandb",
+        "seaborn",
+        "jsonargparse",
+        "imageio",
+        "python-opencv",
+    ]
 
 
 def get_extra_requires() -> dict:
@@ -36,7 +50,15 @@ def get_extra_requires() -> dict:
             "black",
             "ruff",
         ],
+        "dev": ["build", "twine"],
         "mpe": ["pyglet==1.5.27"],
+        "nlp": [
+            "stable-baselines3==1.5.1a5",
+            "transformers==4.18.0",
+            "datasets",
+            "nltk",
+            "evaluate",
+        ],
     }
     return req
 
@@ -50,11 +72,11 @@ def get_version() -> str:
 setup(
     name="openrl",
     version=get_version(),
-    description="reinforcement learning framework",
+    description="unified reinforcement learning framework",
     long_description=open("README.md", encoding="utf8").read(),
     long_description_content_type="text/markdown",
     author="openrl contributors",
-    author_email="huangshiyu@4paradigm.com",
+    author_email="huangsy1314@163.com",
     url="https://github.com/OpenRL-Lab/openrl",
     packages=setuptools.find_packages(),
     entry_points={"console_scripts": ["openrl=openrl.cli.cli:run"]},
