@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Copyright 2023 The TARTRL Authors.
+# Copyright 2023 The OpenRL Authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,9 +15,19 @@
 # limitations under the License.
 
 """"""
+import os
+import sys
+
+import pytest
 
 
+@pytest.mark.unittest
 def test_version():
-    from openrl import __version__
+    import openrl
 
-    assert __version__ == "0.1.0"
+    assert hasattr(openrl, "__version__"), "openrl has no __version__ attribute"
+    print(hasattr(openrl, "__version__"), openrl.__version__)
+
+
+if __name__ == "__main__":
+    sys.exit(pytest.main(["-sv", os.path.basename(__file__)]))

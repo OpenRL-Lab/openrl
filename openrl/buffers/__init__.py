@@ -15,3 +15,9 @@
 # limitations under the License.
 
 """"""
+
+from .normal_buffer import NormalReplayBuffer
+
+__all__ = [
+    "NormalReplayBuffer",
+]

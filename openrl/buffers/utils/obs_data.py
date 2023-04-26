@@ -40,6 +40,14 @@ class ObsData(TreeValue):
             return_dict[str_key] = np.concatenate(self[str_key][step])
         return return_dict
 
+    def all_batch(self, min, max):
+        return_dict = {}
+        for str_key in self.keys():
+            return_dict[str_key] = self[str_key][min:max].reshape(
+                (-1, *self[str_key].shape[3:])
+            )
+        return return_dict
+
     def __getitem__(self, key):
         if isinstance(key, int):
             return self.step_batch(key)
@@ -53,35 +61,3 @@ class ObsData(TreeValue):
                 [value[step] for value in kwargs.values()], -1
             ),
         )
-
-
-def test_basic():
-    obs = ObsData(
-        {"a": np.array([1, 2]), "b": np.array([3, 4]), "c": np.array([5, 6, 7])}
-    )
-
-    print(obs["c"])
-    obs["d"] = [10]
-    print(obs["d"])
-
-    obs["a"][0] = 99
-    print(obs["a"])
-
-    print(obs.flatten())
-
-
-def test_step():
-    obs_stepes = [
-        {"obs_a": np.array([[[0, 1]]]), "obs_b": np.array([[[3, 9]]])},
-        {"obs_a": np.array([[[2, 4]]]), "obs_b": np.array([[[6, 8]]])},
-    ]
-    obs = ObsData({"obs_a": np.zeros((2, 1, 1, 2)), "obs_b": np.zeros((2, 1, 1, 2))})
-    for step in range(len(obs_stepes)):
-        for key in obs.keys():
-            obs[key][step] = obs_stepes[step][key]
-    print(obs[0])
-    print(obs[1])
-
-
-if __name__ == "__main__":
-    test_step()
