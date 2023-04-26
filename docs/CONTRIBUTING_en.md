@@ -21,7 +21,9 @@ Finally, at least one maintainer's review and approval are required before being
 
 Before submitting a Pull Request, make sure that your code passes unit tests and conforms with OpenRL's coding style.
 
-Firstly, ensure that unit tests pass by executing `make unittest`.
+Firstly, you should install the test-related packages: `pip install -e ".[test]"`
+
+Then, ensure that unit tests pass by executing `make unittest`.
 
 Next, format your code by running `make format`.
 

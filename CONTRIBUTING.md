@@ -22,7 +22,9 @@
 
 在您提交Pull Request之前，您需要确保您的代码通过了单元测试，并且符合OpenRL的代码风格。
 
-首先，您需要确保单元测试通过，这可以通过执行`make unittest`来完成。
+首先，您需要安装测试相关的包：`pip install -e ".[test]"`
+
+然后，您需要确保单元测试通过，这可以通过执行`make unittest`来完成。
 
 然后，您需要执行`make format`来格式化您的代码。
 
