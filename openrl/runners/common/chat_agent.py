@@ -4,7 +4,6 @@ from typing import List, Optional, Type, Union
 
 import torch
 
-
 from openrl.runners.common.base_agent import BaseAgent, SelfAgent
 
 

@@ -34,7 +34,7 @@ Before submitting a Pull Request, make sure that your code passes unit tests and
 
 Firstly, you should install the test-related packages: `pip install -e ".[test]"`
 
-Then, ensure that unit tests pass by executing `make unittest`.
+Then, ensure that unit tests pass by executing `make test`.
 
 Next, format your code by running `make format`.
 
