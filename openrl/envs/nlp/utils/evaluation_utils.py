@@ -49,7 +49,7 @@ def generate(
         attention_mask=attention_mask.to(device),
         return_dict_in_generate=True,
         output_scores=True,
-        pad_token_id=tokenizer.eos_token_id,  # TODO
+        pad_token_id=tokenizer.eos_token_id, # TODO
         **gen_kwargs_,
     )
 

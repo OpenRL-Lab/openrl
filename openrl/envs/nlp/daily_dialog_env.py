@@ -17,9 +17,9 @@ class DailyDialogEnv(Env):
     def __init__(
         self,
         cfg,
-        max_episode_length: int = 20,  # 512,
+        max_episode_length: int = 20,
         priority_scale: float = 0.0,
-        max_prompt_length: Optional[int] = 128,  # None,
+        max_prompt_length: Optional[int] = 128,
         terminate_on_eos: bool = True,  # False,
         context_start_token: Optional[int] = None,
         prompt_truncation_side: str = "left",
@@ -36,7 +36,7 @@ class DailyDialogEnv(Env):
             prompt_truncation_side (str): truncation side for prompt text (Defaults to "left")
         """
 
-        self.debug = cfg.data_path is None
+        self.debug = cfg.env.args['data_path'] is None
 
         self.env_name = "daily_dialog"
         tokenizer_name = cfg.env.args["tokenizer_path"]
@@ -85,7 +85,7 @@ class DailyDialogEnv(Env):
             self.sampler_for_replaying = PrioritySampler(priority_scale=priority_scale)
 
             samples_config = {}
-            samples_config["data_path"] = cfg.data_path
+            samples_config["data_path"] = cfg.env.args['data_path']
             samples_config["context_size"] = 5
             samples_config["split"] = "train"
             samples_config["small_debug"] = False
@@ -122,21 +122,24 @@ class DailyDialogEnv(Env):
         done = done or self.__current_obs.context_text.endswith(DailyDialog.EOU_TOKEN)
 
         reward = 0.0
-        reward_info = {}
+        reward_info = dict()
 
-        if self.reward_function is None:
-            pass
-        else:
-            for reward_function in self.reward_function:
-                reward_new, reward_info_new = reward_function(
-                    [self.__current_obs.prompt_or_input_text],
-                    [self.__current_obs.context_text],
-                    [self.__current_obs.target_or_reference_texts],
-                    [done],
-                    [self.__current_obs.meta_info],
-                )
+        if done and self.reward_function:
+            for reward_function in self.reward_function.values():
+                data = {
+                    "generated_texts": self.__current_obs.context_text,
+                    "reference_texts": self.__current_obs.target_or_reference_texts,
+                }
+                reward_new, reward_info_new = reward_function(data)
                 reward += reward_new
                 reward_info.update(reward_info_new)
+                data = {
+                    "generated_texts": self.__current_obs.context_text,
+                    "prompt_texts": self.__current_obs.prompt_or_input_text,
+                    "meta_infos": self.__current_obs.meta_info,
+                }
+                reward_info.update(data)
+        
         # populate additional info
         info = dict()
         info.update(reward_info)
