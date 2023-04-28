@@ -26,7 +26,7 @@
 [![Contributors](https://img.shields.io/github/contributors/OpenRL-Lab/openrl)](https://github.com/OpenRL-Lab/openrl/graphs/contributors)
 [![GitHub license](https://img.shields.io/github/license/OpenRL-Lab/openrl)](https://github.com/OpenRL-Lab/openrl/blob/master/LICENSE)
 
-OpenRL-v0.0.6 is updated on April 28, 2023 
+OpenRL-v0.0.7 is updated on April 29, 2023 
 
 ## Welcome to OpenRL
 
@@ -192,6 +192,7 @@ If you are using OpenRL in your research project, you are also welcome to join t
 </div>
 
 - Join the [slack](https://join.slack.com/t/openrlhq/shared_invite/zt-1tqwpvthd-Eeh0IxQ~DIaGqYXoW2IUQg) group to discuss OpenRL usage and development with us.
+- Join the [Discord](https://discord.gg/Hsjtu5Q47y) group to discuss OpenRL usage and development with us.
 - Send an E-mail to: [huangshiyu@4paradigm.com](huangshiyu@4paradigm.com)
 - Join the [GitHub Discussion](https://github.com/orgs/OpenRL-Lab/discussions).
 
