@@ -1,0 +1,12 @@
+name: "❓ Other Questions"
+description: You can ask any question here!
+title: "[Question] question title"
+labels: ["question"]
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: ❓ Question
+      description: Any question here!
+    validations:
+      required: true

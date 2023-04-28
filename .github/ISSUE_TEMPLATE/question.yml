@@ -1,5 +1,5 @@
 name: "❓ Question"
-description: How to ask a question regarding Stable-Baselines3
+description: How to ask a question regarding OpenRL
 title: "[Question] question title"
 labels: ["question"]
 body:

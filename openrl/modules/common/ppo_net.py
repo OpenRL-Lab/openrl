@@ -85,9 +85,6 @@ class PPONet(BaseNet):
         observation: Union[np.ndarray, Dict[str, np.ndarray]],
         deterministic: bool = False,
     ) -> Tuple[np.ndarray, Optional[Tuple[np.ndarray, ...]]]:
-        if not self.first_reset:
-            self.reset()
-
         actions, self.rnn_states_actor = self.module.act(
             obs=observation,
             rnn_states_actor=self.rnn_states_actor,
@@ -98,10 +95,12 @@ class PPONet(BaseNet):
 
         return actions, self.rnn_states_actor
 
-    def reset(self):
+    def reset(self, env: Optional[gym.Env] = None) -> None:
+        if env is not None:
+            self.env = env
         self.first_reset = False
         self.rnn_states_actor, self.masks = self.module.init_rnn_states(
-            rollout_num=self.cfg.n_rollout_threads,
+            rollout_num=self.env.parallel_env_num,
             agent_num=self.env.agent_num,
             rnn_layers=self.cfg.recurrent_N,
             hidden_size=self.cfg.rnn_hidden_size,
