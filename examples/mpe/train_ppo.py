@@ -7,6 +7,7 @@ from openrl.envs.common import make
 from openrl.modules.common import PPONet as Net
 from openrl.runners.common import PPOAgent as Agent
 
+
 def train():
     # 创建 环境
     env_num = 100
@@ -26,6 +27,7 @@ def train():
     env.close()
     agent.save("./ppo_agent/")
     return agent
+
 
 def test(agent):
     render_model = "group_human"
@@ -47,6 +49,7 @@ def test(agent):
         total_reward += np.mean(r)
     print(f"total_reward: {total_reward}")
     env.close()
+
 
 if __name__ == "__main__":
     agent = train()
