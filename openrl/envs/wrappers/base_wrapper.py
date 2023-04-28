@@ -15,8 +15,6 @@
 # limitations under the License.
 
 """"""
-from typing import Any, Dict, Optional
-
 import gymnasium as gym
 
 
@@ -25,20 +23,8 @@ class BaseWrapper(gym.Wrapper):
         super().__init__(env)
         self.reward_class = reward_class
 
-    def step(self, action, extra_data: Optional[Dict[str, Any]] = None):
-        returns = super().step(action)
-        rewards = returns[1]
-        if self.reward_class is not None and extra_data is not None:
-            extra_data.update({"action": action})
-            extra_data.update({"reward": returns[1]})
-            extra_data.update({"returns": returns})
-            rewards = self.reward_class.get_reward(extra_data)
-
-        return returns[0], rewards, *returns[2:]
-
-    def batch_rewards(self, buffer):
-        if self.reward_class is not None:
-            self.reward_class.batch_rewards(buffer)
+    def step(self, action):
+        return super().step(action)
 
     @property
     def env_name(self):

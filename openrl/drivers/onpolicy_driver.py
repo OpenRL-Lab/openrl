@@ -175,20 +175,15 @@ class OnPolicyDriver(RLDriver):
         import time
 
         for step in range(self.episode_length):
-            act_data = self.act(step)
-
-            (
-                values,
-                actions,
-                action_log_probs,
-                rnn_states,
-                rnn_states_critic,
-            ) = act_data
+            values, actions, action_log_probs, rnn_states, rnn_states_critic = self.act(
+                step
+            )
 
             extra_data = {
-                "act_data": act_data,
-                "buffer": self.buffer,
+                "values": values,
+                "action_log_probs": action_log_probs,
                 "step": step,
+                "buffer": self.buffer,
             }
 
             obs, rewards, dones, infos = self.envs.step(actions, extra_data)
@@ -206,13 +201,15 @@ class OnPolicyDriver(RLDriver):
             )
 
             self.add2buffer(data)
-        infos = self.envs.batch_rewards(self.buffer)
+
+        batch_rew_infos = self.envs.batch_rewards(self.buffer)
+
         if self.envs.use_monitor:
-            statistics_info = self.envs.statistics()
-            infos.update(statistics_info)
-            return infos
+            statistics_info = self.envs.statistics(self.buffer)
+            statistics_info.update(batch_rew_infos)
+            return statistics_info
         else:
-            return infos
+            return batch_rew_infos
 
     def run(self) -> None:
         episodes = (

@@ -75,7 +75,7 @@ class PolicyValueNetworkGPT(CausalLMActorCriticPolicy):
         action_log_probs = policy_output.log_prob(actions)
 
         return actions.unsqueeze(-1), action_log_probs.unsqueeze(-1), rnn_states
-        # , past_model_kwargs # TODO
+        # TODO: add past_model_kwargs, i.e., past key value.
 
     def eval_actions(
         self, obs, rnn_states, action, masks, available_actions, active_masks=None
