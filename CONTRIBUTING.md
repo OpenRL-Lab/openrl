@@ -1,3 +1,16 @@
+## 如何参与OpenRL的建设
+
+OpenRL社区欢迎任何人参与到OpenRL的建设中来，无论您是开发者还是用户，您的反馈和贡献都是我们前进的动力！
+您可以通过以下方式加入到OpenRL的贡献中来：
+
+- 作为OpenRL的用户，发现OpenRL中的bug，并提交[issue](https://github.com/OpenRL-Lab/openrl/issues/new/choose)。
+- 作为OpenRL的用户，发现OpenRL文档中的错误，并提交[issue](https://github.com/OpenRL-Lab/openrl/issues/new/choose)。
+- 写测试代码，提升OpenRL的代码测试覆盖率（大家可以从[这里](https://app.codecov.io/gh/OpenRL-Lab/openrl)查到OpenRL的代码测试覆盖情况）。
+ 您可以选择感兴趣的代码片段进行编写代码测试，
+- 作为OpenRL的开发者，为OpenRL修复已有的bug。
+- 作为OpenRL的开发者，为OpenRL添加新的环境和样例。
+- 作为OpenRL的开发者，为OpenRL添加新的算法。
+
 ## 贡献者手册
 
 欢迎更多的人参与到OpenRL的开发中来，我们非常欢迎您的贡献！
@@ -24,7 +37,7 @@
 
 首先，您需要安装测试相关的包：`pip install -e ".[test]"`
 
-然后，您需要确保单元测试通过，这可以通过执行`make unittest`来完成。
+然后，您需要确保单元测试通过，这可以通过执行`make test`来完成。
 
 然后，您需要执行`make format`来格式化您的代码。
 

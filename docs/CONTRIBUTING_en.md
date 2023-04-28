@@ -1,3 +1,14 @@
+## How to Contribute to OpenRL
+
+The OpenRL community welcomes anyone to contribute to the development of OpenRL, whether you are a developer or a user. Your feedback and contributions are our driving force! You can join the contribution of OpenRL in the following ways:
+
+- As an OpenRL user, discover bugs in OpenRL and submit an [issue](https://github.com/OpenRL-Lab/openrl/issues/new/choose).
+- As an OpenRL user, discover errors in the documentation of OpenRL and submit an [issue](https://github.com/OpenRL-Lab/openrl/issues/new/choose).
+- Write test code to improve the code coverage of OpenRL (you can check the code coverage situation of OpenRL from [here](https://app.codecov.io/gh/OpenRL-Lab/openrl)). You can choose interested code snippets for writing test codes.
+- As an open-source developer, fix existing bugs for OpenRL.
+- As an open-source developer, add new environments and examples for OpenRL.
+- As an open-source developer, add new algorithms for OpenRL.
+
 ## Contributing to OpenRL
 
 Welcome to contribute to the development of OpenRL. We appreciate your contribution!
@@ -23,7 +34,7 @@ Before submitting a Pull Request, make sure that your code passes unit tests and
 
 Firstly, you should install the test-related packages: `pip install -e ".[test]"`
 
-Then, ensure that unit tests pass by executing `make unittest`.
+Then, ensure that unit tests pass by executing `make test`.
 
 Next, format your code by running `make format`.
 

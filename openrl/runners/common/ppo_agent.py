@@ -155,6 +155,7 @@ class PPOAgent(BaseAgent):
             self._env = env
             self.env_num = env.parallel_env_num
         env.reset(seed=self._cfg.seed)
+        self.net.reset(env)
 
     def save(self, path: Union[str, pathlib.Path, io.BufferedIOBase]) -> None:
         if isinstance(path, str):
