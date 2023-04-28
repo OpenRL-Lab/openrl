@@ -4,7 +4,7 @@ from openrl.runners.common import ChatAgent as Agent
 def chat():
     agent = Agent.load(
         "./ppo_agent",
-        tokenizer="/home/huangshiyu/data_server/huggingface/models/gpt2",
+        tokenizer="gpt2",
     )
     history = []
     print("Welcome to OpenRL!")

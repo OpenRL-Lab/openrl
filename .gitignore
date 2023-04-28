@@ -146,3 +146,9 @@ pytorch_share_files/
 submission/*/actor.pt
 openrl/configs/instance/
 log.txt
+
+# wandb output
+run_results/
+
+# model
+*.pt

@@ -126,19 +126,21 @@ class DailyDialogEnv(Env):
 
         if done and self.reward_function:
             for reward_function in self.reward_function.values():
-                data = {
+                inner_reward_data = {
                     "generated_texts": self.__current_obs.context_text,
                     "reference_texts": self.__current_obs.target_or_reference_texts,
                 }
-                reward_new, reward_info_new = reward_function(data)
+                reward_new, reward_info_new = reward_function(inner_reward_data)
                 reward += reward_new
                 reward_info.update(reward_info_new)
-                data = {
-                    "generated_texts": self.__current_obs.context_text,
-                    "prompt_texts": self.__current_obs.prompt_or_input_text,
-                    "meta_infos": self.__current_obs.meta_info,
-                }
-                reward_info.update(data)
+
+        if done:
+            batch_reward_data = {
+                "generated_texts": self.__current_obs.context_text,
+                "prompt_texts": self.__current_obs.prompt_or_input_text,
+                "meta_infos": self.__current_obs.meta_info,
+            }
+            reward_info.update(batch_reward_data)
 
         # populate additional info
         info = dict()

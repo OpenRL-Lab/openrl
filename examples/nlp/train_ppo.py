@@ -9,13 +9,11 @@ from openrl.runners.common import PPOAgent as Agent
 
 
 def train():
-    debug = False
     # 创建 环境
-
     cfg_parser = create_config_parser()
     cfg = cfg_parser.parse_args()
 
-    env_num = 2 if debug else 10
+    env_num = 10
     env = make(
         "daily_dialog",
         env_num=env_num,
@@ -28,7 +26,8 @@ def train():
     net = Net(env, device="cuda", cfg=cfg, model_dict=model_dict)
 
     # 初始化训练器
-    agent = Agent(net, use_wandb=not debug)
+    agent = Agent(net, use_wandb=True)
+
     # 开始训练
     agent.train(total_time_steps=100000)
     agent.save("./ppo_agent")
