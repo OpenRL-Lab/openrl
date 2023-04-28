@@ -177,7 +177,6 @@ class PPOAgent(BaseAgent):
         if not torch.cuda.is_available():
             self.net.module = torch.load(path, map_location=torch.device("cpu"))
             self.net.module.device = torch.device("cpu")
-            self.net.module.device = torch.device("cpu")
             for key in self.net.module.models:
                 self.net.module.models[key].tpdv = dict(
                     dtype=torch.float32, device=torch.device("cpu")

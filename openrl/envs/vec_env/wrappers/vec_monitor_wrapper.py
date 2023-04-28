@@ -20,31 +20,12 @@ from typing import Any, Dict, Optional
 from gymnasium.core import ActType
 
 from openrl.envs.vec_env.base_venv import BaseVecEnv
+from openrl.envs.vec_env.vec_info.base_vec_info import BaseVecInfo
 from openrl.envs.vec_env.wrappers.base_wrapper import VecEnvWrapper
-from openrl.envs.vec_env.wrappers.vec_info import NLPVecInfo, VecInfo
-
-registed_vec_info = {
-    "default": VecInfo,
-    "NLPVecInfo": NLPVecInfo,
-}
 
 
-class VecInfoFactory:
-    @staticmethod
-    def get_vec_info_class(vec_info_class, env):
-        if vec_info_class is None or vec_info_class.id is None:
-            return registed_vec_info["default"](env.parallel_env_num, env.agent_num)
-        return registed_vec_info[vec_info_class.id](
-            env.parallel_env_num, env.agent_num, **vec_info_class.args
-        )
-
-    @staticmethod
-    def register(name, vec_info):
-        registed_vec_info[name] = vec_info
-
-
-class VecMonitor(VecEnvWrapper):
-    def __init__(self, vec_info: Any, env: BaseVecEnv):
+class VecMonitorWrapper(VecEnvWrapper):
+    def __init__(self, vec_info: BaseVecInfo, env: BaseVecEnv):
         super().__init__(env)
         self.vec_info = vec_info
 
@@ -54,12 +35,12 @@ class VecMonitor(VecEnvWrapper):
 
     def step(self, action: ActType, extra_data: Optional[Dict[str, Any]] = None):
         returns = self.env.step(action, extra_data)
-        self.vec_info.append(reward=returns[1], info=returns[-1])
+        self.vec_info.append(info=returns[-1])
 
         return returns
 
-    def statistics(self):
+    def statistics(self, buffer):  # TODO
         # this function should be called each episode
-        info_dict = self.vec_info.statistics()
+        info_dict = self.vec_info.statistics(buffer)
         self.vec_info.reset()
         return info_dict

@@ -21,8 +21,14 @@ import gymnasium as gym
 from gymnasium import Env
 
 import openrl
-from openrl.envs.vec_env import AsyncVectorEnv, RewardWrapper, SyncVectorEnv, VecMonitor
-from openrl.envs.vec_env.wrappers.vec_monitor import VecInfoFactory
+from openrl.envs.vec_env import (
+    AsyncVectorEnv,
+    RewardWrapper,
+    SyncVectorEnv,
+    VecMonitorWrapper,
+)
+from openrl.envs.vec_env.vec_info import VecInfoFactory
+from openrl.rewards import RewardFactory
 
 
 def make(
@@ -78,19 +84,14 @@ def make(
     else:
         env = SyncVectorEnv(env_fns, render_mode=render_mode)
 
-    if cfg is not None:
-        from openrl.rewards.register import RewardFactory
-
-        reward_class = RewardFactory.get_reward_class(cfg.reward_class, env)
-    else:
-        reward_class = None
+    reward_class = cfg.reward_class if cfg else None
+    reward_class = RewardFactory.get_reward_class(reward_class, env)
 
     env = RewardWrapper(env, reward_class)
 
     if add_monitor:
-        vec_info_class = VecInfoFactory.get_vec_info_class(
-            cfg.vec_info_class if cfg else None, env
-        )
-        env = VecMonitor(vec_info_class, env)
+        vec_info_class = cfg.vec_info_class if cfg else None
+        vec_info_class = VecInfoFactory.get_vec_info_class(vec_info_class, env)
+        env = VecMonitorWrapper(vec_info_class, env)
 
     return env
