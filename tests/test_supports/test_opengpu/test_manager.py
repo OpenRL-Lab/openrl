@@ -23,6 +23,7 @@ import pytest
 
 from openrl.supports.opengpu.manager import LocalGPUManager
 
+
 @pytest.mark.unittest
 def test_local_manager():
     manager = LocalGPUManager()
@@ -31,7 +32,6 @@ def test_local_manager():
     assert isinstance(manager.get_learner_gpus(), list)
     manager.get_worker_gpu()
     manager.log_info()
-
 
 
 if __name__ == "__main__":

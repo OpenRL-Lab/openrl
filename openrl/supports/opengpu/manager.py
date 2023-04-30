@@ -15,12 +15,10 @@
 # limitations under the License.
 
 """"""
-from typing import List, Union
-
 import argparse
 import logging
 import traceback
-
+from typing import List, Union
 
 from openrl.supports.opengpu.gpu_info import get_local_GPU_info, get_remote_GPU_info
 
