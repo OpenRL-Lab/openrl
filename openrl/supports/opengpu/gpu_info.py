@@ -67,7 +67,7 @@ def get_local_GPU_info():
     cmd = "gpustat --json"
 
     output = subprocess.getoutput(cmd)
-    if "command not found" in output:
+    if "not found" in output:
         print(
             "Can not find gpustat. "
             "Please install gpustat first! "
