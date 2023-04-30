@@ -82,7 +82,10 @@ def get_local_GPU_info():
         if "4pdvGPU" not in line:
             new_output.append(line)
     output = "\n".join(new_output)
-    print(output)
+
+    if "NVML Shared Library Not Found" in output:
+        return []
+
     gpu_dict = json.loads(output)
 
     gpus = gpu_dict["gpus"]
