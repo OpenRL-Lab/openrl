@@ -87,6 +87,7 @@ For more information about OpenRL, please refer to the [documentation](https://o
   - [&#8627; Forkers](#-forkers)
 - [Citing OpenRL](#citing-openrl)
 - [License](#license)
+- [Acknowledgments](#acknowledgments)
 
 ## Installation
 
