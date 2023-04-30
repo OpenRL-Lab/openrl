@@ -18,7 +18,7 @@
 import argparse
 import logging
 import traceback
-from typing import List
+from typing import List, Union
 
 from openrl.supports.opengpu.gpu_info import get_local_GPU_info, get_remote_GPU_info
 
@@ -109,7 +109,7 @@ class LocalGPUManager:
     def __init__(self, args: argparse.Namespace = None):
         self.args = args
         self.gpus = []
-        self.learner_num = None if args is None else args.learner_num
+        self.learner_num = 0 if args is None else args.learner_num
         if args is None or not self.args.disable_cuda:
             try:
                 print("LocalGPUManager fetch gpu infos....")
@@ -133,8 +133,8 @@ class LocalGPUManager:
         else:
             return self.gpus[0].gpu_id
 
-    def get_learner_gpu(self, learner_id: int = 0) -> int:
-        if self.args.disable_cuda or len(self.gpus) == 0:
+    def get_learner_gpu(self, learner_id: int = 0) -> Union[int, None]:
+        if self.args is None or (self.args.disable_cuda or len(self.gpus) == 0):
             return None
 
         if self.args.gpu_usage_type == "auto":
@@ -172,7 +172,7 @@ class LocalGPUManager:
         return gpus
 
     def get_worker_gpu(self, worker_id: int = 0) -> int:
-        if self.args.disable_cuda or len(self.gpus) == 0:
+        if self.args is None or (self.args.disable_cuda or len(self.gpus) == 0):
             return None
 
         worker_id += self.args.learner_num
