@@ -49,6 +49,7 @@ def get_extra_requires() -> dict:
             "isort",
             "black",
             "ruff",
+            "gpustat",
         ],
         "dev": ["build", "twine"],
         "mpe": ["pyglet==1.5.27"],
