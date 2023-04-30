@@ -67,6 +67,11 @@ def get_local_GPU_info():
     cmd = "gpustat --json"
 
     output = subprocess.getoutput(cmd)
+    if "command not found" in output:
+        print("Can not find gpustat. "
+              "Please install gpustat first! "
+              "You can install gpustat by 'pip install gpustat'")
+        return []
 
     # Deal with vGPU
     output = output.split("\n")
@@ -75,7 +80,7 @@ def get_local_GPU_info():
         if "4pdvGPU" not in line:
             new_output.append(line)
     output = "\n".join(new_output)
-
+    print(output)
     gpu_dict = json.loads(output)
 
     gpus = gpu_dict["gpus"]

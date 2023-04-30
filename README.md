@@ -215,3 +215,14 @@ OpenRL框架目前还在持续开发和文档建设，欢迎加入我们让该�
 
 ## License
 OpenRL under the Apache 2.0 license.
+
+## Acknowledgments
+The development of the OpenRL framework has drawn on the strengths of other reinforcement learning frameworks:
+
+- Stable-baselines3: https://github.com/DLR-RM/stable-baselines3
+- pytorch-a2c-ppo-acktr-gail: https://github.com/ikostrikov/pytorch-a2c-ppo-acktr-gail
+- MAPPO: https://github.com/marlbenchmark/on-policy
+- Gymnasium: https://github.com/Farama-Foundation/Gymnasium
+- DI-engine: https://github.com/opendilab/DI-engine/
+- Tianshou: https://github.com/thu-ml/tianshou
+- RL4LMs: https://github.com/allenai/RL4LMs
