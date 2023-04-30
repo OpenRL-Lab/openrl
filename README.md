@@ -68,6 +68,7 @@ OpenRL-Lab将持续维护和更新OpenRL，欢迎大家加入我们的[开源社
   - [&#8627; Forkers](#-forkers)
 - [Citing OpenRL](#citing-openrl)
 - [License](#license)
+- [Acknowledgments](#acknowledgments)
 
 ## 安装
 
