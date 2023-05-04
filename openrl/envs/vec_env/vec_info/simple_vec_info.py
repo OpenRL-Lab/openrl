@@ -17,7 +17,7 @@ class SimpleVecInfo(BaseVecInfo):
 
     def statistics(self, buffer: Any) -> Dict[str, Any]:
         # this function should be called each episode
-        rewards = buffer.data.rewardsc.copy()
+        rewards = buffer.data.rewards.copy()
         self.total_step += np.prod(rewards.shape[:2])
         rewards = rewards.transpose(2, 1, 0, 3)
         info_dict = {}
