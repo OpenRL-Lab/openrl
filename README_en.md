@@ -28,6 +28,8 @@
 
 OpenRL-v0.0.8 is updated on May 4, 2023
 
+The main branch is the latest version of OpenRL, which is under active development. If you want to just use the stable version, please switch to the stable branch.
+
 ## Welcome to OpenRL
 
 [中文介绍](./README.md) | [Documentation](https://openrl-docs.readthedocs.io/en/latest/) | [中文文档](https://openrl-docs.readthedocs.io/zh/latest/)
