@@ -215,7 +215,7 @@ to apply for joining the OpenRL team).
 
 ## Supporters
 
-#### &#8627; Contributors
+### &#8627; Contributors
 
 <a href="https://github.com/OpenRL-Lab/openrl/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=OpenRL-Lab/openrl" />
