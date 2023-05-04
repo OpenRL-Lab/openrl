@@ -28,6 +28,8 @@
 
 OpenRL-v0.0.8 is updated on May 4, 2023 
 
+The main branch is the latest version of OpenRL, which is under active development. If you want to just use the stable version, please switch to the stable branch.
+
 ## 欢迎来到OpenRL
 
 [English](./README_en.md) | [中文文档](https://openrl-docs.readthedocs.io/zh/latest/) | [Documentation](https://openrl-docs.readthedocs.io/en/latest/)
@@ -188,6 +190,12 @@ OpenRL框架目前还在持续开发和文档建设，欢迎加入我们让该�
 欢迎更多的贡献者加入我们的维护团队 (发送邮件到[huangshiyu@4paradigm.com](huangshiyu@4paradigm.com)申请加入OpenRL团队)。
 
 ## 支持者
+
+### &#8627; Contributors
+
+<a href="https://github.com/OpenRL-Lab/openrl/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=OpenRL-Lab/openrl" />
+</a>
 
 ### &#8627; Stargazers
 
