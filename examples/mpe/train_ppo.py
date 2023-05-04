@@ -29,7 +29,7 @@ def train():
     return agent
 
 
-def eval(agent):
+def evaluation(agent):
     render_model = "group_human"
     env_num = 9
     env = make(
@@ -53,4 +53,4 @@ def eval(agent):
 
 if __name__ == "__main__":
     agent = train()
-    eval(agent)
+    evaluation(agent)
