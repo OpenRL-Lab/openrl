@@ -28,7 +28,7 @@
 
 OpenRL-v0.0.8 is updated on May 4, 2023 
 
-The main branch is the latest version of OpenRL, which is under active development. If you want to just use the stable version, please switch to the stable branch.
+The main branch is the latest version of OpenRL, which is under active development. If you just want to have a try with OpenRL, you can switch to the stable branch.
 
 ## 欢迎来到OpenRL
 
@@ -66,6 +66,7 @@ OpenRL-Lab将持续维护和更新OpenRL，欢迎大家加入我们的[开源社
 - [反馈和贡献](#反馈和贡献)
 - [维护人员](#维护人员)
 - [支持者](#支持者)
+  - [&#8627; Contributors](#-contributors)  
   - [&#8627; Stargazers](#-stargazers)
   - [&#8627; Forkers](#-forkers)
 - [Citing OpenRL](#citing-openrl)
