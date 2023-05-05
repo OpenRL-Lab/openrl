@@ -109,7 +109,7 @@ conda install -c openrl openrl
 Users who want to modify the source code can also install OpenRL from the source code:
 
 ```bash
-git clone https://github.com/OpenRL-Lab/openrl && cd openrl
+git clone git@github.com:OpenRL-Lab/openrl.git && cd openrl
 pip install -e .
 ```
 
