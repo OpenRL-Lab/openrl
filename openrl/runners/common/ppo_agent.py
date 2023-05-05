@@ -76,8 +76,8 @@ class PPOAgent(BaseAgent):
 
         if self.run_dir is None:
             assert (not self._use_wandb) and (not self._use_tensorboard), (
-                "log_path must be set when using wandb or tensorboard.Please set"
-                " log_path in PPOAgent or in the config file or pass run_dir in the"
+                "run_dir must be set when using wandb or tensorboard. Please set"
+                " run_dir in the config file or pass run_dir in the"
                 " command line."
             )
 
