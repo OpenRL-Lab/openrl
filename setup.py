@@ -59,6 +59,7 @@ def get_extra_requires() -> dict:
             "datasets",
             "nltk",
             "evaluate",
+            "icetk",
         ],
     }
     return req

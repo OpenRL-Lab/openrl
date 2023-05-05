@@ -1,10 +1,10 @@
-from openrl.runners.common import ChatAgent as Agent
+from openrl.runners.common import Chat6BAgent as Agent
 
 
 def chat():
     agent = Agent.load(
-        "./ppo_agent",
-        tokenizer="gpt2",
+        "THUDM/chatglm-6b",
+        device="cuda:0",
     )
     history = []
     print("Welcome to OpenRL!")
@@ -17,7 +17,7 @@ def chat():
             print("Welcome to OpenRL!")
             continue
         response = agent.chat(input_text, history)
-        print(f"> OpenRL Agent: {response}")
+        print(f"> Agent: {response}")
         history.append(input_text)
         history.append(response)
 

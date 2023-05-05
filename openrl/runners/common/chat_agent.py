@@ -2,6 +2,7 @@ import io
 import pathlib
 from typing import List, Optional, Type, Union
 
+import numpy as np
 import torch
 
 from openrl.runners.common.base_agent import BaseAgent, SelfAgent
@@ -98,3 +99,34 @@ class ChatAgent(BaseAgent):
         path: Union[str, pathlib.Path, io.BufferedIOBase],
     ) -> None:
         pass
+
+
+class Chat6BAgent(ChatAgent):
+    @classmethod
+    def load(
+        cls: Type[SelfAgent],
+        agent_path: Union[str, pathlib.Path, io.BufferedIOBase],
+        device="cuda:0",
+    ) -> SelfAgent:
+        if isinstance(agent_path, str):
+            agent_path = pathlib.Path(agent_path)
+
+        assert agent_path.exists(), f"{agent_path} does not exist"
+
+        from transformers import AutoModel, AutoTokenizer
+
+        tokenizer = AutoTokenizer.from_pretrained(agent_path, trust_remote_code=True)
+        model = (
+            AutoModel.from_pretrained(agent_path, trust_remote_code=True)
+            .half()
+            .cuda(device)
+        )
+        model.eval()
+        return cls(model, tokenizer, device)
+
+    def chat(self, input: str, history: List[str]):
+        new_history = np.reshape(history, (-1, 2)).tolist()
+        response, _ = self.model.chat(
+            self.tokenizer, input, history=new_history, do_sample=False
+        )
+        return response
