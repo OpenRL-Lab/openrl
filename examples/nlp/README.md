@@ -11,3 +11,8 @@ After the training, users can chat with the agent via:
 ```shell
 python chat.py
 ```
+
+
+### Chat with other agents
+
+- Chat with [ChatGLM-6B](https://github.com/THUDM/ChatGLM-6B): `python chat_6b.py`
