@@ -26,7 +26,9 @@
 [![Contributors](https://img.shields.io/github/contributors/OpenRL-Lab/openrl)](https://github.com/OpenRL-Lab/openrl/graphs/contributors)
 [![GitHub license](https://img.shields.io/github/license/OpenRL-Lab/openrl)](https://github.com/OpenRL-Lab/openrl/blob/master/LICENSE)
 
-OpenRL-v0.0.7 is updated on April 29, 2023 
+OpenRL-v0.0.8 is updated on May 4, 2023 
+
+The main branch is the latest version of OpenRL, which is under active development. If you just want to have a try with OpenRL, you can switch to the stable branch.
 
 ## 欢迎来到OpenRL
 
@@ -64,6 +66,7 @@ OpenRL-Lab将持续维护和更新OpenRL，欢迎大家加入我们的[开源社
 - [反馈和贡献](#反馈和贡献)
 - [维护人员](#维护人员)
 - [支持者](#支持者)
+  - [&#8627; Contributors](#-contributors)  
   - [&#8627; Stargazers](#-stargazers)
   - [&#8627; Forkers](#-forkers)
 - [Citing OpenRL](#citing-openrl)
@@ -82,7 +85,7 @@ pip install openrl
 conda install -c openrl openrl
 ```
 
-用户也可以从源码安装OpenRL:
+想要修改源码的用户也可以从源码安装OpenRL:
 ```bash
 git clone https://github.com/OpenRL-Lab/openrl && cd openrl
 pip install -e .
@@ -188,6 +191,12 @@ OpenRL框架目前还在持续开发和文档建设，欢迎加入我们让该�
 欢迎更多的贡献者加入我们的维护团队 (发送邮件到[huangshiyu@4paradigm.com](huangshiyu@4paradigm.com)申请加入OpenRL团队)。
 
 ## 支持者
+
+### &#8627; Contributors
+
+<a href="https://github.com/OpenRL-Lab/openrl/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=OpenRL-Lab/openrl" />
+</a>
 
 ### &#8627; Stargazers
 

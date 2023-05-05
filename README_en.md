@@ -26,7 +26,9 @@
 [![Contributors](https://img.shields.io/github/contributors/OpenRL-Lab/openrl)](https://github.com/OpenRL-Lab/openrl/graphs/contributors)
 [![GitHub license](https://img.shields.io/github/license/OpenRL-Lab/openrl)](https://github.com/OpenRL-Lab/openrl/blob/master/LICENSE)
 
-OpenRL-v0.0.7 is updated on April 29, 2023 
+OpenRL-v0.0.8 is updated on May 4, 2023
+
+The main branch is the latest version of OpenRL, which is under active development. If you just want to have a try with OpenRL, you can switch to the stable branch.
 
 ## Welcome to OpenRL
 
@@ -83,6 +85,7 @@ For more information about OpenRL, please refer to the [documentation](https://o
 - [Feedback and Contribution](#feedback-and-contribution)
 - [Maintainers](#maintainers)
 - [Supporters](#supporters)
+  - [&#8627; Contributors](#-contributors) 
   - [&#8627; Stargazers](#-stargazers)
   - [&#8627; Forkers](#-forkers)
 - [Citing OpenRL](#citing-openrl)
@@ -103,7 +106,7 @@ If users are using Anaconda or Miniconda, they can also install OpenRL via conda
 conda install -c openrl openrl
 ```
 
-Users can also install OpenRL from source code:
+Users who want to modify the source code can also install OpenRL from the source code:
 
 ```bash
 git clone https://github.com/OpenRL-Lab/openrl && cd openrl
@@ -212,6 +215,12 @@ Welcome more contributors to join our maintenance team (send an E-mail to [huang
 to apply for joining the OpenRL team).
 
 ## Supporters
+
+### &#8627; Contributors
+
+<a href="https://github.com/OpenRL-Lab/openrl/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=OpenRL-Lab/openrl" />
+</a>
 
 ### &#8627; Stargazers
 

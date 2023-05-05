@@ -12,14 +12,12 @@ class BaseReward(object):
     def step_reward(
         self, data: Dict[str, Any]
     ) -> Union[np.ndarray, List[Dict[str, Any]]]:
-        
         rewards = data["rewards"].copy()
         infos = [dict() for _ in range(rewards.shape[0])]
 
         return rewards, infos
 
     def batch_rewards(self, buffer: Any) -> Dict[str, Any]:
-        
         infos = dict()
 
         return infos
