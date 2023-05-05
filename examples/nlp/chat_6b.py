@@ -3,7 +3,7 @@ from openrl.runners.common import Chat6BAgent as Agent
 
 def chat():
     agent = Agent.load(
-        "THUDM/chatglm-6b",
+        "/home/huangshiyu/data_server/huggingface/models/THUDM/chatglm-6b",
         device="cuda:0",
     )
     history = []

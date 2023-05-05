@@ -108,11 +108,6 @@ class Chat6BAgent(ChatAgent):
         agent_path: Union[str, pathlib.Path, io.BufferedIOBase],
         device="cuda:0",
     ) -> SelfAgent:
-        if isinstance(agent_path, str):
-            agent_path = pathlib.Path(agent_path)
-
-        assert agent_path.exists(), f"{agent_path} does not exist"
-
         from transformers import AutoModel, AutoTokenizer
 
         tokenizer = AutoTokenizer.from_pretrained(agent_path, trust_remote_code=True)
