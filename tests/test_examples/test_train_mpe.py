@@ -2,8 +2,8 @@
 import os
 import sys
 
-import pytest
 import numpy as np
+import pytest
 
 from openrl.configs.config import create_config_parser
 from openrl.envs.common import make
@@ -14,7 +14,8 @@ from openrl.runners.common import PPOAgent as Agent
 @pytest.fixture(
     scope="module",
     params=[
-        "--episode_length 5 --use_recurrent_policy true --use_joint_action_loss true --use_valuenorm true --use_adv_normalize true"
+        "--episode_length 5 --use_recurrent_policy true --use_joint_action_loss true"
+        " --use_valuenorm true --use_adv_normalize true"
     ],
 )
 def config(request):

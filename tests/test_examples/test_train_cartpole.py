@@ -19,8 +19,8 @@
 import os
 import sys
 
-import pytest
 import numpy as np
+import pytest
 
 from openrl.envs.common import make
 from openrl.modules.common import PPONet as Net
