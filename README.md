@@ -87,7 +87,7 @@ conda install -c openrl openrl
 
 想要修改源码的用户也可以从源码安装OpenRL:
 ```bash
-git clone https://github.com/OpenRL-Lab/openrl && cd openrl
+git clone git@github.com:OpenRL-Lab/openrl.git && cd openrl
 pip install -e .
 ```
 
