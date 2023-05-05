@@ -106,7 +106,7 @@ If users are using Anaconda or Miniconda, they can also install OpenRL via conda
 conda install -c openrl openrl
 ```
 
-Users can also install OpenRL from source code:
+Users who want to modify the source code can also install OpenRL from the source code:
 
 ```bash
 git clone https://github.com/OpenRL-Lab/openrl && cd openrl
