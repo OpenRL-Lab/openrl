@@ -37,6 +37,7 @@ def get_install_requires() -> list:
         "jsonargparse",
         "imageio",
         "opencv-python",
+        "pygame"
     ]
 
 
