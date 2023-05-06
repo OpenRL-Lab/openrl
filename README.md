@@ -60,6 +60,7 @@ OpenRL-Lab将持续维护和更新OpenRL，欢迎大家加入我们的[开源社
 - [欢迎来到OpenRL](#欢迎来到openrl)
 - [目录](#目录)
 - [安装](#安装)
+- [使用Docker](#使用docker)
 - [快速上手](#快速上手)
 - [Gallery](#Gallery)
 - [使用OpenRL的项目](#使用OpenRL的项目)
@@ -95,6 +96,36 @@ pip install -e .
 ```bash
 openrl --version
 ```
+
+## 使用Docker
+
+OpenRL目前也提供了包含显卡支持和非显卡支持的Docker镜像。
+如果用户的电脑上没有英伟达显卡，则可以通过以下命令获取不包含显卡插件的镜像：
+```bash
+sudo docker pull openrllab/openrl-cpu
+```
+
+如果用户想要通过显卡加速训练，则可以通过以下命令获取：
+```bash
+sudo docker pull openrllab/openrl
+```
+
+镜像拉取成功后，用户可以通过以下命令运行OpenRL的Docker镜像：
+```bash
+# 不带显卡加速
+sudo docker run -it openrllab/openrl-cpu
+# 带显卡加速
+sudo docker run -it --gpus all --net host openrllab/openrl
+```
+
+进入Docker镜像后，用户可以通过以下命令查看OpenRL的版本然后运行测例：
+```bash
+# 查看Docker镜像中OpenRL的版本
+openrl --version
+# 运行测例
+openrl --mode train --env CartPole-v1
+```
+
 
 ## 快速上手
 
