@@ -24,7 +24,7 @@ from setuptools import setup
 
 def get_install_requires() -> list:
     return [
-        "setuptools>=50.0",
+        "setuptools>=67.0",
         "gymnasium",
         "click",
         "termcolor",
@@ -54,7 +54,6 @@ def get_extra_requires() -> dict:
         "dev": ["build", "twine"],
         "mpe": ["pyglet==1.5.27"],
         "nlp": [
-            "stable-baselines3==1.5.1a5",
             "transformers==4.18.0",
             "datasets",
             "nltk",

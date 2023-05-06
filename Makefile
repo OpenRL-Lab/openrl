@@ -23,3 +23,9 @@ format:
 	black ${PYTHON_FILES} --preview
 
 commit-checks: format lint
+
+docker-cpu:
+	./scripts/build_docker.sh
+
+docker-gpu:
+	USE_GPU=True ./scripts/build_docker.sh

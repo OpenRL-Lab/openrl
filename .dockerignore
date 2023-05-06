@@ -1,0 +1,11 @@
+__pycache__/
+logs
+.pytest_cache/
+.coverage
+.coverage.*
+.idea/
+logs/
+.pytype/
+htmlcov/
+.vscode/
+.git/
