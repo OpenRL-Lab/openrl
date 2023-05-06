@@ -24,7 +24,7 @@ from setuptools import setup
 
 def get_install_requires() -> list:
     return [
-        "setuptools>=50.0",
+        "setuptools>=67.0",
         "gymnasium",
         "click",
         "termcolor",
@@ -37,6 +37,7 @@ def get_install_requires() -> list:
         "jsonargparse",
         "imageio",
         "opencv-python",
+        "pygame",
     ]
 
 
@@ -54,11 +55,11 @@ def get_extra_requires() -> dict:
         "dev": ["build", "twine"],
         "mpe": ["pyglet==1.5.27"],
         "nlp": [
-            "stable-baselines3==1.5.1a5",
             "transformers==4.18.0",
             "datasets",
             "nltk",
             "evaluate",
+            "icetk",
         ],
     }
     return req
@@ -86,11 +87,12 @@ setup(
         "Documentation": "https://openrl-docs.readthedocs.io/zh/latest/",
     },
     classifiers=[
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Science/Research",
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
         "Topic :: Software Development :: Libraries :: Python Modules",
-        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
     ],

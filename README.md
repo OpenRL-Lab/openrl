@@ -28,6 +28,8 @@
 
 OpenRL-v0.0.8 is updated on May 4, 2023 
 
+The main branch is the latest version of OpenRL, which is under active development. If you just want to have a try with OpenRL, you can switch to the stable branch.
+
 ## 欢迎来到OpenRL
 
 [English](./README_en.md) | [中文文档](https://openrl-docs.readthedocs.io/zh/latest/) | [Documentation](https://openrl-docs.readthedocs.io/en/latest/)
@@ -58,12 +60,14 @@ OpenRL-Lab将持续维护和更新OpenRL，欢迎大家加入我们的[开源社
 - [欢迎来到OpenRL](#欢迎来到openrl)
 - [目录](#目录)
 - [安装](#安装)
+- [使用Docker](#使用docker)
 - [快速上手](#快速上手)
 - [Gallery](#Gallery)
 - [使用OpenRL的项目](#使用OpenRL的项目)
 - [反馈和贡献](#反馈和贡献)
 - [维护人员](#维护人员)
 - [支持者](#支持者)
+  - [&#8627; Contributors](#-contributors)  
   - [&#8627; Stargazers](#-stargazers)
   - [&#8627; Forkers](#-forkers)
 - [Citing OpenRL](#citing-openrl)
@@ -82,9 +86,9 @@ pip install openrl
 conda install -c openrl openrl
 ```
 
-用户也可以从源码安装OpenRL:
+想要修改源码的用户也可以从源码安装OpenRL:
 ```bash
-git clone https://github.com/OpenRL-Lab/openrl && cd openrl
+git clone https://github.com/OpenRL-Lab/openrl.git && cd openrl
 pip install -e .
 ```
 
@@ -92,6 +96,36 @@ pip install -e .
 ```bash
 openrl --version
 ```
+
+## 使用Docker
+
+OpenRL目前也提供了包含显卡支持和非显卡支持的Docker镜像。
+如果用户的电脑上没有英伟达显卡，则可以通过以下命令获取不包含显卡插件的镜像：
+```bash
+sudo docker pull openrllab/openrl-cpu
+```
+
+如果用户想要通过显卡加速训练，则可以通过以下命令获取：
+```bash
+sudo docker pull openrllab/openrl
+```
+
+镜像拉取成功后，用户可以通过以下命令运行OpenRL的Docker镜像：
+```bash
+# 不带显卡加速
+sudo docker run -it openrllab/openrl-cpu
+# 带显卡加速
+sudo docker run -it --gpus all --net host openrllab/openrl
+```
+
+进入Docker镜像后，用户可以通过以下命令查看OpenRL的版本然后运行测例：
+```bash
+# 查看Docker镜像中OpenRL的版本
+openrl --version
+# 运行测例
+openrl --mode train --env CartPole-v1
+```
+
 
 ## 快速上手
 
@@ -188,6 +222,12 @@ OpenRL框架目前还在持续开发和文档建设，欢迎加入我们让该�
 欢迎更多的贡献者加入我们的维护团队 (发送邮件到[huangshiyu@4paradigm.com](huangshiyu@4paradigm.com)申请加入OpenRL团队)。
 
 ## 支持者
+
+### &#8627; Contributors
+
+<a href="https://github.com/OpenRL-Lab/openrl/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=OpenRL-Lab/openrl" />
+</a>
 
 ### &#8627; Stargazers
 

@@ -19,7 +19,7 @@ def train():
     return agent
 
 
-def test(agent):
+def evaluation(agent):
     # 开始测试环境
     env = make("CartPole-v1", render_mode="group_human", env_num=9, asynchronous=True)
     agent.set_env(env)
@@ -37,4 +37,4 @@ def test(agent):
 
 if __name__ == "__main__":
     agent = train()
-    test(agent)
+    evaluation(agent)
