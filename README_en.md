@@ -79,6 +79,7 @@ For more information about OpenRL, please refer to the [documentation](https://o
 - [Welcome to OpenRL](#welcome-to-openrl)
 - [Outline](#outline)
 - [Installation](#installation)
+- [Use Docker](#use-docker)
 - [Quick Start](#quick-start)
 - [Gallery](#gallery)
 - [Projects Using OpenRL](#projects-using-openrl)
@@ -117,6 +118,35 @@ After installation, users can check the version of OpenRL through command line:
 
 ```bash
 openrl --version
+```
+
+## Use Docker
+
+OpenRL currently provides Docker images with and without GPU support. 
+If the user's computer does not have an NVIDIA GPU, they can obtain an image without the GPU plugin using the following command:
+```bash
+sudo docker pull openrllab/openrl-cpu
+```
+
+If the user wants to accelerate training with a GPU, they can obtain it using the following command:
+```bash
+sudo docker pull openrllab/openrl
+```
+
+After successfully pulling the image, users can run OpenRL's Docker image using the following commands:
+```bash
+# Without GPU acceleration
+sudo docker run -it openrllab/openrl-cpu
+# With GPU acceleration 
+sudo docker run -it --gpus all --net host openrllab/openrl
+```
+
+Once inside the Docker container, users can check OpenRL's version and then run test cases using these commands: 
+```bash 
+# Check OpenRL version in Docker container  
+openrl --version  
+# Run test case  
+openrl --mode train --env CartPole-v1  
 ```
 
 ## Quick Start
