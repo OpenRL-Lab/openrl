@@ -68,12 +68,11 @@ class KLPenalty(nn.Module):
 
         with torch.no_grad():
             output = self._ref_net(output_hidden_states=True, **model_inputs)
-
-        output["past_key_values"] = None
-        next_token_logits = output.logits[:, -1, :]
-        dist = self._action_dist.proba_distribution(action_logits=next_token_logits)
-        action_input = actions.to(next_token_logits.device)
-        ref_log_prob = dist.log_prob(action_input)
+            output["past_key_values"] = None
+            next_token_logits = output.logits[:, -1, :]
+            dist = self._action_dist.proba_distribution(action_logits=next_token_logits)
+            action_input = actions.to(next_token_logits.device)
+            ref_log_prob = dist.log_prob(action_input)
 
         ref_log_prob = ref_log_prob.reshape(action_log_probs.shape)
         kl_div = action_log_probs.copy() - ref_log_prob.detach().cpu().numpy()
