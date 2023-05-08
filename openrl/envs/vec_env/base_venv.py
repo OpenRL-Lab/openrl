@@ -161,15 +161,15 @@ class BaseVecEnv(
         # Create a big image by tiling images from subprocesses
         bigimg = tile_images(imgs)
         if mode == "human":
-            import cv2  # pytype:disable=import-error
-
             if IN_COLAB:
                 from google.colab.patches import cv2_imshow
 
                 cv2_imshow(bigimg[:, :, ::-1])
             else:
+                import cv2  # pytype:disable=import-error
+
                 cv2.imshow("Vec_Env:{}".format(self.env_name), bigimg[:, :, ::-1])
-            cv2.waitKey(1)
+                cv2.waitKey(1)
         elif mode in [None, "rgb_array"]:
             return bigimg
         else:
