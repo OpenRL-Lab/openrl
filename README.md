@@ -97,10 +97,13 @@ pip install -e .
 openrl --version
 ```
 
+**Tips**：无需安装，通过Colab在线试用OpenRL: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/15VBA-B7AJF8dBazzRcWAxJxZI7Pl9m-g?usp=sharing)
+
 ## 使用Docker
 
 OpenRL目前也提供了包含显卡支持和非显卡支持的Docker镜像。
 如果用户的电脑上没有英伟达显卡，则可以通过以下命令获取不包含显卡插件的镜像：
+
 ```bash
 sudo docker pull openrllab/openrl-cpu
 ```
