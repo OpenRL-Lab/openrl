@@ -103,6 +103,7 @@ openrl --version
 
 OpenRL目前也提供了包含显卡支持和非显卡支持的Docker镜像。
 如果用户的电脑上没有英伟达显卡，则可以通过以下命令获取不包含显卡插件的镜像：
+
 ```bash
 sudo docker pull openrllab/openrl-cpu
 ```
