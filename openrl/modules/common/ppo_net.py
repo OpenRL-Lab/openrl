@@ -18,7 +18,7 @@
 
 from typing import Any, Dict, Optional, Tuple, Union
 
-import gym
+import gymnasium as gym
 import numpy as np
 import torch
 
@@ -41,7 +41,7 @@ class PPONet(BaseNet):
 
         if cfg is None:
             cfg_parser = create_config_parser()
-            cfg = cfg_parser.parse_args()
+            cfg = cfg_parser.parse_args([])
 
         set_seed(cfg.seed)
         env.reset(seed=cfg.seed)
