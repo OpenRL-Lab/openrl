@@ -120,6 +120,8 @@ After installation, users can check the version of OpenRL through command line:
 openrl --version
 ```
 
+**Tips**: No installation required, try OpenRL online through Colab: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/15VBA-B7AJF8dBazzRcWAxJxZI7Pl9m-g?usp=sharing)
+
 ## Use Docker
 
 OpenRL currently provides Docker images with and without GPU support. 
