@@ -23,6 +23,7 @@ import gym
 import numpy as np
 import torch
 
+from abc import abstractmethod
 from openrl.buffers.utils.obs_data import ObsData
 from openrl.runners.common.base_agent import BaseAgent, SelfAgent
 from openrl.utils.util import _t2n
@@ -82,6 +83,7 @@ class RLAgent(BaseAgent):
         else:
             self.exp_name = self._cfg.experiment_name
 
+    @abstractmethod
     def train(self: SelfAgent, total_time_steps: int) -> None:
         raise NotImplementedError
 
