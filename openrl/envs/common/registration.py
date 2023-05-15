@@ -19,6 +19,7 @@ from typing import Optional
 
 import gymnasium as gym
 from gymnasium import Env
+import retro
 
 import openrl
 from openrl.envs.vec_env import (
@@ -75,6 +76,12 @@ def make(
 
         env_fns = make_nlp_envs(
             id=id, env_num=env_num, render_mode=convert_render_mode, cfg=cfg, **kwargs
+        )
+    elif id in retro.data.list_games():
+        from openrl.envs.retro import make_retro_envs
+
+        env_fns = make_retro_envs(
+            id=id, env_num=env_num, render_mode=convert_render_mode, **kwargs
         )
     else:
         raise NotImplementedError(f"env {id} is not supported.")

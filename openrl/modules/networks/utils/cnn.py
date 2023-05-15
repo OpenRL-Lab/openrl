@@ -30,8 +30,13 @@ class CNNLayer(nn.Module):
             return init(m, init_method, lambda x: nn.init.constant_(x, 0), gain=gain)
 
         input_channel = obs_shape[0]
-        obs_shape[1]
-        obs_shape[2]
+        input_h = obs_shape[1]
+        input_w = obs_shape[2]
+
+        # Calculate the input size for Flatten Layer
+        flatten_h, flatten_w = self.calc_flatten_size(input_h, input_w, 8, 4)
+        flatten_h, flatten_w = self.calc_flatten_size(flatten_h, flatten_w, 4, 2)
+        flatten_h, flatten_w = self.calc_flatten_size(flatten_h, flatten_w, 3, 1)
 
         # self.cnn = nn.Sequential(
         #     init_(nn.Conv2d(in_channels=input_channel, out_channels=hidden_size//2, kernel_size=kernel_size, stride=stride)), active_func,
@@ -47,7 +52,9 @@ class CNNLayer(nn.Module):
             init_(nn.Conv2d(64, 32, 3, stride=1)),
             nn.ReLU(),
             Flatten(),
-            init_(nn.Linear(32 * 7 * 7, hidden_size)),
+            # Lee for retro
+            init_(nn.Linear(32 * flatten_h * flatten_w, hidden_size)),
+            # init_(nn.Linear(32 * 7 * 7, hidden_size)),
             nn.ReLU(),
         )
 
@@ -56,6 +63,12 @@ class CNNLayer(nn.Module):
         x = self.cnn(x)
 
         return x
+
+    def calc_flatten_size(self, h, w, filter, stride):
+        h = int((h - filter) / stride) + 1
+        w = int((w - filter) / stride) + 1
+
+        return h, w
 
 
 class CNNBase(nn.Module):
