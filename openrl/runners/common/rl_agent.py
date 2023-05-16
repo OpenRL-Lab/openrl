@@ -17,13 +17,13 @@
 """"""
 import io
 import pathlib
+from abc import abstractmethod
 from typing import Dict, Optional, Tuple, Union
 
 import gym
 import numpy as np
 import torch
 
-from abc import abstractmethod
 from openrl.buffers.utils.obs_data import ObsData
 from openrl.runners.common.base_agent import BaseAgent, SelfAgent
 from openrl.utils.util import _t2n
