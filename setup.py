@@ -51,6 +51,8 @@ def get_extra_requires() -> dict:
             "black",
             "ruff",
             "gpustat",
+            "gym==0.21.0",
+            "gym-retro",
         ],
         "dev": ["build", "twine"],
         "mpe": ["pyglet==1.5.27"],
