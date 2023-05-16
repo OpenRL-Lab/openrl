@@ -18,8 +18,6 @@
 
 from typing import Callable, List, Optional, Union
 
-import gymnasium as gym
-import retro
 from gymnasium import Env
 
 from openrl.envs.common import build_envs
