@@ -18,7 +18,6 @@
 from typing import Optional
 
 import gymnasium as gym
-import retro
 from gymnasium import Env
 
 import openrl
@@ -77,7 +76,7 @@ def make(
         env_fns = make_nlp_envs(
             id=id, env_num=env_num, render_mode=convert_render_mode, cfg=cfg, **kwargs
         )
-    elif id in retro.data.list_games():
+    elif id in openrl.envs.retro_all_envs:
         from openrl.envs.retro import make_retro_envs
 
         env_fns = make_retro_envs(
