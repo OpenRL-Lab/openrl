@@ -43,10 +43,24 @@ def get_install_requires() -> list:
 
 def get_extra_requires() -> dict:
     req = {
-        "test": ["pytest", "pytest-cov", "mypy", "isort", "black", "ruff", "gpustat",],
+        "test": [
+            "pytest",
+            "pytest-cov",
+            "mypy",
+            "isort",
+            "black",
+            "ruff",
+            "gpustat",
+        ],
         "dev": ["build", "twine"],
         "mpe": ["pyglet==1.5.27"],
-        "nlp": ["transformers==4.18.0", "datasets", "nltk", "evaluate", "icetk",],
+        "nlp": [
+            "transformers==4.18.0",
+            "datasets",
+            "nltk",
+            "evaluate",
+            "icetk",
+        ],
         "retro": ["gym==0.21.0", "gym-retro"],
         "super_mario": ["gym-super-mario-bros==7.3.0"],
     }
