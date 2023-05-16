@@ -51,7 +51,6 @@ def get_extra_requires() -> dict:
             "black",
             "ruff",
             "gpustat",
-            "gym",
             "gym-retro",
         ],
         "dev": ["build", "twine"],
