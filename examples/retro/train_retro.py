@@ -41,7 +41,7 @@ def game_test(agent):
         print(f"{step}: reward:{np.mean(r)}")
 
         if any(done):
-            env.reset()
+            break
 
     env.close()
 
