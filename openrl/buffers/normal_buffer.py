@@ -106,3 +106,6 @@ class NormalReplayBuffer(object):
         return self.data.recurrent_generator(
             advantages, num_mini_batch, data_chunk_length
         )
+
+    def get_buffer_size(self):
+        return self.data.critic_obs.shape[0]
