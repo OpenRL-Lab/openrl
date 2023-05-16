@@ -24,9 +24,7 @@ import gym
 import numpy as np
 import torch
 
-from openrl.buffers.utils.obs_data import ObsData
 from openrl.runners.common.base_agent import BaseAgent, SelfAgent
-from openrl.utils.util import _t2n
 
 
 class RLAgent(BaseAgent):
@@ -87,18 +85,12 @@ class RLAgent(BaseAgent):
     def train(self: SelfAgent, total_time_steps: int) -> None:
         raise NotImplementedError
 
+    @abstractmethod
     def act(
         self,
-        observation: Union[np.ndarray, Dict[str, np.ndarray]],
-        deterministic: bool = True,
-    ) -> Tuple[np.ndarray, Optional[Tuple[np.ndarray, ...]]]:
-        assert self.net is not None, "net is None"
-        observation = ObsData.prepare_input(observation)
-        action, rnn_state = self.net.act(observation, deterministic=deterministic)
-
-        action = np.array(np.split(_t2n(action), self.env_num))
-
-        return action, rnn_state
+        **kwargs
+    ) -> None:
+        raise NotImplementedError
 
     def set_env(
         self,
