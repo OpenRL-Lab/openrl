@@ -18,10 +18,33 @@
 
 from typing import Any, Dict, List, Optional, Union
 
-import gymnasium as gym
+import gymnasium
 import numpy as np
-import retro
 from gymnasium import Wrapper
+from retro import RetroEnv
+
+
+class CustomRetroEnv(RetroEnv):
+    def __init__(self, game: str, **kwargs):
+        super(CustomRetroEnv, self).__init__(game, **kwargs)
+
+    def seed(self, seed: Optional[int] = None):
+        seed1 = np.random.seed(seed)
+
+        seed1 = np.random.randint(0, 2**31)
+        seed2 = np.random.randint(0, 2**31)
+
+        return [seed1, seed2]
+
+    def render(self, mode: Optional[str] = "human", close: Optional[bool] = False):
+        if close:
+            if self.viewer:
+                self.viewer.close()
+            return
+
+        img = self.get_screen() if self.img is None else self.img
+
+        return img
 
 
 class RetroWrapper(Wrapper):
@@ -32,20 +55,20 @@ class RetroWrapper(Wrapper):
         disable_env_checker: Optional[bool] = None,
         **kwargs
     ):
-        self.env = retro.make(game=game, **kwargs)
+        self.env = CustomRetroEnv(game=game, **kwargs)
 
         super().__init__(self.env)
 
         shape = self.env.observation_space.shape
         shape = (shape[2],) + shape[0:2]
-        self.observation_space = gym.spaces.Box(
+        self.observation_space = gymnasium.spaces.Box(
             low=0,
             high=255,
             shape=shape,
             dtype=self.env.observation_space.dtype,
         )
 
-        self.action_space = gym.spaces.Discrete(self.env.action_space.n)
+        self.action_space = gymnasium.spaces.Discrete(self.env.action_space.n)
 
         self.env_name = game
 
