@@ -18,8 +18,8 @@
 from typing import Optional
 
 import gymnasium as gym
-from gymnasium import Env
 import retro
+from gymnasium import Env
 
 import openrl
 from openrl.envs.vec_env import (

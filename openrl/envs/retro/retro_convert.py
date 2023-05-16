@@ -16,11 +16,11 @@
 
 """"""
 
-from typing import List, Optional, Union, Any, Dict
+from typing import Any, Dict, List, Optional, Union
 
-import retro
-import numpy as np
 import gymnasium as gym
+import numpy as np
+import retro
 from gymnasium import Wrapper
 
 
@@ -32,7 +32,6 @@ class RetroWrapper(Wrapper):
         disable_env_checker: Optional[bool] = None,
         **kwargs
     ):
-
         self.env = retro.make(game=game, **kwargs)
 
         super().__init__(self.env)
@@ -40,7 +39,10 @@ class RetroWrapper(Wrapper):
         shape = self.env.observation_space.shape
         shape = (shape[2],) + shape[0:2]
         self.observation_space = gym.spaces.Box(
-            low=0, high=255, shape=shape, dtype=self.env.observation_space.dtype,
+            low=0,
+            high=255,
+            shape=shape,
+            dtype=self.env.observation_space.dtype,
         )
 
         self.action_space = gym.spaces.Discrete(self.env.action_space.n)

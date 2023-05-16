@@ -15,9 +15,9 @@
 # limitations under the License.
 
 """"""
+from abc import ABC, abstractmethod
 from typing import Any, Dict, Optional
 
-from abc import ABC, abstractmethod
 from openrl.drivers.base_driver import BaseDriver
 from openrl.utils.logger import Logger
 

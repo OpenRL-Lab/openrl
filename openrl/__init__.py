@@ -12,4 +12,7 @@ assert python_version_list >= [
     3,
     8,
     0,
-], f"OpenRL requires Python 3.8 or newer, but your Python is {platform.python_version()}"
+], (
+    "OpenRL requires Python 3.8 or newer, but your Python is"
+    f" {platform.python_version()}"
+)

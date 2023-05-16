@@ -19,8 +19,8 @@
 from typing import Callable, List, Optional, Union
 
 import gymnasium as gym
-from gymnasium import Env
 import retro
+from gymnasium import Env
 
 from openrl.envs.common import build_envs
 from openrl.envs.retro.retro_convert import RetroWrapper

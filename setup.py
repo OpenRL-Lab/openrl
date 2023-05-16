@@ -42,7 +42,15 @@ def get_install_requires() -> list:
 
 def get_extra_requires() -> dict:
     req = {
-        "test": ["pytest", "pytest-cov", "mypy", "isort", "black", "ruff", "gpustat",],
+        "test": [
+            "pytest",
+            "pytest-cov",
+            "mypy",
+            "isort",
+            "black",
+            "ruff",
+            "gpustat",
+        ],
         "dev": ["build", "twine"],
         "mpe": ["pyglet==1.5.27"],
         "nlp": [
