@@ -28,7 +28,7 @@ def get_install_requires() -> list:
         "gymnasium",
         "click",
         "termcolor",
-        "gym>=0.21.0",
+        "gym<=0.21.0",
         "torch",
         "treevalue",
         "rich",
