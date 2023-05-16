@@ -29,6 +29,7 @@ def build_envs(
                 disable_env_checker=_disable_env_checker,
                 **kwargs,
             )
+
             if wrappers is not None:
                 if callable(wrappers):
                     env = wrappers(env)

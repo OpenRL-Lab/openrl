@@ -37,7 +37,9 @@ class OnPolicyDriver(RLDriver):
         client=None,
         logger: Optional[Logger] = None,
     ) -> None:
-        super(OnPolicyDriver, self).__init__(config, trainer, buffer, rank, world_size, client, logger)
+        super(OnPolicyDriver, self).__init__(
+            config, trainer, buffer, rank, world_size, client, logger
+        )
 
     def _inner_loop(
         self,

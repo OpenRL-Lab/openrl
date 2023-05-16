@@ -23,8 +23,8 @@ import torch
 from openrl.algorithms.ppo import PPOAlgorithm as TrainAlgo
 from openrl.buffers import NormalReplayBuffer as ReplayBuffer
 from openrl.drivers.onpolicy_driver import OnPolicyDriver as Driver
-from openrl.runners.common.rl_agent import RLAgent
 from openrl.runners.common.base_agent import SelfAgent
+from openrl.runners.common.rl_agent import RLAgent
 from openrl.utils.logger import Logger
 
 
@@ -40,7 +40,9 @@ class PPOAgent(RLAgent):
         use_wandb: bool = False,
         use_tensorboard: bool = False,
     ) -> None:
-        super(PPOAgent, self).__init__(net, env, run_dir, env_num, rank, world_size, use_wandb, use_tensorboard)
+        super(PPOAgent, self).__init__(
+            net, env, run_dir, env_num, rank, world_size, use_wandb, use_tensorboard
+        )
 
     def train(self: SelfAgent, total_time_steps: int) -> None:
         self._cfg.num_env_steps = total_time_steps
