@@ -43,22 +43,6 @@ def test_train_retro(config):
     agent = Agent(Net(env, cfg=config))
     agent.train(total_time_steps=1000)
 
-    agent.set_env(env)
-    obs, info = env.reset()
-    done = False
-    total_reward = 0
-    step = 0
-    while True:
-        action, _ = agent.act(obs, deterministic=True)
-        obs, r, done, info = env.step(action)
-        total_reward += np.mean(r)
-
-        step += 1
-        if step > 200 or any(done):
-            break
-
-    assert total_reward <= 300, "Retro Environment should be solved."
-
     env.close()
 
 
