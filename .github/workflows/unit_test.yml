@@ -23,7 +23,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install .
-          python -m pip install ".[test]" --upgrade --use-pep517
+          python -m pip install ".[test]" --upgrade
       - name: do_unittest
         timeout-minutes: 40
         run: |
