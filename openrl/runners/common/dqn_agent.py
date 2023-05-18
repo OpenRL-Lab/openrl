@@ -25,8 +25,8 @@ from openrl.algorithms.dqn import DQNAlgorithm as TrainAlgo
 from openrl.buffers import NormalReplayBuffer as ReplayBuffer
 from openrl.buffers.utils.obs_data import ObsData
 from openrl.drivers.offpolicy_driver import OffPolicyDriver as Driver
-from openrl.runners.common.rl_agent import RLAgent
 from openrl.runners.common.base_agent import SelfAgent
+from openrl.runners.common.rl_agent import RLAgent
 from openrl.utils.logger import Logger
 from openrl.utils.util import _t2n
 
@@ -43,7 +43,9 @@ class DQNAgent(RLAgent):
         use_wandb: bool = False,
         use_tensorboard: bool = False,
     ) -> None:
-        super(DQNAgent, self).__init__(net, env, run_dir, env_num, rank, world_size, use_wandb, use_tensorboard)
+        super(DQNAgent, self).__init__(
+            net, env, run_dir, env_num, rank, world_size, use_wandb, use_tensorboard
+        )
 
     def train(self: SelfAgent, total_time_steps: int) -> None:
         self._cfg.num_env_steps = total_time_steps
@@ -93,8 +95,7 @@ class DQNAgent(RLAgent):
         driver.run()
 
     def act(
-        self,
-        observation: Union[np.ndarray, Dict[str, np.ndarray]]
+        self, observation: Union[np.ndarray, Dict[str, np.ndarray]]
     ) -> Tuple[np.ndarray, Optional[Tuple[np.ndarray, ...]]]:
         assert self.net is not None, "net is None"
         observation = ObsData.prepare_input(observation)

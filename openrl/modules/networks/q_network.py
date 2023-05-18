@@ -114,4 +114,3 @@ class QNetwork(BasePolicyNetwork):
             actor_features, available_actions, deterministic
         )
         return actions, action_log_probs, rnn_states
-

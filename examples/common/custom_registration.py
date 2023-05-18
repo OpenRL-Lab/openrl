@@ -19,6 +19,7 @@ from typing import Optional
 
 from gymnasium import Env
 
+from examples.retro.retro_env import retro_all_envs
 from openrl.envs.vec_env import (
     AsyncVectorEnv,
     RewardWrapper,
@@ -27,8 +28,6 @@ from openrl.envs.vec_env import (
 )
 from openrl.envs.vec_env.vec_info import VecInfoFactory
 from openrl.rewards import RewardFactory
-
-from examples.retro.retro_env import retro_all_envs
 
 
 def make(

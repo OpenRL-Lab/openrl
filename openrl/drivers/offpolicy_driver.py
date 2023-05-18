@@ -37,12 +37,14 @@ class OffPolicyDriver(RLDriver):
         client=None,
         logger: Optional[Logger] = None,
     ) -> None:
-        super(OffPolicyDriver, self).__init__(config, trainer, buffer, rank, world_size, client, logger)
+        super(OffPolicyDriver, self).__init__(
+            config, trainer, buffer, rank, world_size, client, logger
+        )
 
         self.buffer_minimal_size = config["cfg"].buffer_size * 0.1
 
     def _inner_loop(
-            self,
+        self,
     ) -> None:
         rollout_infos = self.actor_rollout()
 
@@ -50,15 +52,17 @@ class OffPolicyDriver(RLDriver):
             train_infos = self.learner_update()
             self.buffer.after_update()
         else:
-            train_infos = {'value_loss': 0,
-                           'policy_loss': 0,
-                           'dist_entropy': 0,
-                           'actor_grad_norm': 0,
-                           'critic_grad_norm': 0,
-                           'ratio': 0}
+            train_infos = {
+                "value_loss": 0,
+                "policy_loss": 0,
+                "dist_entropy": 0,
+                "actor_grad_norm": 0,
+                "critic_grad_norm": 0,
+                "ratio": 0,
+            }
 
         self.total_num_steps = (
-                (self.episode + 1) * self.episode_length * self.n_rollout_threads
+            (self.episode + 1) * self.episode_length * self.n_rollout_threads
         )
 
         if self.episode % self.log_interval == 0:
@@ -157,13 +161,13 @@ class OffPolicyDriver(RLDriver):
             np.split(_t2n(next_values), self.learner_n_rollout_threads)
         )
         if "critic" in self.trainer.algo_module.models and isinstance(
-                self.trainer.algo_module.models["critic"], DistributedDataParallel
+            self.trainer.algo_module.models["critic"], DistributedDataParallel
         ):
             value_normalizer = self.trainer.algo_module.models[
                 "critic"
             ].module.value_normalizer
         elif "model" in self.trainer.algo_module.models and isinstance(
-                self.trainer.algo_module.models["model"], DistributedDataParallel
+            self.trainer.algo_module.models["model"], DistributedDataParallel
         ):
             value_normalizer = self.trainer.algo_module.models["model"].value_normalizer
         else:
@@ -172,8 +176,8 @@ class OffPolicyDriver(RLDriver):
 
     @torch.no_grad()
     def act(
-            self,
-            step: int,
+        self,
+        step: int,
     ):
         self.trainer.prep_rollout()
 

@@ -41,7 +41,6 @@ class DQNModule(RLModule):
     ):
         model_configs = {}
 
-
         model_configs["q_net"] = ModelTrainConfig(
             lr=cfg.lr,
             model=(
@@ -72,7 +71,6 @@ class DQNModule(RLModule):
         self.cfg = cfg
 
     def lr_decay(self, episode, episodes):
-
         update_linear_schedule(self.optimizers["q_net"], episode, episodes, self.lr)
 
     def get_actions(
@@ -82,7 +80,6 @@ class DQNModule(RLModule):
         masks,
         available_actions=None,
     ):
-
         values, actions, rnn_states_actor = self.models["q_net"](
             "original",
             obs,
@@ -114,10 +111,7 @@ class DQNModule(RLModule):
 
         return values
 
-    def act(
-        self, obs, rnn_states_actor, masks, available_actions=None
-    ):
-
+    def act(self, obs, rnn_states_actor, masks, available_actions=None):
         model = self.models["q_net"]
 
         actions, _, rnn_states_actor = model(
