@@ -22,12 +22,9 @@ import numpy as np
 import torch
 from torch.utils.data.sampler import BatchSampler, SubsetRandomSampler
 
-from openrl.buffers.utils.obs_data import ObsData
-from openrl.buffers.utils.util import (
-    get_critic_obs,
-    get_policy_obs,
-)
 from openrl.buffers.replay_data import ReplayData
+from openrl.buffers.utils.obs_data import ObsData
+from openrl.buffers.utils.util import get_critic_obs, get_policy_obs
 
 
 class OffPolicyReplayData(ReplayData):

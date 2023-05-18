@@ -79,7 +79,6 @@ class DQNModule(RLModule):
         masks,
         available_actions=None,
     ):
-
         q_values, rnn_states = self.models["q_net"](
             "original",
             obs,
@@ -111,10 +110,7 @@ class DQNModule(RLModule):
 
         return q_values
 
-    def act(
-        self, obs, rnn_states_actor, masks, available_actions=None
-    ):
-
+    def act(self, obs, rnn_states_actor, masks, available_actions=None):
         model = self.models["q_net"]
 
         q_values, rnn_states_actor = model(
