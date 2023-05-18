@@ -84,41 +84,19 @@ class RLModule(BaseModule):
                 self.scaler = None
 
     @abstractmethod
-    def get_actions(
-        self,
-        critic_obs,
-        obs,
-        rnn_states_actor,
-        rnn_states_critic,
-        masks,
-        available_actions=None,
-        deterministic=False,
-    ):
+    def get_actions(self):
         raise NotImplementedError
 
     @abstractmethod
-    def get_values(self, critic_obs, rnn_states_critic, masks):
+    def get_values(self):
         raise NotImplementedError
 
     @abstractmethod
-    def evaluate_actions(
-        self,
-        critic_obs,
-        obs,
-        rnn_states_actor,
-        rnn_states_critic,
-        action,
-        masks,
-        available_actions=None,
-        active_masks=None,
-        critic_masks_batch=None,
-    ):
+    def evaluate_actions(self):
         raise NotImplementedError
 
     @abstractmethod
-    def act(
-        self, obs, rnn_states_actor, masks, available_actions=None, deterministic=False
-    ):
+    def act(self):
         raise NotImplementedError
 
     @abstractmethod

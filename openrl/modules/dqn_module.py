@@ -23,7 +23,7 @@ import numpy as np
 import torch
 
 from openrl.modules.model_config import ModelTrainConfig
-from openrl.modules.networks.value_network import ValueNetwork
+from openrl.modules.networks.q_network import QNetwork
 from openrl.modules.rl_module import RLModule
 from openrl.modules.utils.util import update_linear_schedule
 
@@ -40,14 +40,12 @@ class DQNModule(RLModule):
         model_dict: Optional[Dict[str, Any]] = None,
     ):
         model_configs = {}
-
-
         model_configs["q_net"] = ModelTrainConfig(
             lr=cfg.lr,
             model=(
                 model_dict["q_net"]
                 if model_dict and "q_net" in model_dict
-                else ValueNetwork
+                else QNetwork
             ),
             input_space=input_space,
         )
@@ -56,7 +54,7 @@ class DQNModule(RLModule):
             model=(
                 model_dict["target_q_net"]
                 if model_dict and "target_q_net" in model_dict
-                else ValueNetwork
+                else QNetwork
             ),
             input_space=input_space,
         )
@@ -72,30 +70,29 @@ class DQNModule(RLModule):
         self.cfg = cfg
 
     def lr_decay(self, episode, episodes):
-
         update_linear_schedule(self.optimizers["q_net"], episode, episodes, self.lr)
 
     def get_actions(
         self,
         obs,
-        rnn_states_actor,
+        rnn_states,
         masks,
         available_actions=None,
     ):
 
-        values, actions, rnn_states_actor = self.models["q_net"](
+        q_values, rnn_states = self.models["q_net"](
             "original",
             obs,
-            rnn_states_actor,
+            rnn_states,
             masks,
             available_actions,
         )
 
-        return values, actions, rnn_states_actor
+        return q_values, rnn_states
 
-    def get_values(self, critic_obs, rnn_states_critic, masks):
-        values, _ = self.models["q_net"](critic_obs, rnn_states_critic, masks)
-        return values
+    def get_values(self, obs, rnn_states_critic, masks):
+        q_values, _ = self.models["q_net"](obs, rnn_states_critic, masks)
+        return q_values
 
     def evaluate_actions(
         self,
@@ -108,11 +105,11 @@ class DQNModule(RLModule):
         if masks_batch is None:
             masks_batch = masks
 
-        values, _ = self.models["q_net"](
+        q_values, _ = self.models["q_net"](
             obs, rnn_states, masks_batch, available_actions
         )
 
-        return values
+        return q_values
 
     def act(
         self, obs, rnn_states_actor, masks, available_actions=None
@@ -120,14 +117,14 @@ class DQNModule(RLModule):
 
         model = self.models["q_net"]
 
-        actions, _, rnn_states_actor = model(
+        q_values, rnn_states_actor = model(
             obs,
             rnn_states_actor,
             masks,
             available_actions,
         )
-
-        return actions, rnn_states_actor
+        action = q_values.argmax().item()
+        return action, rnn_states_actor
 
     def get_critic_value_normalizer(self):
         return self.models["q_net"].value_normalizer

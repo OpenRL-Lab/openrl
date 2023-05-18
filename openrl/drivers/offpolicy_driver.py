@@ -17,6 +17,7 @@
 """"""
 from typing import Any, Dict, Optional
 
+import random
 import numpy as np
 import torch
 from torch.nn.parallel import DistributedDataParallel
@@ -39,7 +40,10 @@ class OffPolicyDriver(RLDriver):
     ) -> None:
         super(OffPolicyDriver, self).__init__(config, trainer, buffer, rank, world_size, client, logger)
 
-        self.buffer_minimal_size = config["cfg"].buffer_size * 0.1
+        self.buffer_minimal_size = int(config["cfg"].buffer_size * 0.2)
+        self.epsilon_start = config.epsilon_start
+        self.epsilon_finish = config.epsilon_finish
+        self.epsilon_anneal_time = config.epsilon_anneal_time
 
     def _inner_loop(
             self,
@@ -178,33 +182,26 @@ class OffPolicyDriver(RLDriver):
         self.trainer.prep_rollout()
 
         (
-            value,
-            action,
-            action_log_prob,
+            q_values,
             rnn_states,
-            rnn_states_critic,
         ) = self.trainer.algo_module.get_actions(
-            self.buffer.data.get_batch_data("critic_obs", step),
             self.buffer.data.get_batch_data("policy_obs", step),
             np.concatenate(self.buffer.data.rnn_states[step]),
-            np.concatenate(self.buffer.data.rnn_states_critic[step]),
             np.concatenate(self.buffer.data.masks[step]),
         )
 
-        values = np.array(np.split(_t2n(value), self.n_rollout_threads))
-        actions = np.array(np.split(_t2n(action), self.n_rollout_threads))
-        action_log_probs = np.array(
-            np.split(_t2n(action_log_prob), self.n_rollout_threads)
-        )
+        q_values = np.array(np.split(_t2n(q_values), self.n_rollout_threads))
         rnn_states = np.array(np.split(_t2n(rnn_states), self.n_rollout_threads))
-        rnn_states_critic = np.array(
-            np.split(_t2n(rnn_states_critic), self.n_rollout_threads)
-        )
+
+        # todo add epsilon greedy
+        epsilon = self.epsilon_finish + (self.epsilon_start - self.epsilon_finish) / self.epsilon_anneal_time * step
+        if random.random() > epsilon:
+            action = q_values.argmax().item()
+        else:
+            action = q_values.argmax().item()
 
         return (
-            values,
-            actions,
-            action_log_probs,
+            q_values,
+            action,
             rnn_states,
-            rnn_states_critic,
         )
