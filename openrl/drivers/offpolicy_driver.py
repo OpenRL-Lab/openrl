@@ -15,9 +15,9 @@
 # limitations under the License.
 
 """"""
+import random
 from typing import Any, Dict, Optional
 
-import random
 import numpy as np
 import torch
 from torch.nn.parallel import DistributedDataParallel
@@ -38,7 +38,9 @@ class OffPolicyDriver(RLDriver):
         client=None,
         logger: Optional[Logger] = None,
     ) -> None:
-        super(OffPolicyDriver, self).__init__(config, trainer, buffer, rank, world_size, client, logger)
+        super(OffPolicyDriver, self).__init__(
+            config, trainer, buffer, rank, world_size, client, logger
+        )
 
         self.buffer_minimal_size = int(config["cfg"].buffer_size * 0.2)
         self.epsilon_start = config.epsilon_start
@@ -46,7 +48,7 @@ class OffPolicyDriver(RLDriver):
         self.epsilon_anneal_time = config.epsilon_anneal_time
 
     def _inner_loop(
-            self,
+        self,
     ) -> None:
         rollout_infos = self.actor_rollout()
 
@@ -54,15 +56,17 @@ class OffPolicyDriver(RLDriver):
             train_infos = self.learner_update()
             self.buffer.after_update()
         else:
-            train_infos = {'value_loss': 0,
-                           'policy_loss': 0,
-                           'dist_entropy': 0,
-                           'actor_grad_norm': 0,
-                           'critic_grad_norm': 0,
-                           'ratio': 0}
+            train_infos = {
+                "value_loss": 0,
+                "policy_loss": 0,
+                "dist_entropy": 0,
+                "actor_grad_norm": 0,
+                "critic_grad_norm": 0,
+                "ratio": 0,
+            }
 
         self.total_num_steps = (
-                (self.episode + 1) * self.episode_length * self.n_rollout_threads
+            (self.episode + 1) * self.episode_length * self.n_rollout_threads
         )
 
         if self.episode % self.log_interval == 0:
@@ -161,13 +165,13 @@ class OffPolicyDriver(RLDriver):
             np.split(_t2n(next_values), self.learner_n_rollout_threads)
         )
         if "critic" in self.trainer.algo_module.models and isinstance(
-                self.trainer.algo_module.models["critic"], DistributedDataParallel
+            self.trainer.algo_module.models["critic"], DistributedDataParallel
         ):
             value_normalizer = self.trainer.algo_module.models[
                 "critic"
             ].module.value_normalizer
         elif "model" in self.trainer.algo_module.models and isinstance(
-                self.trainer.algo_module.models["model"], DistributedDataParallel
+            self.trainer.algo_module.models["model"], DistributedDataParallel
         ):
             value_normalizer = self.trainer.algo_module.models["model"].value_normalizer
         else:
@@ -176,8 +180,8 @@ class OffPolicyDriver(RLDriver):
 
     @torch.no_grad()
     def act(
-            self,
-            step: int,
+        self,
+        step: int,
     ):
         self.trainer.prep_rollout()
 
@@ -194,7 +198,12 @@ class OffPolicyDriver(RLDriver):
         rnn_states = np.array(np.split(_t2n(rnn_states), self.n_rollout_threads))
 
         # todo add epsilon greedy
-        epsilon = self.epsilon_finish + (self.epsilon_start - self.epsilon_finish) / self.epsilon_anneal_time * step
+        epsilon = (
+            self.epsilon_finish
+            + (self.epsilon_start - self.epsilon_finish)
+            / self.epsilon_anneal_time
+            * step
+        )
         if random.random() > epsilon:
             action = q_values.argmax().item()
         else:

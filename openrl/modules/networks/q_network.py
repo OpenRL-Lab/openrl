@@ -57,9 +57,7 @@ class QNetwork(BaseValueNetwork):
 
         if "Dict" in obs_shape.__class__.__name__:
             self._mixed_obs = True
-            self.base = MIXBase(
-                cfg, obs_shape, cnn_layers_params=cfg.cnn_layers_params
-            )
+            self.base = MIXBase(cfg, obs_shape, cnn_layers_params=cfg.cnn_layers_params)
         else:
             self._mixed_obs = False
             self.base = (

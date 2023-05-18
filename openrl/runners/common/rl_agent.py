@@ -86,10 +86,7 @@ class RLAgent(BaseAgent):
         raise NotImplementedError
 
     @abstractmethod
-    def act(
-        self,
-        **kwargs
-    ) -> None:
+    def act(self, **kwargs) -> None:
         raise NotImplementedError
 
     def set_env(

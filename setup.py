@@ -61,7 +61,7 @@ def get_extra_requires() -> dict:
             "evaluate",
             "icetk",
         ],
-        "retro": ["gym==0.21.0", "gym-retro"],
+        "retro": ["gym-retro"],
         "super_mario": ["gym-super-mario-bros==7.3.0"],
     }
     return req
