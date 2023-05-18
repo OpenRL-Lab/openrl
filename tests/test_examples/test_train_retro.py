@@ -19,10 +19,9 @@
 import os
 import sys
 
-import numpy as np
 import pytest
 
-from openrl.envs.common import make
+from examples.common.custom_registration import make
 from openrl.modules.common import PPONet as Net
 from openrl.runners.common import PPOAgent as Agent
 

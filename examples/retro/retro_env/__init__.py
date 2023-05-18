@@ -18,11 +18,13 @@
 
 from typing import Callable, List, Optional, Union
 
+import retro
 from gymnasium import Env
 
 from openrl.envs.common import build_envs
-from openrl.envs.retro.retro_convert import RetroWrapper
+from examples.retro.retro_env.retro_convert import RetroWrapper
 
+retro_all_envs = retro.data.list_games()
 
 def make_retro_envs(
     id: str,
