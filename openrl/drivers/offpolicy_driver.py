@@ -15,6 +15,7 @@
 # limitations under the License.
 
 """"""
+import random
 from typing import Any, Dict, Optional
 
 import numpy as np
@@ -26,7 +27,7 @@ from openrl.utils.logger import Logger
 from openrl.utils.util import _t2n
 
 
-class OnPolicyDriver(RLDriver):
+class OffPolicyDriver(RLDriver):
     def __init__(
         self,
         config: Dict[str, Any],
@@ -37,16 +38,25 @@ class OnPolicyDriver(RLDriver):
         client=None,
         logger: Optional[Logger] = None,
     ) -> None:
-        super(OnPolicyDriver, self).__init__(
+        super(OffPolicyDriver, self).__init__(
             config, trainer, buffer, rank, world_size, client, logger
         )
+
+        self.buffer_minimal_size = int(config["cfg"].buffer_size * 0.2)
+        self.epsilon_start = config.epsilon_start
+        self.epsilon_finish = config.epsilon_finish
+        self.epsilon_anneal_time = config.epsilon_anneal_time
 
     def _inner_loop(
         self,
     ) -> None:
         rollout_infos = self.actor_rollout()
-        train_infos = self.learner_update()
-        self.buffer.after_update()
+
+        if self.buffer.get_buffer_size() > self.buffer_minimal_size:
+            train_infos = self.learner_update()
+            self.buffer.after_update()
+        else:
+            train_infos = {"q_loss": 0}
 
         self.total_num_steps = (
             (self.episode + 1) * self.episode_length * self.n_rollout_threads
@@ -60,14 +70,13 @@ class OnPolicyDriver(RLDriver):
     def add2buffer(self, data):
         (
             obs,
+            next_obs,
             rewards,
             dones,
             infos,
-            values,
+            q_values,
             actions,
-            action_log_probs,
             rnn_states,
-            rnn_states_critic,
         ) = data
 
         rnn_states[dones] = np.zeros(
@@ -75,20 +84,20 @@ class OnPolicyDriver(RLDriver):
             dtype=np.float32,
         )
 
-        rnn_states_critic[dones] = np.zeros(
-            (dones.sum(), *self.buffer.data.rnn_states_critic.shape[3:]),
-            dtype=np.float32,
-        )
         masks = np.ones((self.n_rollout_threads, self.num_agents, 1), dtype=np.float32)
         masks[dones] = np.zeros((dones.sum(), 1), dtype=np.float32)
 
+        rnn_states_critic = rnn_states
+        action_log_probs = actions
+
         self.buffer.insert(
             obs,
+            next_obs,
             rnn_states,
             rnn_states_critic,
             actions,
             action_log_probs,
-            values,
+            q_values,
             rewards,
             masks,
         )
@@ -97,32 +106,39 @@ class OnPolicyDriver(RLDriver):
         self.trainer.prep_rollout()
         import time
 
+        q_values, actions, rnn_states = self.act(0)
+        extra_data = {
+            "q_values": q_values,
+            "step": 0,
+            "buffer": self.buffer,
+        }
+        obs, rewards, dones, infos = self.envs.step(actions, extra_data)
+
+        # todo how to handle next obs in initialized state and terminal state
+        next_obs, rewards, dones, infos = self.envs.step(actions, extra_data)
         for step in range(self.episode_length):
-            values, actions, action_log_probs, rnn_states, rnn_states_critic = self.act(
-                step
-            )
+            q_values, actions, rnn_states = self.act(step)
 
             extra_data = {
-                "values": values,
-                "action_log_probs": action_log_probs,
+                "q_values": q_values,
                 "step": step,
                 "buffer": self.buffer,
             }
 
-            obs, rewards, dones, infos = self.envs.step(actions, extra_data)
+            # todo how to handle next obs in initialized state and terminal state
+            next_obs, rewards, dones, infos = self.envs.step(actions, extra_data)
 
             data = (
                 obs,
+                next_obs,
                 rewards,
                 dones,
                 infos,
-                values,
+                q_values,
                 actions,
-                action_log_probs,
                 rnn_states,
-                rnn_states_critic,
             )
-
+            obs = next_obs
             self.add2buffer(data)
 
         batch_rew_infos = self.envs.batch_rewards(self.buffer)
@@ -135,33 +151,6 @@ class OnPolicyDriver(RLDriver):
             return batch_rew_infos
 
     @torch.no_grad()
-    def compute_returns(self):
-        self.trainer.prep_rollout()
-
-        next_values = self.trainer.algo_module.get_values(
-            self.buffer.data.get_batch_data("critic_obs", -1),
-            np.concatenate(self.buffer.data.rnn_states_critic[-1]),
-            np.concatenate(self.buffer.data.masks[-1]),
-        )
-
-        next_values = np.array(
-            np.split(_t2n(next_values), self.learner_n_rollout_threads)
-        )
-        if "critic" in self.trainer.algo_module.models and isinstance(
-            self.trainer.algo_module.models["critic"], DistributedDataParallel
-        ):
-            value_normalizer = self.trainer.algo_module.models[
-                "critic"
-            ].module.value_normalizer
-        elif "model" in self.trainer.algo_module.models and isinstance(
-            self.trainer.algo_module.models["model"], DistributedDataParallel
-        ):
-            value_normalizer = self.trainer.algo_module.models["model"].value_normalizer
-        else:
-            value_normalizer = self.trainer.algo_module.get_critic_value_normalizer()
-        self.buffer.compute_returns(next_values, value_normalizer)
-
-    @torch.no_grad()
     def act(
         self,
         step: int,
@@ -169,33 +158,31 @@ class OnPolicyDriver(RLDriver):
         self.trainer.prep_rollout()
 
         (
-            value,
-            action,
-            action_log_prob,
+            q_values,
             rnn_states,
-            rnn_states_critic,
         ) = self.trainer.algo_module.get_actions(
-            self.buffer.data.get_batch_data("critic_obs", step),
             self.buffer.data.get_batch_data("policy_obs", step),
             np.concatenate(self.buffer.data.rnn_states[step]),
-            np.concatenate(self.buffer.data.rnn_states_critic[step]),
             np.concatenate(self.buffer.data.masks[step]),
         )
 
-        values = np.array(np.split(_t2n(value), self.n_rollout_threads))
-        actions = np.array(np.split(_t2n(action), self.n_rollout_threads))
-        action_log_probs = np.array(
-            np.split(_t2n(action_log_prob), self.n_rollout_threads)
-        )
+        q_values = np.array(np.split(_t2n(q_values), self.n_rollout_threads))
         rnn_states = np.array(np.split(_t2n(rnn_states), self.n_rollout_threads))
-        rnn_states_critic = np.array(
-            np.split(_t2n(rnn_states_critic), self.n_rollout_threads)
+
+        # todo add epsilon greedy
+        epsilon = (
+            self.epsilon_finish
+            + (self.epsilon_start - self.epsilon_finish)
+            / self.epsilon_anneal_time
+            * step
         )
+        if random.random() > epsilon:
+            actions = q_values.argmax().item()
+        else:
+            actions = q_values.argmax().item()
 
         return (
-            values,
+            q_values,
             actions,
-            action_log_probs,
             rnn_states,
-            rnn_states_critic,
         )

@@ -17,10 +17,9 @@
 """"""
 from typing import Optional
 
-import gymnasium as gym
 from gymnasium import Env
+from retro_env import retro_all_envs
 
-import openrl
 from openrl.envs.vec_env import (
     AsyncVectorEnv,
     RewardWrapper,
@@ -58,28 +57,10 @@ def make(
     else:
         raise NotImplementedError(f"render_mode {render_mode} is not supported.")
 
-    if id in gym.envs.registry.keys():
-        from openrl.envs.gymnasium import make_gym_envs
+    if id in retro_all_envs:
+        from examples.retro.retro_env import make_retro_envs
 
-        env_fns = make_gym_envs(
-            id=id, env_num=env_num, render_mode=convert_render_mode, **kwargs
-        )
-    elif id in openrl.envs.mpe_all_envs:
-        from openrl.envs.mpe import make_mpe_envs
-
-        env_fns = make_mpe_envs(
-            id=id, env_num=env_num, render_mode=convert_render_mode, **kwargs
-        )
-    elif id in openrl.envs.nlp_all_envs:
-        from openrl.envs.nlp import make_nlp_envs
-
-        env_fns = make_nlp_envs(
-            id=id, env_num=env_num, render_mode=convert_render_mode, cfg=cfg, **kwargs
-        )
-    elif id[0:14] in openrl.envs.super_mario_all_envs:
-        from openrl.envs.super_mario import make_super_mario_envs
-
-        env_fns = make_super_mario_envs(
+        env_fns = make_retro_envs(
             id=id, env_num=env_num, render_mode=convert_render_mode, **kwargs
         )
     else:

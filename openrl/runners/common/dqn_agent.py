@@ -21,21 +21,20 @@ import gym
 import numpy as np
 import torch
 
-from openrl.algorithms.ppo import PPOAlgorithm as TrainAlgo
+from openrl.algorithms.dqn import DQNAlgorithm as TrainAlgo
 from openrl.buffers import NormalReplayBuffer as ReplayBuffer
 from openrl.buffers.utils.obs_data import ObsData
-from openrl.drivers.onpolicy_driver import OnPolicyDriver as Driver
-from openrl.modules.common import BaseNet
+from openrl.drivers.offpolicy_driver import OffPolicyDriver as Driver
 from openrl.runners.common.base_agent import SelfAgent
 from openrl.runners.common.rl_agent import RLAgent
 from openrl.utils.logger import Logger
 from openrl.utils.util import _t2n
 
 
-class PPOAgent(RLAgent):
+class DQNAgent(RLAgent):
     def __init__(
         self,
-        net: Optional[Union[torch.nn.Module, BaseNet]] = None,
+        net: Optional[torch.nn.Module] = None,
         env: Union[gym.Env, str] = None,
         run_dir: Optional[str] = None,
         env_num: Optional[int] = None,
@@ -44,7 +43,7 @@ class PPOAgent(RLAgent):
         use_wandb: bool = False,
         use_tensorboard: bool = False,
     ) -> None:
-        super(PPOAgent, self).__init__(
+        super(DQNAgent, self).__init__(
             net, env, run_dir, env_num, rank, world_size, use_wandb, use_tensorboard
         )
 
@@ -72,11 +71,12 @@ class PPOAgent(RLAgent):
             self._env.observation_space,
             self._env.action_space,
             data_client=None,
+            episode_length=self._cfg.buffer_size,
         )
 
         logger = Logger(
             cfg=self._cfg,
-            project_name="PPOAgent",
+            project_name="DQNAgent",
             scenario_name=self._env.env_name,
             wandb_entity=self._cfg.wandb_entity,
             exp_name=self.exp_name,
@@ -96,13 +96,11 @@ class PPOAgent(RLAgent):
         driver.run()
 
     def act(
-        self,
-        observation: Union[np.ndarray, Dict[str, np.ndarray]],
-        deterministic: bool = True,
+        self, observation: Union[np.ndarray, Dict[str, np.ndarray]]
     ) -> Tuple[np.ndarray, Optional[Tuple[np.ndarray, ...]]]:
         assert self.net is not None, "net is None"
         observation = ObsData.prepare_input(observation)
-        action, rnn_state = self.net.act(observation, deterministic=deterministic)
+        action, rnn_state = self.net.act(observation)
 
         action = np.array(np.split(_t2n(action), self.env_num))
 

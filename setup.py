@@ -51,6 +51,7 @@ def get_extra_requires() -> dict:
             "black",
             "ruff",
             "gpustat",
+            "gym-super-mario-bros",
         ],
         "dev": ["build", "twine"],
         "mpe": ["pyglet==1.5.27"],
@@ -61,6 +62,8 @@ def get_extra_requires() -> dict:
             "evaluate",
             "icetk",
         ],
+        "retro": ["gym-retro"],
+        "super_mario": ["gym-super-mario-bros"],
     }
     return req
 
@@ -93,6 +96,8 @@ setup(
         "Topic :: Software Development :: Libraries :: Python Modules",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
     ],

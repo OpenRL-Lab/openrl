@@ -17,21 +17,20 @@
 """"""
 import io
 import pathlib
-from typing import Dict, Optional, Tuple, Union
+from abc import abstractmethod
+from typing import Optional, Union
 
 import gym
-import numpy as np
 import torch
 
-from openrl.buffers.utils.obs_data import ObsData
+from openrl.modules.common import BaseNet
 from openrl.runners.common.base_agent import BaseAgent, SelfAgent
-from openrl.utils.util import _t2n
 
 
 class RLAgent(BaseAgent):
     def __init__(
         self,
-        net: Optional[torch.nn.Module] = None,
+        net: Optional[Union[torch.nn.Module, BaseNet]] = None,
         env: Union[gym.Env, str] = None,
         run_dir: Optional[str] = None,
         env_num: Optional[int] = None,
@@ -41,6 +40,8 @@ class RLAgent(BaseAgent):
         use_tensorboard: bool = False,
     ) -> None:
         self.net = net
+        if self.net is not None:
+            self.net.reset()
         self._cfg = net.cfg
         self._use_wandb = use_wandb
         self._use_tensorboard = not use_wandb and use_tensorboard
@@ -82,21 +83,13 @@ class RLAgent(BaseAgent):
         else:
             self.exp_name = self._cfg.experiment_name
 
+    @abstractmethod
     def train(self: SelfAgent, total_time_steps: int) -> None:
         raise NotImplementedError
 
-    def act(
-        self,
-        observation: Union[np.ndarray, Dict[str, np.ndarray]],
-        deterministic: bool = True,
-    ) -> Tuple[np.ndarray, Optional[Tuple[np.ndarray, ...]]]:
-        assert self.net is not None, "net is None"
-        observation = ObsData.prepare_input(observation)
-        action, rnn_state = self.net.act(observation, deterministic=deterministic)
-
-        action = np.array(np.split(_t2n(action), self.env_num))
-
-        return action, rnn_state
+    @abstractmethod
+    def act(self, **kwargs) -> None:
+        raise NotImplementedError
 
     def set_env(
         self,
@@ -135,6 +128,7 @@ class RLAgent(BaseAgent):
                 )
         else:
             self.net.module = torch.load(path)
+        self.net.reset()
 
     def load_policy(self, path: Union[str, pathlib.Path, io.BufferedIOBase]) -> None:
         self.net.load_policy(path)
