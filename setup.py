@@ -51,6 +51,7 @@ def get_extra_requires() -> dict:
             "black",
             "ruff",
             "gpustat",
+            "gym-super-mario-bros",
         ],
         "dev": ["build", "twine"],
         "mpe": ["pyglet==1.5.27"],
@@ -62,7 +63,7 @@ def get_extra_requires() -> dict:
             "icetk",
         ],
         "retro": ["gym-retro"],
-        "super_mario": ["gym-super-mario-bros==7.3.0"],
+        "super_mario": ["gym-super-mario-bros"],
     }
     return req
 
