@@ -56,9 +56,7 @@ class OffPolicyDriver(RLDriver):
             train_infos = self.learner_update()
             self.buffer.after_update()
         else:
-            train_infos = {
-                "q_loss": 0
-            }
+            train_infos = {"q_loss": 0}
 
         self.total_num_steps = (
             (self.episode + 1) * self.episode_length * self.n_rollout_threads
@@ -119,9 +117,7 @@ class OffPolicyDriver(RLDriver):
         # todo how to handle next obs in initialized state and terminal state
         next_obs, rewards, dones, infos = self.envs.step(actions, extra_data)
         for step in range(self.episode_length):
-            q_values, actions, rnn_states = self.act(
-                step
-            )
+            q_values, actions, rnn_states = self.act(step)
 
             extra_data = {
                 "q_values": q_values,

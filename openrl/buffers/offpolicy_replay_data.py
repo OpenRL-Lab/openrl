@@ -26,9 +26,9 @@ from openrl.buffers.replay_data import ReplayData
 from openrl.buffers.utils.obs_data import ObsData
 from openrl.buffers.utils.util import (
     get_critic_obs,
-    get_policy_obs,
     get_critic_obs_space,
-    get_policy_obs_space
+    get_policy_obs,
+    get_policy_obs_space,
 )
 
 
@@ -54,23 +54,23 @@ class OffPolicyReplayData(ReplayData):
         policy_obs_shape = get_policy_obs_space(obs_space)
         critic_obs_shape = get_critic_obs_space(obs_space)
         self.next_policy_obs = np.zeros(
-                (
-                    self.episode_length + 1,
-                    self.n_rollout_threads,
-                    num_agents,
-                    *policy_obs_shape,
-                ),
-                dtype=np.float32,
-            )
+            (
+                self.episode_length + 1,
+                self.n_rollout_threads,
+                num_agents,
+                *policy_obs_shape,
+            ),
+            dtype=np.float32,
+        )
         self.next_critic_obs = np.zeros(
-                (
-                    self.episode_length + 1,
-                    self.n_rollout_threads,
-                    num_agents,
-                    *critic_obs_shape,
-                ),
-                dtype=np.float32,
-            )
+            (
+                self.episode_length + 1,
+                self.n_rollout_threads,
+                num_agents,
+                *critic_obs_shape,
+            ),
+            dtype=np.float32,
+        )
         self.first_insert_flag = True
 
     def dict_insert(self, data):
@@ -80,9 +80,13 @@ class OffPolicyReplayData(ReplayData):
             for key in self.policy_obs.keys():
                 self.policy_obs[key][self.step + 1] = data["policy_obs"][key].copy()
             for key in self.next_policy_obs.keys():
-                self.next_policy_obs[key][self.step + 1] = data["next_policy_obs"][key].copy()
+                self.next_policy_obs[key][self.step + 1] = data["next_policy_obs"][
+                    key
+                ].copy()
             for key in self.next_critic_obs.keys():
-                self.next_critic_obs[key][self.step + 1] = data["next_critic_obs"][key].copy()
+                self.next_critic_obs[key][self.step + 1] = data["next_critic_obs"][
+                    key
+                ].copy()
         else:
             self.critic_obs[self.step + 1] = data["critic_obs"].copy()
             self.policy_obs[self.step + 1] = data["policy_obs"].copy()
@@ -253,8 +257,12 @@ class OffPolicyReplayData(ReplayData):
         else:
             critic_obs = self.critic_obs[:-1].reshape(-1, *self.critic_obs.shape[3:])
             policy_obs = self.policy_obs[:-1].reshape(-1, *self.policy_obs.shape[3:])
-            next_critic_obs = self.next_critic_obs[:-1].reshape(-1, *self.next_critic_obs.shape[3:])
-            next_policy_obs = self.next_policy_obs[:-1].reshape(-1, *self.next_policy_obs.shape[3:])
+            next_critic_obs = self.next_critic_obs[:-1].reshape(
+                -1, *self.next_critic_obs.shape[3:]
+            )
+            next_policy_obs = self.next_policy_obs[:-1].reshape(
+                -1, *self.next_policy_obs.shape[3:]
+            )
 
         rnn_states = self.rnn_states[:-1].reshape(-1, *self.rnn_states.shape[3:])
         rnn_states_critic = self.rnn_states_critic[:-1].reshape(
@@ -315,4 +323,4 @@ class OffPolicyReplayData(ReplayData):
             if critic_obs_process_func is not None:
                 critic_obs_batch = critic_obs_process_func(critic_obs_batch)
 
-            yield critic_obs_batch, policy_obs_batch, next_critic_obs_batch, next_policy_obs_batch,rnn_states_batch, rnn_states_critic_batch, actions_batch, value_preds_batch, rewards_batch, masks_batch, active_masks_batch, old_action_log_probs_batch, adv_targ, available_actions_batch
+            yield critic_obs_batch, policy_obs_batch, next_critic_obs_batch, next_policy_obs_batch, rnn_states_batch, rnn_states_critic_batch, actions_batch, value_preds_batch, rewards_batch, masks_batch, active_masks_batch, old_action_log_probs_batch, adv_targ, available_actions_batch

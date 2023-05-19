@@ -110,7 +110,9 @@ class DQNModule(RLModule):
         q_values, _ = self.models["q_net"](
             obs_batch, rnn_states_batch, masks_batch, available_actions
         )
-        max_next_q_values, _ = self.algo_module.models["target_q_net"](next_obs_batch, rnn_states_batch, masks_batch, available_actions)
+        max_next_q_values, _ = self.algo_module.models["target_q_net"](
+            next_obs_batch, rnn_states_batch, masks_batch, available_actions
+        )
 
         return q_values, max_next_q_values
 

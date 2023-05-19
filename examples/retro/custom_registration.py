@@ -18,8 +18,8 @@
 from typing import Optional
 
 from gymnasium import Env
+from retro_env import retro_all_envs
 
-from examples.retro.retro_env import retro_all_envs
 from openrl.envs.vec_env import (
     AsyncVectorEnv,
     RewardWrapper,
