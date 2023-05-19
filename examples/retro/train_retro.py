@@ -1,7 +1,7 @@
 """"""
 import numpy as np
 
-from openrl.envs.common import make
+from examples.common.custom_registration import make
 from openrl.modules.common import PPONet as Net
 from openrl.runners.common import PPOAgent as Agent
 
@@ -14,7 +14,7 @@ def train():
     # 初始化训练器
     agent = Agent(net)
     # 开始训练
-    agent.train(total_time_steps=20000)
+    agent.train(total_time_steps=2000)
     # 关闭环境
     env.close()
     return agent
@@ -41,7 +41,7 @@ def game_test(agent):
         print(f"{step}: reward:{np.mean(r)}")
 
         if any(done):
-            env.reset()
+            break
 
     env.close()
 
