@@ -40,6 +40,8 @@ class RLAgent(BaseAgent):
         use_tensorboard: bool = False,
     ) -> None:
         self.net = net
+        if self.net is not None:
+            self.net.reset()
         self._cfg = net.cfg
         self._use_wandb = use_wandb
         self._use_tensorboard = not use_wandb and use_tensorboard
@@ -126,6 +128,7 @@ class RLAgent(BaseAgent):
                 )
         else:
             self.net.module = torch.load(path)
+        self.net.reset()
 
     def load_policy(self, path: Union[str, pathlib.Path, io.BufferedIOBase]) -> None:
         self.net.load_policy(path)
