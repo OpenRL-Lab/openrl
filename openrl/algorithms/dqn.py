@@ -68,7 +68,7 @@ class DQNAlgorithm(BaseAlgorithm):
 
         if self.use_amp:
             with torch.cuda.amp.autocast():
-                    loss_list = self.prepare_loss(
+                loss_list = self.prepare_loss(
                     obs_batch,
                     next_obs_batch,
                     rnn_states_batch,
@@ -184,10 +184,7 @@ class DQNAlgorithm(BaseAlgorithm):
         loss_list = []
         critic_masks_batch = masks_batch
 
-        (
-            q_values,
-            max_next_q_values
-        ) = self.algo_module.evaluate_actions(
+        (q_values, max_next_q_values) = self.algo_module.evaluate_actions(
             obs_batch,
             next_obs_batch,
             rnn_states_batch,
@@ -223,9 +220,7 @@ class DQNAlgorithm(BaseAlgorithm):
             elif self._use_naive_recurrent:
                 raise NotImplementedError
             else:
-                data_generator = buffer.feed_forward_generator(
-                    _, self.num_mini_batch
-                )
+                data_generator = buffer.feed_forward_generator(_, self.num_mini_batch)
 
             for sample in data_generator:
                 (

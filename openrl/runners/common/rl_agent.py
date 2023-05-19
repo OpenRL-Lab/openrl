@@ -18,19 +18,19 @@
 import io
 import pathlib
 from abc import abstractmethod
-from typing import Dict, Optional, Tuple, Union
+from typing import Optional, Union
 
 import gym
-import numpy as np
 import torch
 
+from openrl.modules.common import BaseNet
 from openrl.runners.common.base_agent import BaseAgent, SelfAgent
 
 
 class RLAgent(BaseAgent):
     def __init__(
         self,
-        net: Optional[torch.nn.Module] = None,
+        net: Optional[Union[torch.nn.Module, BaseNet]] = None,
         env: Union[gym.Env, str] = None,
         run_dir: Optional[str] = None,
         env_num: Optional[int] = None,

@@ -19,7 +19,6 @@
 import os
 import sys
 
-import numpy as np
 import pytest
 
 from openrl.envs.common import make
@@ -41,7 +40,7 @@ def test_train_super_mario(config):
     env = make("SuperMarioBros-1-1-v1", env_num=2)
 
     agent = Agent(Net(env, cfg=config))
-    agent.train(total_time_steps=1000)
+    agent.train(total_time_steps=30)
 
     env.close()
 

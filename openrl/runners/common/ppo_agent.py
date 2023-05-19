@@ -25,6 +25,7 @@ from openrl.algorithms.ppo import PPOAlgorithm as TrainAlgo
 from openrl.buffers import NormalReplayBuffer as ReplayBuffer
 from openrl.buffers.utils.obs_data import ObsData
 from openrl.drivers.onpolicy_driver import OnPolicyDriver as Driver
+from openrl.modules.common import BaseNet
 from openrl.runners.common.base_agent import SelfAgent
 from openrl.runners.common.rl_agent import RLAgent
 from openrl.utils.logger import Logger
@@ -34,7 +35,7 @@ from openrl.utils.util import _t2n
 class PPOAgent(RLAgent):
     def __init__(
         self,
-        net: Optional[torch.nn.Module] = None,
+        net: Optional[Union[torch.nn.Module, BaseNet]] = None,
         env: Union[gym.Env, str] = None,
         run_dir: Optional[str] = None,
         env_num: Optional[int] = None,
