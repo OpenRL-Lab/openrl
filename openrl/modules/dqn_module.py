@@ -95,8 +95,11 @@ class DQNModule(RLModule):
 
     def evaluate_actions(
         self,
-        obs,
-        rnn_states,
+        obs_batch,
+        next_obs_batch,
+        rnn_states_batch,
+        rewards_batch,
+        actions_batch,
         masks,
         available_actions=None,
         masks_batch=None,
@@ -105,10 +108,11 @@ class DQNModule(RLModule):
             masks_batch = masks
 
         q_values, _ = self.models["q_net"](
-            obs, rnn_states, masks_batch, available_actions
+            obs_batch, rnn_states_batch, masks_batch, available_actions
         )
+        max_next_q_values, _ = self.algo_module.models["target_q_net"](next_obs_batch, rnn_states_batch, masks_batch, available_actions)
 
-        return q_values
+        return q_values, max_next_q_values
 
     def act(self, obs, rnn_states_actor, masks, available_actions=None):
         model = self.models["q_net"]
@@ -119,8 +123,8 @@ class DQNModule(RLModule):
             masks,
             available_actions,
         )
-        action = q_values.argmax().item()
-        return action, rnn_states_actor
+
+        return q_values, rnn_states_actor
 
     def get_critic_value_normalizer(self):
         return self.models["q_net"].value_normalizer
