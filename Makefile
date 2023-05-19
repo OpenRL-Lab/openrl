@@ -25,7 +25,7 @@ format:
 commit-checks: format lint
 
 docker-cpu:
-	./scripts/build_docker.sh
+	RELEASE=True ./scripts/build_docker.sh
 
 docker-gpu:
-	USE_GPU=True ./scripts/build_docker.sh
+	RELEASE=True USE_GPU=True ./scripts/build_docker.sh
