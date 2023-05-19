@@ -71,6 +71,7 @@ class DQNAgent(RLAgent):
             self._env.observation_space,
             self._env.action_space,
             data_client=None,
+            episode_length=self._cfg.buffer_size,
         )
 
         logger = Logger(
