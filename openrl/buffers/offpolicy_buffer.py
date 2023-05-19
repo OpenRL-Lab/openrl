@@ -36,6 +36,36 @@ class OffPolicyReplayBuffer(NormalReplayBuffer):
             episode_length,
         )
 
+    def insert(
+        self,
+        raw_obs,
+        next_raw_obs,
+        rnn_states,
+        rnn_states_critic,
+        actions,
+        action_log_probs,
+        value_preds,
+        rewards,
+        masks,
+        bad_masks=None,
+        active_masks=None,
+        available_actions=None,
+    ):
+        self.data.insert(
+            raw_obs,
+            next_raw_obs,
+            rnn_states,
+            rnn_states_critic,
+            actions,
+            action_log_probs,
+            value_preds,
+            rewards,
+            masks,
+            bad_masks,
+            active_masks,
+            available_actions,
+        )
+
     def get_buffer_size(self):
         if self.data.first_insert_flag:
             return self.data.step
