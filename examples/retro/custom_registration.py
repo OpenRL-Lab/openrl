@@ -19,7 +19,7 @@ from typing import Optional
 
 from gymnasium import Env
 
-from examples.retro.retro_env import retro_all_envs
+from retro_env import retro_all_envs
 from openrl.envs.vec_env import (
     AsyncVectorEnv,
     RewardWrapper,

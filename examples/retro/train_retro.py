@@ -1,7 +1,7 @@
 """"""
 import numpy as np
 
-from examples.common.custom_registration import make
+from custom_registration import make
 from openrl.modules.common import PPONet as Net
 from openrl.runners.common import PPOAgent as Agent
 
