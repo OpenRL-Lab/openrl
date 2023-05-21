@@ -51,6 +51,11 @@ class OffPolicyReplayData(ReplayData):
             episode_length,
         )
 
+        self.value_preds = np.zeros(
+            (self.episode_length + 1, self.n_rollout_threads, num_agents, act_space.n),
+            dtype=np.float32,
+        )
+
         policy_obs_shape = get_policy_obs_space(obs_space)
         critic_obs_shape = get_critic_obs_space(obs_space)
         self.next_policy_obs = np.zeros(

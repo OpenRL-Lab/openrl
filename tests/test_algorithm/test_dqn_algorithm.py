@@ -84,7 +84,7 @@ def test_dqn_algorithm(config, init_module, buffer_data):
 
     dqn_algo = DQNAlgorithm(config, init_module)
 
-    # dqn_algo.train(buffer_data)
+    dqn_algo.train(buffer_data)
 
 
 @pytest.mark.unittest
@@ -93,7 +93,7 @@ def test_dqn_algorithm_amp(config, init_module, buffer_data):
 
     dqn_algo = DQNAlgorithm(config, init_module)
 
-    # dqn_algo.train(buffer_data)
+    dqn_algo.train(buffer_data)
 
 
 if __name__ == "__main__":

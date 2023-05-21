@@ -43,9 +43,9 @@ class OffPolicyDriver(RLDriver):
         )
 
         self.buffer_minimal_size = int(config["cfg"].buffer_size * 0.2)
-        self.epsilon_start = config.epsilon_start
-        self.epsilon_finish = config.epsilon_finish
-        self.epsilon_anneal_time = config.epsilon_anneal_time
+        self.epsilon_start = config["cfg"].epsilon_start
+        self.epsilon_finish = config["cfg"].epsilon_finish
+        self.epsilon_anneal_time = config["cfg"].epsilon_anneal_time
 
     def _inner_loop(
         self,
@@ -78,11 +78,33 @@ class OffPolicyDriver(RLDriver):
             actions,
             rnn_states,
         ) = data
-
         rnn_states[dones] = np.zeros(
             (dones.sum(), self.recurrent_N, self.hidden_size),
             dtype=np.float32,
         )
+
+        # temp = np.zeros(
+        #     (dones.sum(), self.recurrent_N, self.hidden_size),
+        #     dtype=np.float32,
+        # )
+        # a = dones.sum()
+        # temp2 = np.zeros(
+        #     (dones.sum(), next_obs["policy"].shape[2:]),
+        #     dtype=np.float32,
+        # )
+
+        # todo add mask of next_obs
+        # if "Dict" in next_obs.__class__.__name__:
+        #     for key in next_obs.keys():
+        #         next_obs[key][dones] = np.zeros(
+        #             (dones.sum(), next_obs[key].shape[2:]),
+        #             dtype=np.float32,
+        #         )
+        # else:
+        #     next_obs[dones] = np.zeros(
+        #         (dones.sum(), next_obs.shape[2:]),
+        #         dtype=np.float32,
+        #     )
 
         masks = np.ones((self.n_rollout_threads, self.num_agents, 1), dtype=np.float32)
         masks[dones] = np.zeros((dones.sum(), 1), dtype=np.float32)
@@ -112,10 +134,8 @@ class OffPolicyDriver(RLDriver):
             "step": 0,
             "buffer": self.buffer,
         }
-        obs, rewards, dones, infos = self.envs.step(actions, extra_data)
 
-        # todo how to handle next obs in initialized state and terminal state
-        next_obs, rewards, dones, infos = self.envs.step(actions, extra_data)
+        obs, rewards, dones, infos = self.envs.step(actions, extra_data)
         for step in range(self.episode_length):
             q_values, actions, rnn_states = self.act(step)
 
@@ -169,20 +189,26 @@ class OffPolicyDriver(RLDriver):
         q_values = np.array(np.split(_t2n(q_values), self.n_rollout_threads))
         rnn_states = np.array(np.split(_t2n(rnn_states), self.n_rollout_threads))
 
-        # todo add epsilon greedy
         epsilon = (
             self.epsilon_finish
             + (self.epsilon_start - self.epsilon_finish)
             / self.epsilon_anneal_time
             * step
         )
+
+        actions = np.expand_dims(q_values.argmax(axis=-1), axis=-1)
+
         if random.random() > epsilon:
-            actions = q_values.argmax().item()
-        else:
-            actions = q_values.argmax().item()
+            actions = np.random.randint(low=0,
+                                        high=self.envs.action_space.n,
+                                        size=actions.shape)
 
         return (
             q_values,
             actions,
             rnn_states,
         )
+
+    def compute_returns(self):
+        pass
+
