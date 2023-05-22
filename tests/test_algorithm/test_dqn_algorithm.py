@@ -65,9 +65,9 @@ def init_module(config, obs_space, act_space):
 
 @pytest.fixture
 def buffer_data(config, obs_space, act_space):
-    from openrl.buffers.normal_buffer import NormalReplayBuffer
+    from openrl.buffers.offpolicy_buffer import OffPolicyReplayBuffer
 
-    buffer = NormalReplayBuffer(
+    buffer = OffPolicyReplayBuffer(
         config,
         num_agents=1,
         obs_space=obs_space,
@@ -84,7 +84,7 @@ def test_dqn_algorithm(config, init_module, buffer_data):
 
     dqn_algo = DQNAlgorithm(config, init_module)
 
-    # dqn_algo.train(buffer_data)
+    dqn_algo.train(buffer_data)
 
 
 @pytest.mark.unittest
@@ -93,7 +93,7 @@ def test_dqn_algorithm_amp(config, init_module, buffer_data):
 
     dqn_algo = DQNAlgorithm(config, init_module)
 
-    # dqn_algo.train(buffer_data)
+    dqn_algo.train(buffer_data)
 
 
 if __name__ == "__main__":

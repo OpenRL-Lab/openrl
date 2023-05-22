@@ -18,7 +18,7 @@
 import torch
 import torch.nn as nn
 
-from openrl.buffers.utils.util import get_shape_from_obs_space_v2
+from openrl.buffers.utils.util import get_shape_from_obs_space_v2, get_critic_obs_space
 from openrl.modules.networks.base_value_network import BaseValueNetwork
 from openrl.modules.networks.utils.cnn import CNNBase
 from openrl.modules.networks.utils.mix import MIXBase
@@ -53,7 +53,7 @@ class QNetwork(BaseValueNetwork):
         init_method = [nn.init.xavier_uniform_, nn.init.orthogonal_][
             self._use_orthogonal
         ]
-        obs_shape = get_shape_from_obs_space_v2(input_space)
+        obs_shape = get_critic_obs_space(input_space)
 
         if "Dict" in obs_shape.__class__.__name__:
             self._mixed_obs = True
@@ -91,7 +91,7 @@ class QNetwork(BaseValueNetwork):
             self.half()
         self.to(device)
 
-    def forward(self, obs, rnn_states, masks):
+    def forward(self, obs, rnn_states, masks, available_actions=None):
         if self._mixed_obs:
             for key in obs.keys():
                 obs[key] = check(obs[key]).to(**self.tpdv)
@@ -106,5 +106,8 @@ class QNetwork(BaseValueNetwork):
             features, rnn_states = self.rnn(features, rnn_states, masks)
 
         q_values = self.q_out(features)
+
+        if available_actions is not None:
+            q_values[available_actions == 0] = -1e10
 
         return q_values, rnn_states
