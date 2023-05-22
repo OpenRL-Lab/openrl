@@ -52,9 +52,9 @@ class OffPolicyDriver(RLDriver):
     ) -> None:
         rollout_infos = self.actor_rollout()
 
-        if self.buffer.get_buffer_size() > self.buffer_minimal_size:
+        # if self.buffer.get_buffer_size() > self.buffer_minimal_size:
+        if self.buffer.get_buffer_size() > 0:
             train_infos = self.learner_update()
-            self.buffer.after_update()
         else:
             train_infos = {"q_loss": 0}
 

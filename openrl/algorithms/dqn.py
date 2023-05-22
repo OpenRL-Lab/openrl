@@ -220,17 +220,10 @@ class DQNAlgorithm(BaseAlgorithm):
             elif self._use_naive_recurrent:
                 raise NotImplementedError
             else:
-                data_generator = buffer.feed_forward_generator(_, self.num_mini_batch)
+                data_generator = buffer.feed_forward_generator(None, self.num_mini_batch)
 
             for sample in data_generator:
-                (
-                    q_loss,
-                    critic_grad_norm,
-                    policy_loss,
-                    dist_entropy,
-                    actor_grad_norm,
-                    ratio,
-                ) = self.dqn_update(sample, turn_on)
+                (q_loss) = self.dqn_update(sample, turn_on)
 
                 if self.world_size > 1:
                     train_info["reduced_q_loss"] += reduce_tensor(

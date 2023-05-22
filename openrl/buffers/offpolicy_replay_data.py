@@ -51,6 +51,7 @@ class OffPolicyReplayData(ReplayData):
             episode_length,
         )
 
+        self.act_space = act_space.n
         self.value_preds = np.zeros(
             (self.episode_length + 1, self.n_rollout_threads, num_agents, act_space.n),
             dtype=np.float32,
@@ -278,8 +279,8 @@ class OffPolicyReplayData(ReplayData):
             available_actions = self.available_actions[:-1].reshape(
                 -1, self.available_actions.shape[-1]
             )
-        value_preds = self.value_preds[:-1].reshape(-1, 1)
-        rewards = self.rewards[:-1].reshape(-1, 1)
+        value_preds = self.value_preds[:-1].reshape(-1, self.act_space)
+        rewards = self.rewards.reshape(-1, 1)
         masks = self.masks[:-1].reshape(-1, 1)
         active_masks = self.active_masks[:-1].reshape(-1, 1)
         action_log_probs = self.action_log_probs.reshape(
@@ -322,7 +323,7 @@ class OffPolicyReplayData(ReplayData):
             active_masks_batch = active_masks[indices]
             old_action_log_probs_batch = action_log_probs[indices]
             if advantages is None:
-                adv_targ = None
+                adv_targ = rewards_batch
             else:
                 adv_targ = advantages[indices]
             if critic_obs_process_func is not None:
