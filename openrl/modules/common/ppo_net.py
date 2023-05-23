@@ -26,6 +26,7 @@ from openrl.configs.config import create_config_parser
 from openrl.modules.common.base_net import BaseNet
 from openrl.modules.ppo_module import PPOModule
 from openrl.utils.util import set_seed
+from openrl.modules.base_module import BaseModule
 
 
 class PPONet(BaseNet):
@@ -36,6 +37,7 @@ class PPONet(BaseNet):
         device: Union[torch.device, str] = "cpu",
         n_rollout_threads: int = 1,
         model_dict: Optional[Dict[str, Any]] = None,
+        module_class: BaseModule = PPOModule,
     ) -> None:
         super().__init__()
 
@@ -46,6 +48,7 @@ class PPONet(BaseNet):
         set_seed(cfg.seed)
         env.reset(seed=cfg.seed)
 
+        cfg.num_agents = env.agent_num
         cfg.n_rollout_threads = n_rollout_threads
         cfg.learner_n_rollout_threads = cfg.n_rollout_threads
 
@@ -62,7 +65,7 @@ class PPONet(BaseNet):
         if isinstance(device, str):
             device = torch.device(device)
 
-        self.module = PPOModule(
+        self.module = module_class(
             cfg=cfg,
             policy_input_space=env.observation_space,
             critic_input_space=env.observation_space,

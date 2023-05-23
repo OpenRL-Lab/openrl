@@ -159,9 +159,10 @@ class OffPolicyReplayData(ReplayData):
             self.policy_obs[self.step + 1] = policy_obs.copy()
             self.next_critic_obs[self.step + 1] = next_critic_obs.copy()
             self.next_policy_obs[self.step + 1] = next_policy_obs.copy()
-
-        self.rnn_states[self.step + 1] = rnn_states.copy()
-        self.rnn_states_critic[self.step + 1] = rnn_states_critic.copy()
+        if rnn_states is not None:
+            self.rnn_states[self.step + 1] = rnn_states.copy()
+        if rnn_states_critic is not None:
+            self.rnn_states_critic[self.step + 1] = rnn_states_critic.copy()
         self.actions[self.step] = actions.copy()
         self.action_log_probs[self.step] = action_log_probs.copy()
         self.value_preds[self.step] = value_preds.copy()
@@ -219,9 +220,7 @@ class OffPolicyReplayData(ReplayData):
         batch_size = n_rollout_threads * episode_length * num_agents
 
         if mini_batch_size is None:
-            assert (
-                batch_size >= num_mini_batch
-            ), (
+            assert batch_size >= num_mini_batch, (
                 "DQN requires the number of processes ({}) "
                 "* number of steps ({}) * number of agents ({}) = {} "
                 "to be greater than or equal to the number of DQN mini batches ({})."

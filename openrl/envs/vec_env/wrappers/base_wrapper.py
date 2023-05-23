@@ -113,9 +113,9 @@ class VecEnvWrapper(BaseVecEnv):
         """Reset all environments."""
         return self.env.reset(**kwargs)
 
-    def step(self, actions):
+    def step(self, actions, *args, **kwargs):
         """Step all environments."""
-        return self.env.step(actions)
+        return self.env.step(actions, *args, **kwargs)
 
     def close(self, **kwargs):
         return self.env.close(**kwargs)
@@ -193,15 +193,14 @@ class VectorObservationWrapper(VecEnvWrapper):
             observation = results
             return self.observation(observation)
 
-    def step(self, actions):
+    def step(self, actions, *args, **kwargs):
         """Modifies the observation returned from the environment ``step`` using the :meth:`observation`."""
-        results = self.env.step(actions)
+        results = self.env.step(actions, *args, **kwargs)
 
         if len(results) == 5:
             observation, reward, termination, truncation, info = results
             return (
                 self.observation(observation),
-                observation,
                 reward,
                 termination,
                 truncation,
@@ -211,15 +210,15 @@ class VectorObservationWrapper(VecEnvWrapper):
             observation, reward, done, info = results
             return (
                 self.observation(observation),
-                observation,
                 reward,
                 done,
                 info,
             )
         else:
             raise ValueError(
-                "Invalid step return value, expected 4 or 5 values, got {} values"
-                .format(len(results))
+                "Invalid step return value, expected 4 or 5 values, got {} values".format(
+                    len(results)
+                )
             )
 
     def observation(self, observation: ObsType) -> ObsType:
@@ -237,9 +236,9 @@ class VectorObservationWrapper(VecEnvWrapper):
 class VectorActionWrapper(VecEnvWrapper):
     """Wraps the vectorized environment to allow a modular transformation of the actions. Equivalent of :class:`~gym.ActionWrapper` for vectorized environments."""
 
-    def step(self, actions: ActType):
+    def step(self, actions: ActType, *args, **kwargs):
         """Steps through the environment using a modified action by :meth:`action`."""
-        return self.env.step(self.action(actions))
+        return self.env.step(self.action(actions), *args, **kwargs)
 
     def actions(self, actions: ActType) -> ActType:
         """Transform the actions before sending them to the environment.
@@ -256,9 +255,9 @@ class VectorActionWrapper(VecEnvWrapper):
 class VectorRewardWrapper(VecEnvWrapper):
     """Wraps the vectorized environment to allow a modular transformation of the reward. Equivalent of :class:`~gym.RewardWrapper` for vectorized environments."""
 
-    def step(self, actions):
+    def step(self, actions, *args, **kwargs):
         """Steps through the environment returning a reward modified by :meth:`reward`."""
-        results = self.env.step(actions)
+        results = self.env.step(actions, *args, **kwargs)
         reward = self.reward(results[1])
         return results[0], reward, *results[2:]
 

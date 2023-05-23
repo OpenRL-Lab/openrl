@@ -110,43 +110,26 @@ class PPOAlgorithm(BaseAlgorithm):
             for loss in loss_list:
                 loss.backward()
 
-        if "transformer" in self.algo_module.models:
-            if self._use_max_grad_norm:
-                grad_norm = nn.utils.clip_grad_norm_(
-                    self.algo_module.models["transformer"].parameters(),
-                    self.max_grad_norm,
-                )
-            else:
-                grad_norm = get_gard_norm(
-                    self.algo_module.models["transformer"].parameters()
-                )
-            critic_grad_norm = grad_norm
-            actor_grad_norm = grad_norm
-
+        # else:
+        if self._use_share_model:
+            actor_para = self.algo_module.models["model"].get_actor_para()
         else:
-            if self._use_share_model:
-                actor_para = self.algo_module.models["model"].get_actor_para()
-            else:
-                actor_para = self.algo_module.models["policy"].parameters()
+            actor_para = self.algo_module.models["policy"].parameters()
 
-            if self._use_max_grad_norm:
-                actor_grad_norm = nn.utils.clip_grad_norm_(
-                    actor_para, self.max_grad_norm
-                )
-            else:
-                actor_grad_norm = get_gard_norm(actor_para)
+        if self._use_max_grad_norm:
+            actor_grad_norm = nn.utils.clip_grad_norm_(actor_para, self.max_grad_norm)
+        else:
+            actor_grad_norm = get_gard_norm(actor_para)
 
-            if self._use_share_model:
-                critic_para = self.algo_module.models["model"].get_critic_para()
-            else:
-                critic_para = self.algo_module.models["critic"].parameters()
+        if self._use_share_model:
+            critic_para = self.algo_module.models["model"].get_critic_para()
+        else:
+            critic_para = self.algo_module.models["critic"].parameters()
 
-            if self._use_max_grad_norm:
-                critic_grad_norm = nn.utils.clip_grad_norm_(
-                    critic_para, self.max_grad_norm
-                )
-            else:
-                critic_grad_norm = get_gard_norm(critic_para)
+        if self._use_max_grad_norm:
+            critic_grad_norm = nn.utils.clip_grad_norm_(critic_para, self.max_grad_norm)
+        else:
+            critic_grad_norm = get_gard_norm(critic_para)
 
         if self.use_amp:
             for optimizer in self.algo_module.optimizers.values():
@@ -219,6 +202,16 @@ class PPOAlgorithm(BaseAlgorithm):
         reshape_input = input.reshape(-1, self.agent_num, *input.shape[1:])
         return reshape_input[:, 0, ...]
 
+    def construct_loss_list(self, policy_loss, dist_entropy, value_loss, turn_on):
+        loss_list = []
+        if turn_on:
+            final_p_loss = policy_loss - dist_entropy * self.entropy_coef
+
+            loss_list.append(final_p_loss)
+        final_v_loss = value_loss * self.value_loss_coef
+        loss_list.append(final_v_loss)
+        return loss_list
+
     def prepare_loss(
         self,
         critic_obs_batch,
@@ -235,8 +228,6 @@ class PPOAlgorithm(BaseAlgorithm):
         active_masks_batch,
         turn_on,
     ):
-        loss_list = []
-
         if self.use_joint_action_loss:
             critic_obs_batch = self.to_single_np(critic_obs_batch)
             rnn_states_critic_batch = self.to_single_np(rnn_states_critic_batch)
@@ -341,21 +332,30 @@ class PPOAlgorithm(BaseAlgorithm):
             active_masks_batch,
         )
 
-        if "transformer" in self.algo_module.models:
-            loss = (
-                policy_loss
-                - dist_entropy * self.entropy_coef
-                + value_loss * self.value_loss_coef
-            )
-            loss_list.append(loss)
-        else:
-            if turn_on:
-                final_p_loss = policy_loss - dist_entropy * self.entropy_coef
-
-                loss_list.append(final_p_loss)
-            final_v_loss = value_loss * self.value_loss_coef
-            loss_list.append(final_v_loss)
+        loss_list = self.construct_loss_list(
+            policy_loss, dist_entropy, value_loss, turn_on
+        )
         return loss_list, value_loss, policy_loss, dist_entropy, ratio
+
+    def get_data_generator(self, buffer, advantages):
+        if self._use_recurrent_policy:
+            if self.use_joint_action_loss:
+                data_generator = buffer.recurrent_generator_v3(
+                    advantages, self.num_mini_batch, self.data_chunk_length
+                )
+            else:
+                data_generator = buffer.recurrent_generator(
+                    advantages, self.num_mini_batch, self.data_chunk_length
+                )
+        elif self._use_naive_recurrent:
+            data_generator = buffer.naive_recurrent_generator(
+                advantages, self.num_mini_batch
+            )
+        else:
+            data_generator = buffer.feed_forward_generator(
+                advantages, self.num_mini_batch
+            )
+        return data_generator
 
     def train(self, buffer, turn_on=True):
         if self._use_popart or self._use_valuenorm:
@@ -396,27 +396,7 @@ class PPOAlgorithm(BaseAlgorithm):
             train_info["reduced_policy_loss"] = 0
 
         for _ in range(self.ppo_epoch):
-            if "transformer" in self.algo_module.models:
-                data_generator = buffer.feed_forward_generator_transformer(
-                    advantages, self.num_mini_batch
-                )
-            elif self._use_recurrent_policy:
-                if self.use_joint_action_loss:
-                    data_generator = buffer.recurrent_generator_v3(
-                        advantages, self.num_mini_batch, self.data_chunk_length
-                    )
-                else:
-                    data_generator = buffer.recurrent_generator(
-                        advantages, self.num_mini_batch, self.data_chunk_length
-                    )
-            elif self._use_naive_recurrent:
-                data_generator = buffer.naive_recurrent_generator(
-                    advantages, self.num_mini_batch
-                )
-            else:
-                data_generator = buffer.feed_forward_generator(
-                    advantages, self.num_mini_batch
-                )
+            data_generator = self.get_data_generator(buffer, advantages)
 
             for sample in data_generator:
                 (

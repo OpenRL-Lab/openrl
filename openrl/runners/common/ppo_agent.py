@@ -15,13 +15,14 @@
 # limitations under the License.
 
 """"""
-from typing import Dict, Optional, Tuple, Union
+from typing import Dict, Optional, Tuple, Union, Type
 
 import gym
 import numpy as np
 import torch
 
-from openrl.algorithms.ppo import PPOAlgorithm as TrainAlgo
+from openrl.algorithms.ppo import PPOAlgorithm
+from openrl.algorithms.base_algorithm import BaseAlgorithm
 from openrl.buffers import NormalReplayBuffer as ReplayBuffer
 from openrl.buffers.utils.obs_data import ObsData
 from openrl.drivers.onpolicy_driver import OnPolicyDriver as Driver
@@ -48,7 +49,12 @@ class PPOAgent(RLAgent):
             net, env, run_dir, env_num, rank, world_size, use_wandb, use_tensorboard
         )
 
-    def train(self: SelfAgent, total_time_steps: int) -> None:
+    def train(
+        self: SelfAgent,
+        total_time_steps: int,
+        train_algo_class: Type[BaseAlgorithm] = PPOAlgorithm,
+        logger: Optional[Logger] = None,
+    ) -> None:
         self._cfg.num_env_steps = total_time_steps
 
         self.config = {
@@ -59,7 +65,7 @@ class PPOAgent(RLAgent):
             "device": self.net.device,
         }
 
-        trainer = TrainAlgo(
+        trainer = train_algo_class(
             cfg=self._cfg,
             init_module=self.net.module,
             device=self.net.device,
@@ -73,17 +79,17 @@ class PPOAgent(RLAgent):
             self._env.action_space,
             data_client=None,
         )
-
-        logger = Logger(
-            cfg=self._cfg,
-            project_name="PPOAgent",
-            scenario_name=self._env.env_name,
-            wandb_entity=self._cfg.wandb_entity,
-            exp_name=self.exp_name,
-            log_path=self.run_dir,
-            use_wandb=self._use_wandb,
-            use_tensorboard=self._use_tensorboard,
-        )
+        if logger is None:
+            logger = Logger(
+                cfg=self._cfg,
+                project_name="PPOAgent",
+                scenario_name=self._env.env_name,
+                wandb_entity=self._cfg.wandb_entity,
+                exp_name=self.exp_name,
+                log_path=self.run_dir,
+                use_wandb=self._use_wandb,
+                use_tensorboard=self._use_tensorboard,
+            )
         driver = Driver(
             config=self.config,
             trainer=trainer,

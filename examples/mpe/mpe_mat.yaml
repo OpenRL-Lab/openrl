@@ -1,12 +1,9 @@
 seed: 0
 lr: 7e-4
-critic_lr: 7e-4
 episode_length: 25
 run_dir: ./run_results/
-experiment_name: train_mpe
+experiment_name: train_mpe_mat
 log_interval: 10
-use_recurrent_policy: true
-use_joint_action_loss: false
 use_valuenorm: true
 use_adv_normalize: true
 wandb_entity: openrl-lab
