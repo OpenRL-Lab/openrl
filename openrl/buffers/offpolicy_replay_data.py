@@ -220,7 +220,9 @@ class OffPolicyReplayData(ReplayData):
         batch_size = n_rollout_threads * episode_length * num_agents
 
         if mini_batch_size is None:
-            assert batch_size >= num_mini_batch, (
+            assert (
+                batch_size >= num_mini_batch
+            ), (
                 "DQN requires the number of processes ({}) "
                 "* number of steps ({}) * number of agents ({}) = {} "
                 "to be greater than or equal to the number of DQN mini batches ({})."

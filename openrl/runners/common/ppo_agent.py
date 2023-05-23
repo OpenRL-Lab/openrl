@@ -15,14 +15,14 @@
 # limitations under the License.
 
 """"""
-from typing import Dict, Optional, Tuple, Union, Type
+from typing import Dict, Optional, Tuple, Type, Union
 
 import gym
 import numpy as np
 import torch
 
-from openrl.algorithms.ppo import PPOAlgorithm
 from openrl.algorithms.base_algorithm import BaseAlgorithm
+from openrl.algorithms.ppo import PPOAlgorithm
 from openrl.buffers import NormalReplayBuffer as ReplayBuffer
 from openrl.buffers.utils.obs_data import ObsData
 from openrl.drivers.onpolicy_driver import OnPolicyDriver as Driver

@@ -17,11 +17,10 @@
 """"""
 from typing import Type
 
-from openrl.algorithms.mat import MATAlgorithm
 from openrl.algorithms.base_algorithm import BaseAlgorithm
-from openrl.runners.common.base_agent import SelfAgent
-
+from openrl.algorithms.mat import MATAlgorithm
 from openrl.runners.common import PPOAgent
+from openrl.runners.common.base_agent import SelfAgent
 from openrl.utils.logger import Logger
 
 

@@ -4,9 +4,9 @@ import numpy as np
 
 from openrl.configs.config import create_config_parser
 from openrl.envs.common import make
+from openrl.envs.wrappers.mat_wrapper import MATWrapper
 from openrl.modules.common import MATNet as Net
 from openrl.runners.common import MATAgent as Agent
-from openrl.envs.wrappers.mat_wrapper import MATWrapper
 
 
 def train():

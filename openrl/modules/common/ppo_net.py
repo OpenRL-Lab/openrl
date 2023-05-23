@@ -23,10 +23,10 @@ import numpy as np
 import torch
 
 from openrl.configs.config import create_config_parser
+from openrl.modules.base_module import BaseModule
 from openrl.modules.common.base_net import BaseNet
 from openrl.modules.ppo_module import PPOModule
 from openrl.utils.util import set_seed
-from openrl.modules.base_module import BaseModule
 
 
 class PPONet(BaseNet):

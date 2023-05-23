@@ -1,19 +1,20 @@
+import math
+
+import numpy as np
 import torch
 import torch.nn as nn
 from torch.nn import functional as F
-import math
-import numpy as np
 
-from openrl.modules.networks.utils.util import init
-from openrl.utils.util import check_v2 as check
+from openrl.buffers.utils.util import get_critic_obs_space, get_policy_obs_space
+from openrl.modules.networks.base_value_policy_network import BaseValuePolicyNetwork
 from openrl.modules.networks.utils.transformer_act import (
-    discrete_autoregreesive_act,
-    discrete_parallel_act,
     continuous_autoregreesive_act,
     continuous_parallel_act,
+    discrete_autoregreesive_act,
+    discrete_parallel_act,
 )
-from openrl.buffers.utils.util import get_policy_obs_space, get_critic_obs_space
-from openrl.modules.networks.base_value_policy_network import BaseValuePolicyNetwork
+from openrl.modules.networks.utils.util import init
+from openrl.utils.util import check_v2 as check
 
 
 def init_(m, gain=0.01, activate=False):
