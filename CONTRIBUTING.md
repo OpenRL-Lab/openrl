@@ -1,51 +1,45 @@
-## 如何参与OpenRL的建设
+## How to Contribute to OpenRL
 
-OpenRL社区欢迎任何人参与到OpenRL的建设中来，无论您是开发者还是用户，您的反馈和贡献都是我们前进的动力！
-您可以通过以下方式加入到OpenRL的贡献中来：
+The OpenRL community welcomes anyone to contribute to the development of OpenRL, whether you are a developer or a user. Your feedback and contributions are our driving force! You can join the contribution of OpenRL in the following ways:
 
-- 作为OpenRL的用户，发现OpenRL中的bug，并提交[issue](https://github.com/OpenRL-Lab/openrl/issues/new/choose)。
-- 作为OpenRL的用户，发现OpenRL文档中的错误，并提交[issue](https://github.com/OpenRL-Lab/openrl/issues/new/choose)。
-- 写测试代码，提升OpenRL的代码测试覆盖率（大家可以从[这里](https://app.codecov.io/gh/OpenRL-Lab/openrl)查到OpenRL的代码测试覆盖情况）。
- 您可以选择感兴趣的代码片段进行编写代码测试，
-- 作为OpenRL的开发者，为OpenRL修复已有的bug。
-- 作为OpenRL的开发者，为OpenRL添加新的环境和样例。
-- 作为OpenRL的开发者，为OpenRL添加新的算法。
+- As an OpenRL user, discover bugs in OpenRL and submit an [issue](https://github.com/OpenRL-Lab/openrl/issues/new/choose).
+- As an OpenRL user, discover errors in the documentation of OpenRL and submit an [issue](https://github.com/OpenRL-Lab/openrl/issues/new/choose).
+- Write test code to improve the code coverage of OpenRL (you can check the code coverage situation of OpenRL from [here](https://app.codecov.io/gh/OpenRL-Lab/openrl)). You can choose interested code snippets for writing test codes.
+- As an open-source developer, fix existing bugs for OpenRL.
+- As an open-source developer, add new environments and examples for OpenRL.
+- As an open-source developer, add new algorithms for OpenRL.
 
-## 贡献者手册
+## Contributing to OpenRL
 
-欢迎更多的人参与到OpenRL的开发中来，我们非常欢迎您的贡献！
+Welcome to contribute to the development of OpenRL. We appreciate your contribution!
 
-- 如果您想要贡献新的功能，请先在请先创建一个新的[issue](https://github.com/OpenRL-Lab/openrl/issues/new/choose)，
- 以便我们讨论这个功能的实现细节。如果该功能得到了大家的认可，您可以开始进行代码实现。
-- 您也可以在 [Issues](https://github.com/OpenRL-Lab/openrl/issues) 中查看未被实现的功能和仍然存的在bug，
-在对应的issue中进行回复，说明您想要解决该issue，然后开始进行代码实现。
+- If you want to contribute new features, please create a new [issue](https://github.com/OpenRL-Lab/openrl/issues/new/choose) first 
+to discuss the implementation details of this feature. If the feature is approved by everyone, you can start implementing the code.
+- You can also check for unimplemented features and existing bugs in [Issues](https://github.com/OpenRL-Lab/openrl/issues), 
+reply in the corresponding issue that you want to solve it, and then start implementing the code.
 
-在您完成了代码实现之后，您需要拉取最新的`main`分支并进行合并。
-解决合并冲突后，
-您可以通过提交 [Pull Request](https://github.com/OpenRL-Lab/openrl/pulls) 
-的方式将您的代码合并到OpenRL的main分支中。
+After completing your code implementation, you need to pull the latest `main` branch and merge it.
+After resolving any merge conflicts,
+you can submit your code for merging into OpenRL's main branch through [Pull Request](https://github.com/OpenRL-Lab/openrl/pulls).
 
-在提交Pull Request前，您需要完成 [代码测试和代码格式化](#代码测试和代码格式化)。
+Before submitting a Pull Request, you need to complete [Code Testing and Code Formatting](#code-testing-and-code-formatting).
 
-然后，您的Pull Request需要通过GitHub上的自动化测试。
+Then, your Pull Request needs to pass automated testing on GitHub.
 
-最后，需要得到至少一个开发人员的review和批准，才能被合并到main分支中。
+Finally, at least one maintainer's review and approval are required before being merged into the main branch.
 
-## 代码测试和代码格式化
+## Code Testing and Code Formatting
 
-在您提交Pull Request之前，您需要确保您的代码通过了单元测试，并且符合OpenRL的代码风格。
+Before submitting a Pull Request, make sure that your code passes unit tests and conforms with OpenRL's coding style.
 
-首先，您需要安装测试相关的包：`pip install -e ".[test]"`
+Firstly, you should install the test-related packages: `pip install -e ".[test]"`
 
-然后，您需要确保单元测试通过，这可以通过执行`make test`来完成。
+Then, ensure that unit tests pass by executing `make test`.
 
-然后，您需要执行`make format`来格式化您的代码。
+Next, format your code by running `make format`.
 
-最后，您需要执行`make commit-checks`来检查您的代码是否符合OpenRL的代码风格。
+Lastly, run `make commit-checks` to check if your code complies with OpenRL's coding style.
 
-> 小技巧: OpenRL使用 [black](https://github.com/psf/black) 代码风格。
-您可以在您的编辑器中安装black的[插件](https://black.readthedocs.io/en/stable/integrations/editors.html)，
-来帮助您自动格式化代码。
-
-
-
+> Tip: OpenRL uses [black](https://github.com/psf/black) coding style. 
+You can install black plugins in your editor as shown in the [official website](https://black.readthedocs.io/en/stable/integrations/editors.html)
+to help automatically format codes.
