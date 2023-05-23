@@ -1,6 +1,6 @@
 ## How to Use
 
-Train MPE with [MAPPO]((https://arxiv.org/abs/2103.01955)) algorithm:
+Train MPE with [MAPPO](https://arxiv.org/abs/2103.01955) algorithm:
 
 ```shell
 python train_ppo.py --config mpe_ppo.yaml
