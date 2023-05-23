@@ -1,5 +1,7 @@
 ## 如何参与OpenRL的建设
 
+[English](../CONTRIBUTING.md)
+
 OpenRL社区欢迎任何人参与到OpenRL的建设中来，无论您是开发者还是用户，您的反馈和贡献都是我们前进的动力！
 您可以通过以下方式加入到OpenRL的贡献中来：
 

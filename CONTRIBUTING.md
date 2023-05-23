@@ -1,5 +1,7 @@
 ## How to Contribute to OpenRL
 
+[中文介绍](./docs/CONTRIBUTING_zh.md)
+
 The OpenRL community welcomes anyone to contribute to the development of OpenRL, whether you are a developer or a user. Your feedback and contributions are our driving force! You can join the contribution of OpenRL in the following ways:
 
 - As an OpenRL user, discover bugs in OpenRL and submit an [issue](https://github.com/OpenRL-Lab/openrl/issues/new/choose).

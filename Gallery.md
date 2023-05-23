@@ -1,5 +1,9 @@
 ## Gallery
 
+In order to facilitate users' familiarity with the framework, we provide more examples and demos of using OpenRL in Gallery. 
+
+Users are also welcome to contribute their own training examples and demos to the Gallery.
+
 ### Tags:
 
 ![MARL](https://img.shields.io/badge/-MARL-yellow)
