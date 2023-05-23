@@ -19,8 +19,8 @@ from typing import Type
 
 from openrl.algorithms.base_algorithm import BaseAlgorithm
 from openrl.algorithms.mat import MATAlgorithm
-from openrl.runners.common import PPOAgent
 from openrl.runners.common.base_agent import SelfAgent
+from openrl.runners.common.ppo_agent import PPOAgent
 from openrl.utils.logger import Logger
 
 
