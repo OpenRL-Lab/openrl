@@ -199,9 +199,9 @@ class OffPolicyDriver(RLDriver):
         actions = np.expand_dims(q_values.argmax(axis=-1), axis=-1)
 
         if random.random() > epsilon:
-            actions = np.random.randint(low=0,
-                                        high=self.envs.action_space.n,
-                                        size=actions.shape)
+            actions = np.random.randint(
+                low=0, high=self.envs.action_space.n, size=actions.shape
+            )
 
         return (
             q_values,
@@ -211,4 +211,3 @@ class OffPolicyDriver(RLDriver):
 
     def compute_returns(self):
         pass
-

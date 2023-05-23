@@ -6,6 +6,7 @@
 ![sparse](https://img.shields.io/badge/-sparse%20reward-orange)
 ![offline](https://img.shields.io/badge/-offlineRL-darkblue)
 ![selfplay](https://img.shields.io/badge/-selfplay-blue)
+![mbrl](https://img.shields.io/badge/-ModelBasedRL-lightblue)
 
 ![discrete](https://img.shields.io/badge/-discrete-brightgreen) (Discrete Action Space)
 
@@ -15,6 +16,17 @@
 
 ![IL](https://img.shields.io/badge/-IL/SL-purple) (Imitation Learning or Supervised Learning）
 
+## Algorithm List
+
+<div align="center">
+
+|                 Algorithm                 |                                                          Tags                                                           |              Refs               |
+|:-----------------------------------------:|:-----------------------------------------------------------------------------------------------------------------------:|:-------------------------------:|
+|  [PPO](https://arxiv.org/abs/1707.06347)  |                             ![discrete](https://img.shields.io/badge/-discrete-brightgreen)                             |  [code](./examples/cartpole/)   |
+| [MAPPO](https://arxiv.org/abs/2103.01955) |                             ![MARL](https://img.shields.io/badge/-MARL-yellow)                             |  [code](./examples/mpe/)   |
+| [JRPO](https://arxiv.org/abs/2302.07515)  |                             ![MARL](https://img.shields.io/badge/-MARL-yellow)                             |  [code](./examples/mpe/)   |
+|  [MAT](https://arxiv.org/abs/2205.14953)  |                             ![MARL](https://img.shields.io/badge/-MARL-yellow)                             |  [code](./examples/mpe/)   |
+</div>
 
 ## Demo List
 

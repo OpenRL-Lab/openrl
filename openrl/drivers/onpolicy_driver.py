@@ -69,16 +69,17 @@ class OnPolicyDriver(RLDriver):
             rnn_states,
             rnn_states_critic,
         ) = data
+        if rnn_states is not None:
+            rnn_states[dones] = np.zeros(
+                (dones.sum(), self.recurrent_N, self.hidden_size),
+                dtype=np.float32,
+            )
 
-        rnn_states[dones] = np.zeros(
-            (dones.sum(), self.recurrent_N, self.hidden_size),
-            dtype=np.float32,
-        )
-
-        rnn_states_critic[dones] = np.zeros(
-            (dones.sum(), *self.buffer.data.rnn_states_critic.shape[3:]),
-            dtype=np.float32,
-        )
+        if rnn_states_critic is not None:
+            rnn_states_critic[dones] = np.zeros(
+                (dones.sum(), *self.buffer.data.rnn_states_critic.shape[3:]),
+                dtype=np.float32,
+            )
         masks = np.ones((self.n_rollout_threads, self.num_agents, 1), dtype=np.float32)
         masks[dones] = np.zeros((dones.sum(), 1), dtype=np.float32)
 
@@ -187,10 +188,12 @@ class OnPolicyDriver(RLDriver):
         action_log_probs = np.array(
             np.split(_t2n(action_log_prob), self.n_rollout_threads)
         )
-        rnn_states = np.array(np.split(_t2n(rnn_states), self.n_rollout_threads))
-        rnn_states_critic = np.array(
-            np.split(_t2n(rnn_states_critic), self.n_rollout_threads)
-        )
+        if rnn_states is not None:
+            rnn_states = np.array(np.split(_t2n(rnn_states), self.n_rollout_threads))
+        if rnn_states_critic is not None:
+            rnn_states_critic = np.array(
+                np.split(_t2n(rnn_states_critic), self.n_rollout_threads)
+            )
 
         return (
             values,

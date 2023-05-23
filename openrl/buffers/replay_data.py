@@ -264,9 +264,10 @@ class ReplayData(object):
         else:
             self.critic_obs[self.step + 1] = critic_obs.copy()
             self.policy_obs[self.step + 1] = policy_obs.copy()
-
-        self.rnn_states[self.step + 1] = rnn_states.copy()
-        self.rnn_states_critic[self.step + 1] = rnn_states_critic.copy()
+        if rnn_states is not None:
+            self.rnn_states[self.step + 1] = rnn_states.copy()
+        if rnn_states_critic is not None:
+            self.rnn_states_critic[self.step + 1] = rnn_states_critic.copy()
         self.actions[self.step] = actions.copy()
         self.action_log_probs[self.step] = action_log_probs.copy()
         self.value_preds[self.step] = value_preds.copy()

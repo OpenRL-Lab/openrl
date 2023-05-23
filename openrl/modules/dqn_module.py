@@ -102,7 +102,7 @@ class DQNModule(RLModule):
         masks,
         available_actions=None,
         masks_batch=None,
-        critic_masks_batch=None
+        critic_masks_batch=None,
     ):
         if masks_batch is None:
             masks_batch = masks
