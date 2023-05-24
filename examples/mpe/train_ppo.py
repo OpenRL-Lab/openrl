@@ -9,20 +9,20 @@ from openrl.runners.common import PPOAgent as Agent
 
 
 def train():
-    # 创建 环境
+    # create environment
     env_num = 100
     env = make(
         "simple_spread",
         env_num=env_num,
         asynchronous=True,
     )
-    # 创建 神经网络
+    # create the neural network
     cfg_parser = create_config_parser()
     cfg = cfg_parser.parse_args()
     net = Net(env, cfg=cfg, device="cuda")
-    # 初始化训练器
+    # initialize the trainer
     agent = Agent(net, use_wandb=True)
-    # 开始训练
+    # start training, set total number of training steps to 5000000
     agent.train(total_time_steps=5000000)
     env.close()
     agent.save("./ppo_agent/")
@@ -42,7 +42,7 @@ def evaluation(agent):
     step = 0
     total_reward = 0
     while not np.any(done):
-        # 智能体根据 observation 预测下一个动作
+        # Based on environmental observation input, predict next action.
         action, _ = agent.act(obs, deterministic=True)
         obs, r, done, info = env.step(action)
         step += 1

@@ -257,6 +257,7 @@ We welcome you to join us in making this project better:
 At present, OpenRL is maintained by the following maintainers:
 - [Shiyu Huang](https://huangshiyu13.github.io/)([@huangshiyu13](https://github.com/huangshiyu13))
 - Wenze Chen([@Chen001117](https://github.com/Chen001117))
+- Yiwen Sun([@YiwenAI](https://github.com/YiwenAI))
 
 Welcome more contributors to join our maintenance team (send an E-mail to [huangshiyu@4paradigm.com](huangshiyu@4paradigm.com) 
 to apply for joining the OpenRL team).
