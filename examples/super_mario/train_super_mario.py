@@ -58,7 +58,7 @@ def game_test():
     # load the trained model
     agent.load("super_mario_agent/")
 
-    # 开始测试
+    # begin to test
     obs, info = env.reset()
     step = 0
     while True:
