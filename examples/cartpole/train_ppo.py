@@ -7,27 +7,30 @@ from openrl.runners.common import PPOAgent as Agent
 
 
 def train():
-    # 创建 环境
+    # create environment, set environment parallelism to 9
     env = make("CartPole-v1", env_num=9)
-    # 创建 神经网络
+    # create the neural network
     net = Net(env)
-    # 初始化训练器
+    # initialize the trainer
     agent = Agent(net)
-    # 开始训练
+    # start training, set total number of training steps to 20000
     agent.train(total_time_steps=20000)
     env.close()
     return agent
 
 
 def evaluation(agent):
-    # 开始测试环境
+    # begin to test
+    # Create an environment for testing and set the number of environments to interact with to 9. Set rendering mode to group_human.
     env = make("CartPole-v1", render_mode="group_human", env_num=9, asynchronous=True)
+    # The trained agent sets up the interactive environment it needs.
     agent.set_env(env)
+    # Initialize the environment and get initial observations and environmental information.
     obs, info = env.reset()
     done = False
     step = 0
     while not np.any(done):
-        # 智能体根据 observation 预测下一个动作
+        # Based on environmental observation input, predict next action.
         action, _ = agent.act(obs, deterministic=True)
         obs, r, done, info = env.step(action)
         step += 1

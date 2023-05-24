@@ -25,44 +25,44 @@ from openrl.runners.common import PPOAgent as Agent
 
 
 def train():
-    # 创建环境
+    # create environment
     env = make("SuperMarioBros-1-1-v1", env_num=2)
-    # 创建网络
+    # create the neural network
     net = Net(env, device="cuda")
-    # 初始化训练器
+    # initialize the trainer
     agent = Agent(net)
-    # 开始训练
+    # start training
     agent.train(total_time_steps=2000)
-    # 保存模型
+    # save the trained model
     agent.save("super_mario_agent/")
-    # 关闭环境
+    # close the environment
     env.close()
     return agent
 
 
 def game_test():
-    # 开始测试环境
+    # begin to test
     env = make(
         "SuperMarioBros-1-1-v1",
         render_mode="group_human",
         env_num=1,
     )
 
-    # 保存运行结果为GIF图片
+    # Save the running result as a GIF image.
     env = GIFWrapper(env, "super_mario.gif")
 
-    # 初始化网络
+    # init the agent
     agent = Agent(Net(env))
-    # 设置环境，并初始化RNN网络
+    # set up the environment and initialize the RNN network.
     agent.set_env(env)
-    # 加载模型
+    # load the trained model
     agent.load("super_mario_agent/")
 
     # 开始测试
     obs, info = env.reset()
     step = 0
     while True:
-        # 智能体根据 observation 预测下一个动作
+        # Based on environmental observation input, predict next action.
         action, _ = agent.act(obs, deterministic=True)
         obs, r, done, info = env.step(action)
         step += 1
