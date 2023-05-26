@@ -1,0 +1,2 @@
+dual_clip_ppo: true
+dual_clip_coeff: 3.0

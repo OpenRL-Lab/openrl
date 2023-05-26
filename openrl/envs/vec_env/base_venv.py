@@ -24,6 +24,7 @@ import gymnasium as gym
 import numpy as np
 
 from openrl.envs.vec_env.utils.util import tile_images
+from openrl.envs.vec_env.utils.numpy_utils import single_random_action
 
 IN_COLAB = "google.colab" in sys.modules
 
@@ -257,9 +258,10 @@ class BaseVecEnv(
         """
         Get a random action from the action space
         """
+
         return np.array(
             [
-                [[self.action_space.sample()] for _ in range(self.agent_num)]
+                [single_random_action(self.action_space) for _ in range(self.agent_num)]
                 for _ in range(self.parallel_env_num)
             ]
         )

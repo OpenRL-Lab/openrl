@@ -460,7 +460,6 @@ def create_config_parser():
     )
     parser.add_argument(
         "--dual_clip_ppo",
-        action="store_true",
         default=False,
         help="by default False, use dual-clip ppo.",
     )
