@@ -23,8 +23,8 @@ from typing import Any, List, Optional, Sequence, Union
 import gymnasium as gym
 import numpy as np
 
-from openrl.envs.vec_env.utils.util import tile_images
 from openrl.envs.vec_env.utils.numpy_utils import single_random_action
+from openrl.envs.vec_env.utils.util import tile_images
 
 IN_COLAB = "google.colab" in sys.modules
 
