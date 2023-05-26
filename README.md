@@ -71,12 +71,14 @@ Currently, the features supported by OpenRL include:
 
 Algorithms currently supported by OpenRL (for more details, please refer to [Gallery](./Gallery.md)):
 - [Proximal Policy Optimization (PPO)](https://arxiv.org/abs/1707.06347)
+- [Dual-clip PPO](https://arxiv.org/abs/1912.09729)
 - [Multi-agent PPO (MAPPO)](https://arxiv.org/abs/2103.01955)
 - [Joint-ratio Policy Optimization (JRPO)](https://arxiv.org/abs/2302.07515)
 - [Multi-Agent Transformer (MAT)](https://arxiv.org/abs/2205.14953)
 
 Environments currently supported by OpenRL (for more details, please refer to [Gallery](./Gallery.md)):
 - [Gymnasium](https://gymnasium.farama.org/)
+- [MuJoCo](https://github.com/deepmind/mujoco)
 - [MPE](https://github.com/openai/multiagent-particle-envs)
 - [Super Mario Bros](https://github.com/Kautenja/gym-super-mario-bros)
 - [Gym Retro](https://github.com/openai/retro)

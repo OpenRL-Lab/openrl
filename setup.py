@@ -38,6 +38,7 @@ def get_install_requires() -> list:
         "imageio",
         "opencv-python",
         "pygame",
+        "mujoco",
     ]
 
 

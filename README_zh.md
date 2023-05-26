@@ -56,12 +56,14 @@ OpenRL是一个开源的通用强化学习研究框架，支持单智能体、�
 
 OpenRL目前支持的算法（更多详情请参考 [Gallery](Gallery.md)）：
 - [Proximal Policy Optimization (PPO)](https://arxiv.org/abs/1707.06347)
+- [Dual-clip PPO](https://arxiv.org/abs/1912.09729)
 - [Multi-agent PPO (MAPPO)](https://arxiv.org/abs/2103.01955)
 - [Joint-ratio Policy Optimization (JRPO)](https://arxiv.org/abs/2302.07515)
 - [Multi-Agent Transformer (MAT)](https://arxiv.org/abs/2205.14953)
 
 OpenRL目前支持的环境（更多详情请参考 [Gallery](Gallery.md)）：
 - [Gymnasium](https://gymnasium.farama.org/)
+- [MuJoCo](https://github.com/deepmind/mujoco)
 - [MPE](https://github.com/openai/multiagent-particle-envs)
 - [Super Mario Bros](https://github.com/Kautenja/gym-super-mario-bros)
 - [Gym Retro](https://github.com/openai/retro)
