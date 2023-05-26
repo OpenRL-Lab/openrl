@@ -9,7 +9,7 @@ from openrl.runners.common import PPOAgent as Agent
 
 
 def train():
-    # 创建 环境
+    # create environment
     cfg_parser = create_config_parser()
     cfg = cfg_parser.parse_args()
 
@@ -21,14 +21,14 @@ def train():
         cfg=cfg,
     )
 
-    # 创建 神经网络
+    # create the neural network
     model_dict = {"model": PolicyValueNetwork}
     net = Net(env, device="cuda", cfg=cfg, model_dict=model_dict)
 
-    # 初始化训练器
+    # initialize the trainer
     agent = Agent(net, use_wandb=True)
 
-    # 开始训练
+    # start training
     agent.train(total_time_steps=100000)
     agent.save("./ppo_agent")
 

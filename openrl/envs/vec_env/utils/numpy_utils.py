@@ -20,6 +20,7 @@ __all__ = [
     "concatenate",
     "create_empty_array",
     "iterate_action",
+    "single_random_action",
 ]
 
 
@@ -53,7 +54,7 @@ def _iterate_discrete(space, actions):
 @iterate_action.register(MultiDiscrete)
 @iterate_action.register(MultiBinary)
 def _iterate_base(space, actions):
-    raise NotImplementedError("Not implemented yet.")
+    return iter(actions)
 
 
 @iterate_action.register(Tuple)
@@ -205,3 +206,20 @@ def _create_empty_array_dict(space, n=1, agent_num=1, fn=np.zeros):
 @create_empty_array.register(Space)
 def _create_empty_array_custom(space, n=1, agent_num=1, fn=np.zeros):
     return None
+
+
+@singledispatch
+def single_random_action(space: Space) -> Union[tuple, dict, np.ndarray]:
+    raise ValueError(
+        f"Space of type `{type(space)}` is not a valid `gymnasium.Space` instance."
+    )
+
+
+@single_random_action.register(Discrete)
+def _single_random_action_discrete(space):
+    return [space.sample()]
+
+
+@single_random_action.register(Box)
+def _single_random_action_discrete(space):
+    return space.sample()

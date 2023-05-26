@@ -22,7 +22,7 @@ import numpy as np
 import torch
 
 from openrl.algorithms.dqn import DQNAlgorithm as TrainAlgo
-from openrl.buffers import NormalReplayBuffer as ReplayBuffer
+from openrl.buffers import OffPolicyReplayBuffer as ReplayBuffer
 from openrl.buffers.utils.obs_data import ObsData
 from openrl.drivers.offpolicy_driver import OffPolicyDriver as Driver
 from openrl.runners.common.base_agent import SelfAgent

@@ -7,21 +7,22 @@ from openrl.runners.common import PPOAgent as Agent
 
 
 def train():
-    # 创建环境，若需要并行多个环境，需要设置参数asynchronous为True；若需要设定关卡，可以设定state参数，该参数与具体游戏有关
+    # Create an environment. If multiple environments need to be run in parallel, set the asynchronous parameter to True.
+    # If you need to specify a level, you can set the state parameter which is specific to each game.
     env = make("Airstriker-Genesis", state="Level1", env_num=2, asynchronous=True)
-    # 创建网络
+    # create the neural network
     net = Net(env, device="cuda")
-    # 初始化训练器
+    # initialize the trainer
     agent = Agent(net)
-    # 开始训练
+    # start training
     agent.train(total_time_steps=2000)
-    # 关闭环境
+    # close the environment
     env.close()
     return agent
 
 
 def game_test(agent):
-    # 开始测试环境
+    # begin to test
     env = make(
         "Airstriker-Genesis",
         state="Level1",
@@ -34,7 +35,7 @@ def game_test(agent):
     done = False
     step = 0
     while True:
-        # 智能体根据 observation 预测下一个动作
+        # Based on environmental observation input, predict next action.
         action, _ = agent.act(obs, deterministic=True)
         obs, r, done, info = env.step(action)
         step += 1

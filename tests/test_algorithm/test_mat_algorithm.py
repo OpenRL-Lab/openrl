@@ -43,21 +43,13 @@ def config(request):
 
 
 @pytest.fixture
-def amp_config():
-    from openrl.configs.config import create_config_parser
-
-    cfg_parser = create_config_parser()
-    cfg = cfg_parser.parse_args("")
-    return cfg
-
-
-@pytest.fixture
 def init_module(config, obs_space, act_space):
-    from openrl.modules.dqn_module import DQNModule
+    from openrl.modules.ppo_module import PPOModule
 
-    module = DQNModule(
+    module = PPOModule(
         config,
-        input_space=obs_space,
+        policy_input_space=obs_space,
+        critic_input_space=obs_space,
         act_space=act_space,
     )
     return module
@@ -65,35 +57,25 @@ def init_module(config, obs_space, act_space):
 
 @pytest.fixture
 def buffer_data(config, obs_space, act_space):
-    from openrl.buffers.offpolicy_buffer import OffPolicyReplayBuffer
+    from openrl.buffers.normal_buffer import NormalReplayBuffer
 
-    buffer = OffPolicyReplayBuffer(
+    buffer = NormalReplayBuffer(
         config,
         num_agents=1,
         obs_space=obs_space,
         act_space=act_space,
         data_client=None,
-        episode_length=5000,
+        episode_length=100,
     )
     return buffer.data
 
 
 @pytest.mark.unittest
-def test_dqn_algorithm(config, init_module, buffer_data):
-    from openrl.algorithms.dqn import DQNAlgorithm
+def test_mat_algorithm(config, init_module, buffer_data):
+    from openrl.algorithms.mat import MATAlgorithm
 
-    dqn_algo = DQNAlgorithm(config, init_module)
-
-    dqn_algo.train(buffer_data)
-
-
-@pytest.mark.unittest
-def test_dqn_algorithm_amp(config, init_module, buffer_data):
-    from openrl.algorithms.dqn import DQNAlgorithm
-
-    dqn_algo = DQNAlgorithm(config, init_module)
-
-    dqn_algo.train(buffer_data)
+    mat_algo = MATAlgorithm(config, init_module)
+    mat_algo.train(buffer_data)
 
 
 if __name__ == "__main__":

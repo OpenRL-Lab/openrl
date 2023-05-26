@@ -17,7 +17,9 @@
 """"""
 
 from .normal_buffer import NormalReplayBuffer
+from .offpolicy_buffer import OffPolicyReplayBuffer
 
 __all__ = [
     "NormalReplayBuffer",
+    "OffPolicyReplayBuffer",
 ]
