@@ -80,6 +80,7 @@ Environments currently supported by OpenRL (for more details, please refer to [G
 - [Gymnasium](https://gymnasium.farama.org/)
 - [MuJoCo](https://github.com/deepmind/mujoco)
 - [MPE](https://github.com/openai/multiagent-particle-envs)
+- [Chat Bot](https://openrl-docs.readthedocs.io/en/latest/quick_start/train_nlp.html)
 - [Super Mario Bros](https://github.com/Kautenja/gym-super-mario-bros)
 - [Gym Retro](https://github.com/openai/retro)
 

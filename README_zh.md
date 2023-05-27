@@ -65,6 +65,7 @@ OpenRL目前支持的环境（更多详情请参考 [Gallery](Gallery.md)）：
 - [Gymnasium](https://gymnasium.farama.org/)
 - [MuJoCo](https://github.com/deepmind/mujoco)
 - [MPE](https://github.com/openai/multiagent-particle-envs)
+- [Chat Bot](https://openrl-docs.readthedocs.io/en/latest/quick_start/train_nlp.html)
 - [Super Mario Bros](https://github.com/Kautenja/gym-super-mario-bros)
 - [Gym Retro](https://github.com/openai/retro)
 
