@@ -33,7 +33,7 @@ Users are also welcome to contribute their own training examples and demos to th
 | [Dual-clip PPO](https://arxiv.org/abs/1912.09729) |                             ![discrete](https://img.shields.io/badge/-discrete-brightgreen)                             |  [code](./examples/cartpole/)   |
 |     [MAPPO](https://arxiv.org/abs/2103.01955)     |                             ![MARL](https://img.shields.io/badge/-MARL-yellow)                             |  [code](./examples/mpe/)   |
 |     [JRPO](https://arxiv.org/abs/2302.07515)      |                             ![MARL](https://img.shields.io/badge/-MARL-yellow)                             |  [code](./examples/mpe/)   |
-|      [MAT](https://arxiv.org/abs/2205.14953)      |                             ![MARL](https://img.shields.io/badge/-MARL-yellow)                             |  [code](./examples/mpe/)   |
+|      [MAT](https://arxiv.org/abs/2205.14953)      |                             ![MARL](https://img.shields.io/badge/-MARL-yellow)  ![Transformer](https://img.shields.io/badge/-Transformer-blue)                           |  [code](./examples/mpe/)   |
 </div>
 
 ## Demo List
