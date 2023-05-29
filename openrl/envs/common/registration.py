@@ -82,6 +82,12 @@ def make(
         env_fns = make_super_mario_envs(
             id=id, env_num=env_num, render_mode=convert_render_mode, **kwargs
         )
+    elif id in openrl.envs.connec3_all_envs:
+        from openrl.envs.connect3 import make_connect3_envs
+
+        env_fns = make_connect3_envs(
+            id=id, env_num=env_num, render_mode=convert_render_mode, **kwargs
+        )
     else:
         raise NotImplementedError(f"env {id} is not supported.")
 

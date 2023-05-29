@@ -7,3 +7,7 @@ nlp_all_envs = [
 super_mario_all_envs = [
     "SuperMarioBros",
 ]
+
+connect3_all_envs = [
+    "connect3",
+]

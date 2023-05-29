@@ -641,6 +641,12 @@ def create_config_parser():
         help="number of batches for ppo (default: 1)",
     )
     parser.add_argument(
+        "--mini_batch_size",
+        type=int,
+        default=128,
+        help="number of batches for ppo (default: 1)",
+    )
+    parser.add_argument(
         "--policy_value_loss_coef",
         type=float,
         default=0.5,
@@ -990,7 +996,7 @@ def create_config_parser():
     parser.add_argument(
         "--epsilon_anneal_time",
         type=int,
-        default=50000,
+        default=5000,
         help="Number of episodes until epsilon reaches epsilon_finish",
     )
     # qmix parameters

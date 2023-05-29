@@ -37,6 +37,7 @@ class BaseAlgorithm(ABC):
         self.clip_param = cfg.clip_param
         self.ppo_epoch = cfg.ppo_epoch
         self.num_mini_batch = cfg.num_mini_batch
+        self.mini_batch_size = cfg.mini_batch_size
         self.data_chunk_length = cfg.data_chunk_length
         self.policy_value_loss_coef = cfg.policy_value_loss_coef
         self.value_loss_coef = cfg.value_loss_coef

@@ -1,0 +1,16 @@
+seed: 0
+lr: 7e-4
+gamma: 0.9
+episode_length: 1000
+mini_batch_size: 32
+buffer_size: 5000
+num_mini_batch: 50
+run_dir: ./run_results/
+experiment_name: train_dqn
+log_interval: 10
+
+use_recurrent_policy: false
+use_joint_action_loss: false
+use_valuenorm: false
+use_adv_normalize: false
+wandb_entity: openrl-lab
