@@ -106,8 +106,8 @@ class QNetwork(BaseValueNetwork):
             features, rnn_states = self.rnn(features, rnn_states, masks)
 
         q_values = self.q_out(features)
-
-        if available_actions is not None:
-            q_values[available_actions == 0] = -1e10
+        # todo 
+        # if available_actions is not None:
+        #     q_values[available_actions == 0] = -1e10
 
         return q_values, rnn_states

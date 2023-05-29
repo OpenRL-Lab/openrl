@@ -211,8 +211,7 @@ class DQNAlgorithm(BaseAlgorithm):
             train_info["reduced_q_loss"] = 0
 
         # todo add rnn and transformer
-        # update once
-        for _ in range(1):
+        for _ in range(self.num_mini_batch):
             if "transformer" in self.algo_module.models:
                 raise NotImplementedError
             elif self._use_recurrent_policy:
@@ -221,12 +220,14 @@ class DQNAlgorithm(BaseAlgorithm):
                 raise NotImplementedError
             else:
                 data_generator = buffer.feed_forward_generator(
-                    None, self.num_mini_batch
+                    None,
+                    num_mini_batch=self.num_mini_batch,
+                    mini_batch_size=self.mini_batch_size
                 )
 
             for sample in data_generator:
                 (q_loss) = self.dqn_update(sample, turn_on)
-
+                print(q_loss)
                 if self.world_size > 1:
                     train_info["reduced_q_loss"] += reduce_tensor(
                         q_loss.data, self.world_size
@@ -234,6 +235,7 @@ class DQNAlgorithm(BaseAlgorithm):
 
                 train_info["q_loss"] += q_loss.item()
 
+        self.algo_module.models["target_q_net"].load_state_dict(self.algo_module.models["q_net"].state_dict())
         num_updates = 1 * self.num_mini_batch
 
         for k in train_info.keys():

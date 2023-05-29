@@ -29,6 +29,7 @@ from openrl.buffers.utils.util import (
     get_critic_obs_space,
     get_policy_obs,
     get_policy_obs_space,
+    get_shape_from_act_space
 )
 
 
@@ -52,6 +53,13 @@ class OffPolicyReplayData(ReplayData):
         )
 
         self.act_space = act_space.n
+        act_shape = get_shape_from_act_space(act_space)
+
+        self.actions = np.zeros(
+            (self.episode_length+1, self.n_rollout_threads, num_agents, act_shape),
+            dtype=np.float32,
+        )
+
         self.value_preds = np.zeros(
             (self.episode_length + 1, self.n_rollout_threads, num_agents, act_space.n),
             dtype=np.float32,
@@ -163,7 +171,7 @@ class OffPolicyReplayData(ReplayData):
             self.rnn_states[self.step + 1] = rnn_states.copy()
         if rnn_states_critic is not None:
             self.rnn_states_critic[self.step + 1] = rnn_states_critic.copy()
-        self.actions[self.step] = actions.copy()
+        self.actions[self.step + 1] = actions.copy()
         self.action_log_probs[self.step] = action_log_probs.copy()
         self.value_preds[self.step] = value_preds.copy()
         self.rewards[self.step] = rewards.copy()
@@ -175,9 +183,12 @@ class OffPolicyReplayData(ReplayData):
         if available_actions is not None:
             self.available_actions[self.step + 1] = available_actions.copy()
 
-        if (self.step + 1) % self.episode_length != 0:
-            self.first_insert_flag = False
+        # if (self.step + 1) % self.episode_length != 0:
+        #     self.first_insert_flag = False
         self.step = (self.step + 1) % self.episode_length
+
+    def compute_returns(self, next_value, value_normalizer=None):
+        pass
 
     def after_update(self):
         assert self.step == 0, "step:{} episode:{}".format(
@@ -188,26 +199,17 @@ class OffPolicyReplayData(ReplayData):
                 self.critic_obs[key][0] = self.critic_obs[key][-1].copy()
             for key in self.policy_obs.keys():
                 self.policy_obs[key][0] = self.policy_obs[key][-1].copy()
-            for key in self.next_critic_obs.keys():
-                self.next_critic_obs[key][0] = self.next_critic_obs[key][-1].copy()
-            for key in self.next_policy_obs.keys():
-                self.next_policy_obs[key][0] = self.next_policy_obs[key][-1].copy()
         else:
             self.critic_obs[0] = self.critic_obs[-1].copy()
             self.policy_obs[0] = self.policy_obs[-1].copy()
-            self.next_critic_obs[0] = self.next_critic_obs[-1].copy()
-            self.next_policy_obs[0] = self.next_policy_obs[-1].copy()
-
         self.rnn_states[0] = self.rnn_states[-1].copy()
         self.rnn_states_critic[0] = self.rnn_states_critic[-1].copy()
+        self.actions[0] = self.actions[-1].copy()
         self.masks[0] = self.masks[-1].copy()
         self.bad_masks[0] = self.bad_masks[-1].copy()
         self.active_masks[0] = self.active_masks[-1].copy()
         if self.available_actions is not None:
             self.available_actions[0] = self.available_actions[-1].copy()
-
-    def compute_returns(self, next_value, value_normalizer=None):
-        pass
 
     def feed_forward_generator(
         self,
