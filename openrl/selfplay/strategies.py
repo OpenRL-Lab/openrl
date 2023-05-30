@@ -1,6 +1,6 @@
 import json
 import numpy as np
-from base_strategy import BaseSelfplayStrategy
+from openrl.selfplay.base_strategy import BaseSelfplayStrategy
 
 
 class SelfplayStrategy(BaseSelfplayStrategy):
@@ -171,7 +171,7 @@ class WinRateSelfplayStrategy(SelfplayStrategy):
         self.recent_list_max_len = all_args.recent_list_max_len
         self.latest_weight = all_args.latest_weight
         self.least_win_rate = all_args.least_win_rate
-        self.stage2_least_win_rate = all_args.stage2_least_win_rate
+        self.stage2_least_win_rate = all_args.least_win_rate
         self.stage = 1
         self.newest_pos = all_args.newest_pos
         self.newest_weight = all_args.newest_weight

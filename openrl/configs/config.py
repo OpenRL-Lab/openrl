@@ -1096,4 +1096,44 @@ def create_config_parser():
         help="the id of the vec env's info class",
     )
     parser.add_argument("--config", action=ActionConfigFile)
+
+    # selfplay parameters
+    parser.add_argument(
+        "--disable_update_enemy",
+        default=False,
+        type=bool,
+        help="whether update enemy model",
+    )
+    parser.add_argument(
+        "--least_win_rate",
+        default=0.5,
+        type=float,
+        help="least_win_rate",
+    )
+    parser.add_argument(
+        "--recent_list_max_len",
+        default=100,
+        type=int,
+        help="max length of recent player list",
+    )
+    parser.add_argument(
+        "--latest_weight",
+        default=0.5,
+        type=float,
+        help="latest_weight",
+    )
+    parser.add_argument(
+        "--newest_pos",
+        default=1,
+        type=int,
+        help="newest_pos",
+    )
+    parser.add_argument(
+        "--newest_weight",
+        default=0.5,
+        type=float,
+        help="newest_weight",
+    )
+
     return parser
+

@@ -15,12 +15,12 @@
 # limitations under the License.
 
 """"""
-from strategies import NaiveSelfplayStrategy
-from strategies import OnlyLatestSelfplayStrategy
-from strategies import WeightSelfplayStrategy
-from strategies import WinRateSelfplayStrategy
-from strategies import VarExistEnemySelfplayStrategy
-from strategies import WeightExistEnemySelfplayStrategy
+from openrl.selfplay.strategies import NaiveSelfplayStrategy
+from openrl.selfplay.strategies import OnlyLatestSelfplayStrategy
+from openrl.selfplay.strategies import WeightSelfplayStrategy
+from openrl.selfplay.strategies import WinRateSelfplayStrategy
+from openrl.selfplay.strategies import VarExistEnemySelfplayStrategy
+from openrl.selfplay.strategies import WeightExistEnemySelfplayStrategy
 
 
 def make_strategy(strategy_name):
