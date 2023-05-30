@@ -205,7 +205,7 @@ while True:
     if any(done): break
 env.close() # Close test environment
 ```
-Executing the above code on a regular laptop only takes a few seconds 
+Executing the above code on a regular laptop only takes **a few seconds**
 to complete the training. Below shows the visualization of the agent:
 
 <div align="center">
