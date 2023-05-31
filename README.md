@@ -35,7 +35,7 @@ The main branch is the latest version of OpenRL, which is under active developme
 
 ## Welcome to OpenRL
 
-[中文介绍](README_zh.md) | [Documentation](https://openrl-docs.readthedocs.io/en/latest/) | [中文文档](https://openrl-docs.readthedocs.io/zh/latest/)
+[Documentation](https://openrl-docs.readthedocs.io/en/latest/) | [中文介绍](README_zh.md) |  [中文文档](https://openrl-docs.readthedocs.io/zh/latest/)
 
 OpenRL is an open-source general reinforcement learning research framework that supports training for various tasks 
 such as single-agent, multi-agent, and natural language. 
