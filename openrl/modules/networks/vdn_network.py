@@ -24,9 +24,9 @@ from openrl.modules.networks.base_value_policy_network import BaseValuePolicyNet
 from openrl.modules.networks.utils.cnn import CNNBase
 from openrl.modules.networks.utils.mix import MIXBase
 from openrl.modules.networks.utils.mlp import MLPBase
-from openrl.modules.networks.utils.vdn import VDNBase
 from openrl.modules.networks.utils.rnn import RNNLayer
 from openrl.modules.networks.utils.util import init
+from openrl.modules.networks.utils.vdn import VDNBase
 from openrl.utils.util import check_v2 as check
 
 
@@ -57,7 +57,6 @@ class VDNNetwork(BaseValuePolicyNetwork):
         init_method = [nn.init.xavier_uniform_, nn.init.orthogonal_][
             self._use_orthogonal
         ]
-
 
         obs_shape = get_critic_obs_space(input_space)
 
@@ -98,8 +97,6 @@ class VDNNetwork(BaseValuePolicyNetwork):
             self.half()
         self.to(device)
 
-
-
     def forward(self, forward_type, *args, **kwargs):
         if forward_type == "original":
             return self.get_actions(*args, **kwargs)
@@ -113,11 +110,12 @@ class VDNNetwork(BaseValuePolicyNetwork):
         else:
             raise NotImplementedError
 
-
     def get_actions(self, *args, **kwargs):
         raise NotImplementedError
 
-    def eval_actions(self, obs, rnn_states, action, masks, available_actions, active_masks=None):
+    def eval_actions(
+        self, obs, rnn_states, action, masks, available_actions, active_masks=None
+    ):
         if self._mixed_obs:
             for key in obs.keys():
                 obs[key] = check(obs[key]).to(**self.tpdv)
@@ -132,7 +130,9 @@ class VDNNetwork(BaseValuePolicyNetwork):
             features, rnn_states = self.rnn(features, rnn_states, masks)
 
         q_values = self.q_out(features)
-        q_values_ = q_values.reshape(-1, self.parallel_env_num, self.n_agent, self.action_n)
+        q_values_ = q_values.reshape(
+            -1, self.parallel_env_num, self.n_agent, self.action_n
+        )
         action = action.reshape(-1, self.parallel_env_num, self.n_agent, 1)
         action_ = torch.from_numpy(action).long()
 
@@ -144,9 +144,7 @@ class VDNNetwork(BaseValuePolicyNetwork):
 
         return q_tot_value
 
-
     def get_values(self, obs, rnn_states, masks, available_actions=None):
-
         if self._mixed_obs:
             for key in obs.keys():
                 obs[key] = check(obs[key]).to(**self.tpdv)
@@ -167,7 +165,9 @@ class VDNNetwork(BaseValuePolicyNetwork):
 
         return q_values, rnn_states
 
-    def eval_actions_target(self, obs, rnn_states, action, masks, available_actions, active_masks=None):
+    def eval_actions_target(
+        self, obs, rnn_states, action, masks, available_actions, active_masks=None
+    ):
         if self._mixed_obs:
             for key in obs.keys():
                 obs[key] = check(obs[key]).to(**self.tpdv)
@@ -182,13 +182,12 @@ class VDNNetwork(BaseValuePolicyNetwork):
             features, rnn_states = self.rnn(features, rnn_states, masks)
 
         q_values = self.q_out(features)
-        q_values_ = q_values.reshape(-1, self.parallel_env_num, self.n_agent, self.action_n)
+        q_values_ = q_values.reshape(
+            -1, self.parallel_env_num, self.n_agent, self.action_n
+        )
 
         q_values_ = q_values_.max(-1)[0]
 
         q_tot_value = self.q_tot(q_values_).view(-1, 1)
 
         return q_tot_value
-
-
-

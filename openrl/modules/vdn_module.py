@@ -105,18 +105,26 @@ class VDNModule(RLModule):
         masks_batch=None,
         critic_masks_batch=None,
     ):
-
         if masks_batch is None:
             masks_batch = masks
 
         q_tot = self.models["vdn_net"](
-            "eval_actions", obs_batch, rnn_states_batch, actions_batch, masks_batch, available_actions
+            "eval_actions",
+            obs_batch,
+            rnn_states_batch,
+            actions_batch,
+            masks_batch,
+            available_actions,
         )
 
         max_next_q_tot = self.models["target_vdn_net"](
-            "eval_actions_target", next_obs_batch, rnn_states_batch, actions_batch, masks_batch, available_actions
+            "eval_actions_target",
+            next_obs_batch,
+            rnn_states_batch,
+            actions_batch,
+            masks_batch,
+            available_actions,
         )
-
 
         return q_tot, max_next_q_tot
 
