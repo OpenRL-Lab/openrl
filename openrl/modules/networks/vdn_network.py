@@ -53,7 +53,6 @@ class VDNNetwork(BaseValuePolicyNetwork):
         self.tpdv = dict(dtype=torch.float32, device=device)
         self.n_agent = cfg.num_agents
         self.action_n = action_space.n
-        self.parallel_env_num = cfg.parallel_env_num
         init_method = [nn.init.xavier_uniform_, nn.init.orthogonal_][
             self._use_orthogonal
         ]
@@ -131,12 +130,12 @@ class VDNNetwork(BaseValuePolicyNetwork):
 
         q_values = self.q_out(features)
         q_values_ = q_values.reshape(
-            -1, self.parallel_env_num, self.n_agent, self.action_n
+            -1, self.n_agent, self.action_n
         )
-        action = action.reshape(-1, self.parallel_env_num, self.n_agent, 1)
+        action = action.reshape(-1, self.n_agent, 1)
         action_ = torch.from_numpy(action).long()
 
-        q_values_ = torch.gather(q_values_, dim=3, index=action_)
+        q_values_ = torch.gather(q_values_, dim=2, index=action_)
 
         q_tot_value = self.q_tot(q_values_)
 
@@ -183,7 +182,7 @@ class VDNNetwork(BaseValuePolicyNetwork):
 
         q_values = self.q_out(features)
         q_values_ = q_values.reshape(
-            -1, self.parallel_env_num, self.n_agent, self.action_n
+            -1, self.n_agent, self.action_n
         )
 
         q_values_ = q_values_.max(-1)[0]
