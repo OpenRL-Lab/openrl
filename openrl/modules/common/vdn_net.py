@@ -62,7 +62,6 @@ class VDNNet(BaseNet):
         if isinstance(device, str):
             device = torch.device(device)
 
-        cfg.parallel_env_num = env.parallel_env_num
         cfg.num_agents = env.agent_num
         self.module = VDNModule(
             cfg=cfg,

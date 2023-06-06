@@ -41,7 +41,6 @@ class VDNAlgorithm(BaseAlgorithm):
 
         self.gamma = cfg.gamma
         self.n_agent = cfg.num_agents
-        self.parallel_env_num = cfg.parallel_env_num
 
     def dqn_update(self, sample, turn_on=True):
         for optimizer in self.algo_module.optimizers.values():
@@ -199,7 +198,7 @@ class VDNAlgorithm(BaseAlgorithm):
         )
 
         rewards_batch = rewards_batch.reshape(
-            -1, self.parallel_env_num, self.n_agent, 1
+            -1, self.n_agent, 1
         )
         rewards_batch = torch.sum(rewards_batch, dim=2, keepdim=True).view(-1, 1)
         q_targets = rewards_batch + self.gamma * max_next_q_values
