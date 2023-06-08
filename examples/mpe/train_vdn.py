@@ -29,7 +29,7 @@ def train():
     # start training
     agent.train(total_time_steps=5000000)
     env.close()
-    agent.save("./mat_agent/")
+    agent.save("./vdn_agent/")
     return agent
 
 
