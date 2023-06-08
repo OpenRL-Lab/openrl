@@ -10,7 +10,7 @@ from openrl.configs.config import create_config_parser
 def train():
     # 添加读取配置文件的代码
     cfg_parser = create_config_parser()
-    cfg = cfg_parser.parse_args(["--config", "dqn_cartpole.yaml"])
+    cfg = cfg_parser.parse_args(["--config", "dqn_gridworld.yaml"])
 
     # 创建 环境
     env = make("CartPole-v1", render_mode="group_human", env_num=1)
@@ -42,4 +42,4 @@ def evaluation(agent):
 
 if __name__ == "__main__":
     agent = train()
-    evaluation(agent)
+    # evaluation(agent)

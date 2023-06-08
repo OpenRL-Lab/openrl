@@ -40,6 +40,8 @@ class DQNAlgorithm(BaseAlgorithm):
         super(DQNAlgorithm, self).__init__(cfg, init_module, agent_num, device)
 
         self.gamma = cfg.gamma
+        self.update_count = 0
+        self.target_update_frequency = cfg.train_interval
 
     def dqn_update(self, sample, turn_on=True):
         for optimizer in self.algo_module.optimizers.values():
@@ -95,6 +97,7 @@ class DQNAlgorithm(BaseAlgorithm):
                 active_masks_batch,
                 turn_on,
             )
+
             for loss in loss_list:
                 loss.backward()
 
@@ -119,6 +122,9 @@ class DQNAlgorithm(BaseAlgorithm):
         if self.world_size > 1:
             torch.cuda.synchronize()
 
+        if self.update_count % self.target_update_frequency == 0:
+            self.update_count = 0
+            self.algo_module.models["target_q_net"].load_state_dict(self.algo_module.models["q_net"].state_dict())
         return loss
 
     def cal_value_loss(
@@ -197,7 +203,7 @@ class DQNAlgorithm(BaseAlgorithm):
         )
 
         q_targets = rewards_batch + self.gamma * max_next_q_values
-        q_loss = torch.mean(F.mse_loss(q_values, q_targets))  # 均方误差损失函数
+        q_loss = torch.mean(F.mse_loss(q_values, q_targets.detach()))  # 均方误差损失函数
 
         loss_list.append(q_loss)
         return loss_list
@@ -218,16 +224,15 @@ class DQNAlgorithm(BaseAlgorithm):
                 raise NotImplementedError
             elif self._use_naive_recurrent:
                 raise NotImplementedError
-            else:
-                data_generator = buffer.feed_forward_generator(
-                    None,
-                    num_mini_batch=self.num_mini_batch,
-                    mini_batch_size=self.mini_batch_size
-                )
+
+            data_generator = buffer.feed_forward_generator(
+                None,
+                num_mini_batch=self.num_mini_batch,
+                mini_batch_size=self.mini_batch_size
+            )
 
             for sample in data_generator:
                 (q_loss) = self.dqn_update(sample, turn_on)
-                print(q_loss)
                 if self.world_size > 1:
                     train_info["reduced_q_loss"] += reduce_tensor(
                         q_loss.data, self.world_size
@@ -235,7 +240,6 @@ class DQNAlgorithm(BaseAlgorithm):
 
                 train_info["q_loss"] += q_loss.item()
 
-        self.algo_module.models["target_q_net"].load_state_dict(self.algo_module.models["q_net"].state_dict())
         num_updates = 1 * self.num_mini_batch
 
         for k in train_info.keys():

@@ -25,7 +25,7 @@ import torch
 from openrl.configs.config import create_config_parser
 from openrl.modules.common.base_net import BaseNet
 from openrl.modules.dqn_module import DQNModule
-from openrl.utils.util import set_seed
+from openrl.utils.util import set_seed, _t2n
 
 
 class DQNNet(BaseNet):
@@ -47,6 +47,7 @@ class DQNNet(BaseNet):
         env.reset(seed=cfg.seed)
 
         cfg.n_rollout_threads = n_rollout_threads
+        self.n_rollout_threads = n_rollout_threads
         cfg.learner_n_rollout_threads = cfg.n_rollout_threads
 
         if cfg.rnn_type == "gru":
@@ -81,12 +82,14 @@ class DQNNet(BaseNet):
     def act(
         self, observation: Union[np.ndarray, Dict[str, np.ndarray]]
     ) -> Tuple[np.ndarray, Optional[Tuple[np.ndarray, ...]]]:
-        actions, self.rnn_states_actor = self.module.act(
+        q_values, self.rnn_states_actor = self.module.act(
             obs=observation,
             rnn_states_actor=self.rnn_states_actor,
             masks=self.masks,
             available_actions=None,
         )
+        q_values = np.array(np.split(_t2n(q_values), self.n_rollout_threads))
+        actions = np.expand_dims(q_values.argmax(axis=-1), axis=-1)
 
         return actions, self.rnn_states_actor
 

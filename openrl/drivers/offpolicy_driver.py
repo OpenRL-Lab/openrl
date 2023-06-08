@@ -96,7 +96,7 @@ class OffPolicyDriver(RLDriver):
                 dtype=np.float32,
             )
 
-        rewards[dones] = np.zeros((dones.sum(), 1), dtype=np.float32)
+        # rewards[dones] = np.zeros((dones.sum(), 1), dtype=np.float32)
 
         masks = np.ones((self.n_rollout_threads, self.num_agents, 1), dtype=np.float32)
         masks[dones] = np.zeros((dones.sum(), 1), dtype=np.float32)
@@ -123,7 +123,10 @@ class OffPolicyDriver(RLDriver):
         obs = self.buffer.data.critic_obs[0]
         for step in range(self.episode_length):
             q_values, actions, rnn_states = self.act(step)
-            # print("q values: ", q_values, " actions: ", actions)
+            # print("step: ", step,
+            #       "state: ", self.buffer.data.get_batch_data("next_policy_obs" if step != 0 else "policy_obs", step),
+            #       "q_values: ", q_values,
+            #       "actions: ", actions)
             extra_data = {
                 "q_values": q_values,
                 "step": step,
@@ -131,7 +134,7 @@ class OffPolicyDriver(RLDriver):
             }
 
             next_obs, rewards, dones, infos = self.envs.step(actions, extra_data)
-            # print("dones: ", dones, "rewards: ", rewards)
+            # print("rewards: ", rewards)
 
             data = (
                 obs,
@@ -163,11 +166,13 @@ class OffPolicyDriver(RLDriver):
     ):
         self.trainer.prep_rollout()
 
+        if step != 0:
+            step = step - 1
         (
             q_values,
             rnn_states,
         ) = self.trainer.algo_module.get_actions(
-            self.buffer.data.get_batch_data("policy_obs", step),
+            self.buffer.data.get_batch_data("next_policy_obs" if step != 0 else "policy_obs", step),
             np.concatenate(self.buffer.data.rnn_states[step]),
             np.concatenate(self.buffer.data.masks[step]),
         )
