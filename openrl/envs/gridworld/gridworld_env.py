@@ -27,16 +27,17 @@ def make(
 
 
 class GridWorldEnv(gym.Env):
-    def __init__(self, env_name, nrow=10, ncol=10):
+    def __init__(self, env_name, nrow=5, ncol=5):
         self.env_name = env_name
         self.nrow = nrow
         self.ncol = ncol
-        self.goal = np.array([7,6])
+        self.goal = np.array([1, 1])
         self.curr_pos = np.array([0,0])
         self.observation_space = spaces.Box(low=np.array([0, 0, 0, 0]),
                                             high=np.array([self.nrow-1, self.ncol-1, self.nrow-1, self.ncol-1]),
                                             dtype=int)  # current position and target position
         self.action_space = spaces.Discrete(5)  # action [[0, 0], [-1, 0], [1, 0], [0, -1], [0, 1]]
+        self.steps = 0
 
     def step(self, action):
         if action == 0:  # stay
@@ -64,9 +65,16 @@ class GridWorldEnv(gym.Env):
         else:
             reward -= 1
 
+        if self.steps == 100:
+            done = True
+            reward -= 10
+        else:
+            self.steps += 1
+
         return obs, reward, done, False, {}
 
     def reset(self, seed=None, options=None):
+        self.steps = 0
         while True:
             self.curr_pos = np.random.randint(low=[0, 0], high=[self.nrow, self.ncol])
             if not (self.curr_pos == self.goal).all():
@@ -78,10 +86,11 @@ class GridWorldEnv(gym.Env):
 
 
 class GridWorldEnvRandomGoal(GridWorldEnv):
-    def __init__(self, env_name, nrow=10, ncol=10):
+    def __init__(self, env_name, nrow=5, ncol=5):
         super(GridWorldEnvRandomGoal, self).__init__(env_name, nrow, ncol)
 
     def reset(self, seed=None, options=None):
+        self.steps = 0
         self.goal = np.random.randint(low=[0, 0], high=[self.nrow, self.ncol])
         while True:
             self.curr_pos = np.random.randint(low=[0, 0], high=[self.nrow, self.ncol])
