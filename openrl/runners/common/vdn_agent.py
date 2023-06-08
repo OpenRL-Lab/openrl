@@ -76,7 +76,7 @@ class VDNAgent(RLAgent):
 
         logger = Logger(
             cfg=self._cfg,
-            project_name="DQNAgent",
+            project_name="VDNAgent",
             scenario_name=self._env.env_name,
             wandb_entity=self._cfg.wandb_entity,
             exp_name=self.exp_name,
