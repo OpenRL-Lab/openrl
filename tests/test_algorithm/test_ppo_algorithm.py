@@ -33,21 +33,12 @@ def act_space():
     return spaces.Discrete(2)
 
 
-@pytest.fixture(scope="module", params=[""])
+@pytest.fixture(scope="module", params=["", "--use_share_model true"])
 def config(request):
     from openrl.configs.config import create_config_parser
 
     cfg_parser = create_config_parser()
     cfg = cfg_parser.parse_args(request.param.split())
-    return cfg
-
-
-@pytest.fixture
-def amp_config():
-    from openrl.configs.config import create_config_parser
-
-    cfg_parser = create_config_parser()
-    cfg = cfg_parser.parse_args("")
     return cfg
 
 
@@ -60,6 +51,7 @@ def init_module(config, obs_space, act_space):
         policy_input_space=obs_space,
         critic_input_space=obs_space,
         act_space=act_space,
+        share_model=config.use_share_model,
     )
     return module
 
@@ -81,15 +73,6 @@ def buffer_data(config, obs_space, act_space):
 
 @pytest.mark.unittest
 def test_ppo_algorithm(config, init_module, buffer_data):
-    from openrl.algorithms.ppo import PPOAlgorithm
-
-    ppo_algo = PPOAlgorithm(config, init_module)
-
-    ppo_algo.train(buffer_data)
-
-
-@pytest.mark.unittest
-def test_ppo_algorithm_amp(config, init_module, buffer_data):
     from openrl.algorithms.ppo import PPOAlgorithm
 
     ppo_algo = PPOAlgorithm(config, init_module)
