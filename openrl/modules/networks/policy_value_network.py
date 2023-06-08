@@ -27,26 +27,26 @@ from openrl.modules.networks.utils.popart import PopArt
 from openrl.modules.networks.utils.rnn import RNNLayer
 from openrl.modules.networks.utils.util import init
 from openrl.utils.util import check_v2 as check
+from openrl.modules.networks.base_value_policy_network import BaseValuePolicyNetwork
 
 
-class PolicyValueNetwork(nn.Module):
+class PolicyValueNetwork(BaseValuePolicyNetwork):
     def __init__(
         self,
         cfg,
-        obs_space,
-        critic_obs_space,
+        input_space,
         action_space,
         device=torch.device("cpu"),
         use_half=False,
     ):
-        super(PolicyValueNetwork, self).__init__()
+        super(PolicyValueNetwork, self).__init__(cfg, device)
         self._gain = cfg.gain
         self._use_orthogonal = cfg.use_orthogonal
         self._activation_id = cfg.activation_id
         self._recurrent_N = cfg.recurrent_N
         self._use_naive_recurrent_policy = cfg.use_naive_recurrent_policy
         self._use_recurrent_policy = cfg.use_recurrent_policy
-        self._concat_obs_as_critic_obs = cfg.concat_obs_as_critic_obs
+
         self._use_popart = cfg.use_popart
         self.hidden_size = cfg.hidden_size
         self.device = device
@@ -57,7 +57,7 @@ class PolicyValueNetwork(nn.Module):
         ]
 
         # obs space
-        policy_obs_shape = get_policy_obs_space(obs_space)
+        policy_obs_shape = get_policy_obs_space(input_space)
 
         self.obs_prep = (
             CNNBase(cfg, policy_obs_shape)
@@ -70,18 +70,6 @@ class PolicyValueNetwork(nn.Module):
             )
         )
 
-        # critic_obs_shape = get_critic_obs_space(critic_obs_space)
-        # self.critic_obs_prep = (
-        #     CNNBase(cfg, critic_obs_shape)
-        #     if len(critic_obs_shape) == 3
-        #     else MLPBase(
-        #         cfg,
-        #         critic_obs_shape,
-        #         use_attn_internal=True,
-        #         use_cat_self=cfg.use_cat_self,
-        #     )
-        # )
-        #
         self.critic_obs_prep = self.obs_prep
 
         # common layer
@@ -143,7 +131,7 @@ class PolicyValueNetwork(nn.Module):
 
         return actions, action_log_probs, rnn_states
 
-    def evaluate_actions(
+    def eval_actions(
         self, obs, rnn_states, action, masks, available_actions, active_masks=None
     ):
         obs = check(obs, self.use_half, self.tpdv)
@@ -166,7 +154,7 @@ class PolicyValueNetwork(nn.Module):
             actor_features, action, available_actions, active_masks
         )
 
-        return action_log_probs, dist_entropy
+        return action_log_probs, dist_entropy, None
 
     def get_values(self, critic_obs, rnn_states, masks):
         critic_obs = check(critic_obs, self.use_half, self.tpdv)

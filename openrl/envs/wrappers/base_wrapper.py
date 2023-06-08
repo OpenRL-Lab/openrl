@@ -54,3 +54,8 @@ class BaseWrapper(gym.Wrapper):
 class BaseObservationWrapper(BaseWrapper, gym.ObservationWrapper):
     def __init__(self, env):
         super().__init__(env)
+
+
+class BaseRewardWrapper(BaseWrapper, gym.RewardWrapper):
+    def __init__(self, env):
+        super().__init__(env)

@@ -83,3 +83,9 @@ class GIFWrapper(BaseWrapper):
     def close(self):
         self.env.close()
         self.writter.close()
+
+
+class RecordReward(BaseWrapper):
+    @property
+    def has_auto_reset(self):
+        return True

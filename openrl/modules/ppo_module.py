@@ -89,7 +89,9 @@ class PPOModule(RLModule):
         if self.share_model:
             update_linear_schedule(self.optimizers["model"], episode, episodes, self.lr)
         else:
-            update_linear_schedule(self.optimizers["actor"], episode, episodes, self.lr)
+            update_linear_schedule(
+                self.optimizers["policy"], episode, episodes, self.lr
+            )
             update_linear_schedule(
                 self.optimizers["critic"], episode, episodes, self.critic_lr
             )

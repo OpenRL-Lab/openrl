@@ -186,6 +186,7 @@ class SyncVectorEnv(BaseVecEnv):
             ), "step return must be tuple, but got: {}".format(type(returns))
 
             _need_reset = not self._subenv_auto_reset
+
             if len(returns) == 5:
                 (
                     observation,

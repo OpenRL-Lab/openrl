@@ -15,6 +15,7 @@
 # limitations under the License.
 
 """"""
+import copy
 from typing import Callable, List, Optional, Union
 
 import gymnasium as gym
@@ -30,18 +31,20 @@ def make_gym_envs(
     **kwargs,
 ) -> List[Callable[[], Env]]:
     from openrl.envs.wrappers import (
-        AutoReset,
-        DictWrapper,
+        # AutoReset,
+        # DictWrapper,
         RemoveTruncated,
         Single2MultiAgentWrapper,
     )
 
-    env_wrappers = [
-        DictWrapper,
+    env_wrappers = copy.copy(kwargs.pop("env_wrappers", []))
+    env_wrappers += [
+        # DictWrapper,
         Single2MultiAgentWrapper,
-        AutoReset,
+        # AutoReset,
         RemoveTruncated,
     ]
+
     env_fns = build_envs(
         make=gym.envs.registration.make,
         id=id,
