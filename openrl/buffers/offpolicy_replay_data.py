@@ -243,7 +243,7 @@ class OffPolicyReplayData(ReplayData):
             )
             mini_batch_size = batch_size // num_mini_batch
 
-        assert batch_size>=mini_batch_size
+        assert (batch_size-n_rollout_threads) >= mini_batch_size
         sampler = BatchSampler(
             SubsetRandomSampler(range(batch_size-n_rollout_threads)), mini_batch_size, drop_last=True
         )

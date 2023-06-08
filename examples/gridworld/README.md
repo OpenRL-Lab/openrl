@@ -3,7 +3,7 @@
 Users can train Gridworld via:
 
 ```shell
-python train_dqn_beta.py
+python train_dqn.py
 ```
 
 tips: Gridworld is a simple environment for quickly verifying custom algorithm
