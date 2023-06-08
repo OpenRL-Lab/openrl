@@ -1,6 +1,6 @@
 ## Installation
 
-xxx
+`pip install mujoco`
 
 ## Usage
 
