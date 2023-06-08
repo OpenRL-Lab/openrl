@@ -30,3 +30,7 @@ class VecInfoFactory:
             from openrl.envs.vec_env.vec_info.nlp_vec_info import NLPVecInfo
 
             VecInfoFactory.register("NLPVecInfo", NLPVecInfo)
+        elif vec_info_class.id == "EPS_RewardInfo":
+            from openrl.envs.vec_env.vec_info.episode_rewards_info import EPS_RewardInfo
+
+            VecInfoFactory.register("EPS_RewardInfo", EPS_RewardInfo)

@@ -12,8 +12,4 @@ connect3_all_envs = [
     "connect3",
 ]
 
-gridworld_all_envs = [
-    "GridWorldEnv",
-    "GridWorldEnvRandomGoal"
-]
-
+gridworld_all_envs = ["GridWorldEnv", "GridWorldEnvRandomGoal"]

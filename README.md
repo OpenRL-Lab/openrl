@@ -74,6 +74,7 @@ Algorithms currently supported by OpenRL (for more details, please refer to [Gal
 - [Dual-clip PPO](https://arxiv.org/abs/1912.09729)
 - [Multi-agent PPO (MAPPO)](https://arxiv.org/abs/2103.01955)
 - [Joint-ratio Policy Optimization (JRPO)](https://arxiv.org/abs/2302.07515)
+- [Deep Q-Network (DQN)](https://arxiv.org/abs/1312.5602)
 - [Multi-Agent Transformer (MAT)](https://arxiv.org/abs/2205.14953)
 
 Environments currently supported by OpenRL (for more details, please refer to [Gallery](./Gallery.md)):
@@ -81,6 +82,8 @@ Environments currently supported by OpenRL (for more details, please refer to [G
 - [MuJoCo](https://github.com/deepmind/mujoco)
 - [MPE](https://github.com/openai/multiagent-particle-envs)
 - [Chat Bot](https://openrl-docs.readthedocs.io/en/latest/quick_start/train_nlp.html)
+- [Atari](https://gymnasium.farama.org/environments/atari/)
+- [GridWorld](./examples/gridworld/)
 - [Super Mario Bros](https://github.com/Kautenja/gym-super-mario-bros)
 - [Gym Retro](https://github.com/openai/retro)
 

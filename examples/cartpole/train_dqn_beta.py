@@ -1,10 +1,10 @@
 """"""
 import numpy as np
 
+from openrl.configs.config import create_config_parser
 from openrl.envs.common import make
 from openrl.modules.common import DQNNet as Net
 from openrl.runners.common import DQNAgent as Agent
-from openrl.configs.config import create_config_parser
 
 
 def train():

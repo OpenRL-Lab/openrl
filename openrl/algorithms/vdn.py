@@ -123,12 +123,12 @@ class VDNAlgorithm(BaseAlgorithm):
         return loss
 
     def cal_value_loss(
-            self,
-            value_normalizer,
-            values,
-            value_preds_batch,
-            return_batch,
-            active_masks_batch,
+        self,
+        value_normalizer,
+        values,
+        value_preds_batch,
+        return_batch,
+        active_masks_batch,
     ):
         value_pred_clipped = value_preds_batch + (values - value_preds_batch).clamp(
             -self.clip_param, self.clip_param
@@ -137,7 +137,7 @@ class VDNAlgorithm(BaseAlgorithm):
         if self._use_popart or self._use_valuenorm:
             value_normalizer.update(return_batch)
             error_clipped = (
-                    value_normalizer.normalize(return_batch) - value_pred_clipped
+                value_normalizer.normalize(return_batch) - value_pred_clipped
             )
             error_original = value_normalizer.normalize(return_batch) - values
         else:
@@ -158,8 +158,8 @@ class VDNAlgorithm(BaseAlgorithm):
 
         if self._use_value_active_masks:
             value_loss = (
-                                 value_loss * active_masks_batch
-                         ).sum() / active_masks_batch.sum()
+                value_loss * active_masks_batch
+            ).sum() / active_masks_batch.sum()
         else:
             value_loss = value_loss.mean()
 
@@ -197,9 +197,7 @@ class VDNAlgorithm(BaseAlgorithm):
             critic_masks_batch=critic_masks_batch,
         )
 
-        rewards_batch = rewards_batch.reshape(
-            -1, self.n_agent, 1
-        )
+        rewards_batch = rewards_batch.reshape(-1, self.n_agent, 1)
         rewards_batch = torch.sum(rewards_batch, dim=2, keepdim=True).view(-1, 1)
         q_targets = rewards_batch + self.gamma * max_next_q_values
         q_loss = torch.mean(F.mse_loss(q_values, q_targets.detach()))  # 均方误差损失函数
@@ -227,7 +225,7 @@ class VDNAlgorithm(BaseAlgorithm):
                 data_generator = buffer.feed_forward_generator(
                     None,
                     num_mini_batch=self.num_mini_batch,
-                    #mini_batch_size=self.mini_batch_size,
+                    # mini_batch_size=self.mini_batch_size,
                 )
 
             for sample in data_generator:
@@ -253,6 +251,8 @@ class VDNAlgorithm(BaseAlgorithm):
                 optimizer.sync_lookahead()
 
         return train_info
+
+
 '''
 
 #!/usr/bin/env python

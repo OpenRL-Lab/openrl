@@ -172,7 +172,9 @@ class OffPolicyDriver(RLDriver):
             q_values,
             rnn_states,
         ) = self.trainer.algo_module.get_actions(
-            self.buffer.data.get_batch_data("next_policy_obs" if step != 0 else "policy_obs", step),
+            self.buffer.data.get_batch_data(
+                "next_policy_obs" if step != 0 else "policy_obs", step
+            ),
             np.concatenate(self.buffer.data.rnn_states[step]),
             np.concatenate(self.buffer.data.masks[step]),
         )
@@ -180,11 +182,15 @@ class OffPolicyDriver(RLDriver):
         q_values = np.array(np.split(_t2n(q_values), self.n_rollout_threads))
         rnn_states = np.array(np.split(_t2n(rnn_states), self.n_rollout_threads))
 
-        epsilon = np.min((
-            self.epsilon_finish
-            + (self.epsilon_start - self.epsilon_finish)
-            / self.epsilon_anneal_time
-            * (self.episode * self.episode_length + step), self.epsilon_start))
+        epsilon = np.min(
+            (
+                self.epsilon_finish
+                + (self.epsilon_start - self.epsilon_finish)
+                / self.epsilon_anneal_time
+                * (self.episode * self.episode_length + step),
+                self.epsilon_start,
+            )
+        )
 
         actions = np.expand_dims(q_values.argmax(axis=-1), axis=-1)
 

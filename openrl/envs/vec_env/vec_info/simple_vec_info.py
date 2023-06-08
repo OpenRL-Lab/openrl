@@ -25,10 +25,10 @@ class SimpleVecInfo(BaseVecInfo):
         for i in range(self.agent_num):
             agent_reward = rewards[i].mean(0).sum()
             ep_rewards.append(agent_reward)
-            info_dict["agent_{}/episode_reward".format(i)] = agent_reward
+            info_dict["agent_{}/rollout_episode_reward".format(i)] = agent_reward
 
         info_dict["FPS"] = int(self.total_step / (time.time() - self.start_time))
-        info_dict["episode_reward"] = np.mean(ep_rewards)
+        info_dict["rollout_episode_reward"] = np.mean(ep_rewards)
         return info_dict
 
     def append(self, info: Dict[str, Any]) -> None:

@@ -59,6 +59,7 @@ OpenRL目前支持的算法（更多详情请参考 [Gallery](Gallery.md)）：
 - [Dual-clip PPO](https://arxiv.org/abs/1912.09729)
 - [Multi-agent PPO (MAPPO)](https://arxiv.org/abs/2103.01955)
 - [Joint-ratio Policy Optimization (JRPO)](https://arxiv.org/abs/2302.07515)
+- [Deep Q-Network (DQN)](https://arxiv.org/abs/1312.5602)
 - [Multi-Agent Transformer (MAT)](https://arxiv.org/abs/2205.14953)
 
 OpenRL目前支持的环境（更多详情请参考 [Gallery](Gallery.md)）：
@@ -66,6 +67,8 @@ OpenRL目前支持的环境（更多详情请参考 [Gallery](Gallery.md)）：
 - [MuJoCo](https://github.com/deepmind/mujoco)
 - [MPE](https://github.com/openai/multiagent-particle-envs)
 - [Chat Bot](https://openrl-docs.readthedocs.io/en/latest/quick_start/train_nlp.html)
+- [Atari](https://gymnasium.farama.org/environments/atari/)
+- [GridWorld](./examples/gridworld/)
 - [Super Mario Bros](https://github.com/Kautenja/gym-super-mario-bros)
 - [Gym Retro](https://github.com/openai/retro)
 

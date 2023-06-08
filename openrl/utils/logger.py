@@ -16,6 +16,7 @@
 
 """"""
 
+import json
 import logging
 import os
 import socket
@@ -40,6 +41,7 @@ class Logger:
         use_wandb: bool = False,
         use_tensorboard: bool = False,
         log_level: int = logging.DEBUG,
+        log_to_terminal: bool = True,
     ) -> None:
         # TODO: change these flags to log_backend
         self.use_wandb = use_wandb
@@ -50,6 +52,7 @@ class Logger:
         self.project_name = project_name
         self.scenario_name = scenario_name
         self.wandb_entity = wandb_entity
+        self.log_to_terminal = log_to_terminal
         if exp_name is not None:
             self.exp_name = exp_name
         else:
@@ -110,6 +113,9 @@ class Logger:
         if run_dir is not None:
             log_file = os.path.join(run_dir, "log.txt")
             handlers.append(logging.FileHandler(log_file))
+
+        for handler in logging.root.handlers[:]:
+            logging.root.removeHandler(handler)
 
         logging.basicConfig(
             level=self.log_level,
@@ -172,17 +178,20 @@ class Logger:
         infos: Dict[str, Any],
         step: int,
     ) -> None:
-        if not (self.use_wandb or self.use_tensorboard):
+        if not (self.use_wandb or self.use_tensorboard or self.log_to_terminal):
             return
-
+        logging_info_str = "\n"
         for k, v in infos.items():
             if isinstance(v, torch.Tensor):
                 v = v.item()
 
             if not isinstance(v, (int, float)):
                 v = np.mean(v)
+            logging_info_str += f"\t{k}: {v}\n"
 
             if self.use_wandb:
                 wandb.log({k: v}, step=step)
             elif self.use_tensorboard:
                 self.writter.add_scalars(k, {k: v}, step)
+        if self.log_to_terminal:
+            logging.info(logging_info_str)
