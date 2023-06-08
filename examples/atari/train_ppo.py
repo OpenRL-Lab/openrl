@@ -17,23 +17,19 @@
 """"""
 import numpy as np
 
+from openrl.configs.config import create_config_parser
 from openrl.envs.common import make
+from openrl.envs.wrappers.atari_wrappers import (
+    ClipRewardEnv,
+    FireResetEnv,
+    NoopResetEnv,
+    WarpFrame,
+)
+from openrl.envs.wrappers.image_wrappers import TransposeImage
+from openrl.envs.wrappers.monitor import Monitor
 from openrl.modules.common import PPONet as Net
 from openrl.runners.common import PPOAgent as Agent
-from openrl.envs.wrappers.image_wrappers import TransposeImage
-
-
-from openrl.envs.wrappers.atari_wrappers import (
-    NoopResetEnv,
-    FireResetEnv,
-    WarpFrame,
-    ClipRewardEnv,
-)
-from openrl.envs.wrappers.monitor import Monitor
-
-from openrl.configs.config import create_config_parser
 from openrl.utils.util import get_system_info
-
 
 env_wrappers = [
     Monitor,

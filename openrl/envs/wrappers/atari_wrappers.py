@@ -15,14 +15,14 @@
 # limitations under the License.
 
 """"""
-import numpy as np
 import cv2
+import numpy as np
 from gymnasium import spaces
 
 from openrl.envs.wrappers.base_wrapper import (
-    BaseWrapper,
     BaseObservationWrapper,
     BaseRewardWrapper,
+    BaseWrapper,
 )
 
 

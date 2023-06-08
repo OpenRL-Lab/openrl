@@ -129,9 +129,7 @@ class VDNNetwork(BaseValuePolicyNetwork):
             features, rnn_states = self.rnn(features, rnn_states, masks)
 
         q_values = self.q_out(features)
-        q_values_ = q_values.reshape(
-            -1, self.n_agent, self.action_n
-        )
+        q_values_ = q_values.reshape(-1, self.n_agent, self.action_n)
         action = action.reshape(-1, self.n_agent, 1)
         action_ = torch.from_numpy(action).long()
 
@@ -181,9 +179,7 @@ class VDNNetwork(BaseValuePolicyNetwork):
             features, rnn_states = self.rnn(features, rnn_states, masks)
 
         q_values = self.q_out(features)
-        q_values_ = q_values.reshape(
-            -1, self.n_agent, self.action_n
-        )
+        q_values_ = q_values.reshape(-1, self.n_agent, self.action_n)
 
         q_values_ = q_values_.max(-1)[0]
 

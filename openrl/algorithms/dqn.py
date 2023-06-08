@@ -124,7 +124,9 @@ class DQNAlgorithm(BaseAlgorithm):
 
         if self.update_count % self.target_update_frequency == 0:
             self.update_count = 0
-            self.algo_module.models["target_q_net"].load_state_dict(self.algo_module.models["q_net"].state_dict())
+            self.algo_module.models["target_q_net"].load_state_dict(
+                self.algo_module.models["q_net"].state_dict()
+            )
         return loss
 
     def cal_value_loss(
@@ -228,7 +230,7 @@ class DQNAlgorithm(BaseAlgorithm):
             data_generator = buffer.feed_forward_generator(
                 None,
                 num_mini_batch=self.num_mini_batch,
-                mini_batch_size=self.mini_batch_size
+                mini_batch_size=self.mini_batch_size,
             )
 
             for sample in data_generator:

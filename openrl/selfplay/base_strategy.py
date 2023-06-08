@@ -2,7 +2,7 @@ import json
 from abc import abstractmethod
 
 
-class BaseSelfplayStrategy():
+class BaseSelfplayStrategy:
     @abstractmethod
     def __init__(self, all_args, nenvs, exist_enemy_num):
         raise NotImplementedError

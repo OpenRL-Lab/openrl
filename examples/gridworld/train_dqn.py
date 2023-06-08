@@ -1,10 +1,10 @@
 """"""
 import numpy as np
 
+from openrl.configs.config import create_config_parser
 from openrl.envs.common import make
 from openrl.modules.common import DQNNet as Net
 from openrl.runners.common import DQNAgent as Agent
-from openrl.configs.config import create_config_parser
 
 
 def train():
@@ -13,10 +13,7 @@ def train():
     cfg = cfg_parser.parse_args(["--config", "dqn_gridworld.yaml"])
 
     # 创建 环境
-    env = make(
-        "GridWorldEnv",
-        env_num=9
-    )
+    env = make("GridWorldEnv", env_num=9)
     # 创建 神经网络
     net = Net(env, cfg=cfg)
     # 初始化训练器

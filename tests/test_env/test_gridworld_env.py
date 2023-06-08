@@ -40,5 +40,6 @@ def test_gridworldrandom():
     obs, reward, done, info = env.step(env.random_action())
     env.close()
 
+
 if __name__ == "__main__":
     sys.exit(pytest.main(["-sv", os.path.basename(__file__)]))

@@ -15,8 +15,8 @@
 # limitations under the License.
 
 """"""
-from typing import List, Union
 import time
+from typing import List, Union
 
 import numpy as np
 

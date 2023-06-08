@@ -15,8 +15,8 @@
 # limitations under the License.
 
 """"""
-from typing import Any, Dict
 from collections import deque
+from typing import Any, Dict
 
 import numpy as np
 

@@ -29,7 +29,7 @@ from openrl.buffers.utils.util import (
     get_critic_obs_space,
     get_policy_obs,
     get_policy_obs_space,
-    get_shape_from_act_space
+    get_shape_from_act_space,
 )
 
 
@@ -243,9 +243,11 @@ class OffPolicyReplayData(ReplayData):
             )
             mini_batch_size = batch_size // num_mini_batch
 
-        assert (batch_size-n_rollout_threads) >= mini_batch_size
+        assert (batch_size - n_rollout_threads) >= mini_batch_size
         sampler = BatchSampler(
-            SubsetRandomSampler(range(batch_size-n_rollout_threads)), mini_batch_size, drop_last=True
+            SubsetRandomSampler(range(batch_size - n_rollout_threads)),
+            mini_batch_size,
+            drop_last=True,
         )
 
         if self._mixed_obs:

@@ -30,9 +30,7 @@ def make_gym_envs(
     render_mode: Optional[Union[str, List[str]]] = None,
     **kwargs,
 ) -> List[Callable[[], Env]]:
-    from openrl.envs.wrappers import (
-        # AutoReset,
-        # DictWrapper,
+    from openrl.envs.wrappers import (  # AutoReset,; DictWrapper,
         RemoveTruncated,
         Single2MultiAgentWrapper,
     )

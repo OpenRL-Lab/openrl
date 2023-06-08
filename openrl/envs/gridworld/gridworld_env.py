@@ -1,8 +1,8 @@
 from typing import Any, Optional
 
-import numpy as np
 import gymnasium as gym
-from gymnasium import spaces, Env
+import numpy as np
+from gymnasium import Env, spaces
 
 
 def make(
@@ -12,17 +12,9 @@ def make(
 ) -> Env:
     # create GridWorld environment from id
     if id == "GridWorldEnv":
-        env = GridWorldEnv(
-            env_name=id,
-            nrow=10,
-            ncol=10
-        )
+        env = GridWorldEnv(env_name=id, nrow=10, ncol=10)
     elif id == "GridWorldEnvRandomGoal":
-        env = GridWorldEnv(
-            env_name=id,
-            nrow=10,
-            ncol=10
-        )
+        env = GridWorldEnv(env_name=id, nrow=10, ncol=10)
     return env
 
 
@@ -32,17 +24,21 @@ class GridWorldEnv(gym.Env):
         self.nrow = nrow
         self.ncol = ncol
         self.goal = np.array([1, 1])
-        self.curr_pos = np.array([0,0])
-        self.observation_space = spaces.Box(low=np.array([0, 0, 0, 0]),
-                                            high=np.array([self.nrow-1, self.ncol-1, self.nrow-1, self.ncol-1]),
-                                            dtype=int)  # current position and target position
-        self.action_space = spaces.Discrete(5)  # action [[0, 0], [-1, 0], [1, 0], [0, -1], [0, 1]]
+        self.curr_pos = np.array([0, 0])
+        self.observation_space = spaces.Box(
+            low=np.array([0, 0, 0, 0]),
+            high=np.array([self.nrow - 1, self.ncol - 1, self.nrow - 1, self.ncol - 1]),
+            dtype=int,
+        )  # current position and target position
+        self.action_space = spaces.Discrete(
+            5
+        )  # action [[0, 0], [-1, 0], [1, 0], [0, -1], [0, 1]]
         self.steps = 0
 
     def step(self, action):
         if action == 0:  # stay
             pass
-        elif action == 1:   # left
+        elif action == 1:  # left
             self.curr_pos[0] -= 1
         elif action == 2:  # right
             self.curr_pos[0] += 1
@@ -53,7 +49,11 @@ class GridWorldEnv(gym.Env):
         else:
             raise ValueError("Invalid action!")
 
-        self.curr_pos = np.clip(self.curr_pos, a_min=np.array([0, 0]), a_max=np.array([self.nrow-1, self.ncol-1]))
+        self.curr_pos = np.clip(
+            self.curr_pos,
+            a_min=np.array([0, 0]),
+            a_max=np.array([self.nrow - 1, self.ncol - 1]),
+        )
 
         obs = np.concatenate((self.curr_pos, self.goal))
         reward = 0
@@ -99,14 +99,14 @@ class GridWorldEnvRandomGoal(GridWorldEnv):
                 return obs, {}
 
 
-if __name__ == '__main__':
-    env = GridWorldEnv(env_name='GridWorldEnv')
+if __name__ == "__main__":
+    env = GridWorldEnv(env_name="GridWorldEnv")
     obs, _ = env.reset(seed=0)
     print(env.curr_pos)
     while True:
         action = np.random.randint(0, 5)
         obs, reward, done, _, info = env.step(action)
-        print("action: ",action)
-        print("obs: ",obs, "reward: ", reward, "done: ", done)
+        print("action: ", action)
+        print("obs: ", obs, "reward: ", reward, "done: ", done)
         if done:
             break

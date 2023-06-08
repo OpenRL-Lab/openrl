@@ -25,7 +25,7 @@ import torch
 from openrl.configs.config import create_config_parser
 from openrl.modules.common.base_net import BaseNet
 from openrl.modules.dqn_module import DQNModule
-from openrl.utils.util import set_seed, _t2n
+from openrl.utils.util import _t2n, set_seed
 
 
 class DQNNet(BaseNet):

@@ -17,14 +17,17 @@
 """"""
 import os
 import sys
+
 import pytest
 
-from openrl.selfplay.strategies import NaiveSelfplayStrategy
-from openrl.selfplay.strategies import OnlyLatestSelfplayStrategy
-from openrl.selfplay.strategies import WeightSelfplayStrategy
-from openrl.selfplay.strategies import WinRateSelfplayStrategy
-from openrl.selfplay.strategies import VarExistEnemySelfplayStrategy
-from openrl.selfplay.strategies import WeightExistEnemySelfplayStrategy
+from openrl.selfplay.strategies import (
+    NaiveSelfplayStrategy,
+    OnlyLatestSelfplayStrategy,
+    VarExistEnemySelfplayStrategy,
+    WeightExistEnemySelfplayStrategy,
+    WeightSelfplayStrategy,
+    WinRateSelfplayStrategy,
+)
 
 
 @pytest.fixture(scope="module", params=[""])
@@ -41,8 +44,7 @@ def test_naive_selfplay(config):
     strategy = NaiveSelfplayStrategy(config, 1, 1)
     strategy.get_plist()
     strategy.update_weight(enemy_loses=1)
-    strategy.update_win_rate(dones=True,
-                             enemy_wins=1)
+    strategy.update_win_rate(dones=True, enemy_wins=1)
     strategy.push_newone()
 
 

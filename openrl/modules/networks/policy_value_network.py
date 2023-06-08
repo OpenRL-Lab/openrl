@@ -20,6 +20,7 @@ import torch
 import torch.nn as nn
 
 from openrl.buffers.utils.util import get_policy_obs_space
+from openrl.modules.networks.base_value_policy_network import BaseValuePolicyNetwork
 from openrl.modules.networks.utils.act import ACTLayer
 from openrl.modules.networks.utils.cnn import CNNBase
 from openrl.modules.networks.utils.mlp import MLPBase, MLPLayer
@@ -27,7 +28,6 @@ from openrl.modules.networks.utils.popart import PopArt
 from openrl.modules.networks.utils.rnn import RNNLayer
 from openrl.modules.networks.utils.util import init
 from openrl.utils.util import check_v2 as check
-from openrl.modules.networks.base_value_policy_network import BaseValuePolicyNetwork
 
 
 class PolicyValueNetwork(BaseValuePolicyNetwork):
