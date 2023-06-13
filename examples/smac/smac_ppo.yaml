@@ -1,0 +1,18 @@
+seed: 0
+lr: 5e-4
+critic_lr: 5e-4
+episode_length: 400
+run_dir: ./run_results/
+experiment_name: smac_jrpo
+use_value_active_masks: false
+ppo_epoch: 5
+log_interval: 10
+attn_size: 128
+use_recurrent_policy: true
+use_joint_action_loss: true
+use_valuenorm: true
+use_adv_normalize: true
+wandb_entity: openrl-lab
+
+vec_info_class:
+  id: "EPS_RewardInfo"
