@@ -56,8 +56,10 @@ class SyncVectorEnv(BaseVecEnv):
             RuntimeError: If the observation space of some sub-environment does not match observation_space
                 (or, by default, the observation space of the first sub-environment).
         """
+        self.viewer = None
         self.env_fns = env_fns
-        self.envs = [env_fn() for env_fn in env_fns]
+        self.envs = []
+        self.envs += [env_fn() for env_fn in env_fns]
 
         self.copy = copy
         self.metadata = self.envs[0].metadata

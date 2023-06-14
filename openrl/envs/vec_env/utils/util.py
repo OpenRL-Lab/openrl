@@ -16,7 +16,7 @@
 
 """"""
 
-from typing import Sequence
+from typing import Any, Dict, List, Optional, Sequence
 
 import numpy as np
 
@@ -49,3 +49,32 @@ def tile_images(img_nhwc: Sequence[np.ndarray]) -> np.ndarray:  # pragma: no cov
     # img_Hh_Ww_c
     out_image = out_image.reshape((new_height * height, new_width * width, n_channels))
     return out_image
+
+
+def prepare_available_actions(
+    info: Optional[List[Dict[str, Any]]] = None,
+    agent_num: int = 1,
+    as_batch: bool = True,
+) -> Optional[np.ndarray]:
+    if info is None:
+        return None
+
+    available_actions = []
+    for env_index in range(len(info)):
+        env_info = info[env_index]
+        available_actions_env = []
+        for agent_index in range(agent_num):
+            if env_info is None:
+                available_action = None
+            else:
+                if "available_actions" in env_info:
+                    available_action = env_info["available_actions"][agent_index]
+                else:
+                    # if there is no available_actions in env_info, then we assume all actions are available
+                    return None
+            available_actions_env.append(available_action)
+        available_actions.append(available_actions_env)
+    available_actions = np.array(available_actions, dtype=np.int8)
+    if as_batch:
+        available_actions = available_actions.reshape(-1, available_actions.shape[-1])
+    return available_actions

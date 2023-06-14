@@ -106,8 +106,8 @@ class VecEnvWrapper(BaseVecEnv):
         """Returns the :attr:`Env` :attr:`render_mode`."""
         return self.env.render_mode
 
-    def random_action(self):
-        return self.env.random_action()
+    def random_action(self, infos=None):
+        return self.env.random_action(infos=infos)
 
     def reset(self, **kwargs):
         """Reset all environments."""
