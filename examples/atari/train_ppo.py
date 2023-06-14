@@ -46,7 +46,9 @@ def train():
     cfg = cfg_parser.parse_args()
 
     # create environment, set environment parallelism to 9
-    env = make("ALE/Pong-v5", env_num=9, cfg=cfg, env_wrappers=env_wrappers)
+    env = make(
+        "ALE/Pong-v5", env_num=9, cfg=cfg, asynchronous=True, env_wrappers=env_wrappers
+    )
 
     # create the neural network
 

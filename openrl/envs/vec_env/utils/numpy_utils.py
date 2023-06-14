@@ -2,7 +2,7 @@
 """Numpy utility functions: concatenate space samples and create empty array."""
 from collections import OrderedDict
 from functools import singledispatch
-from typing import Callable, Iterable, Iterator, Union
+from typing import Callable, Iterable, Iterator, Union, Optional, List
 
 import numpy as np
 from gymnasium.error import CustomSpaceError
@@ -209,17 +209,26 @@ def _create_empty_array_custom(space, n=1, agent_num=1, fn=np.zeros):
 
 
 @singledispatch
-def single_random_action(space: Space) -> Union[tuple, dict, np.ndarray]:
+def single_random_action(
+    space: Space, available_action: Optional[Union[List[int], np.ndarray]] = None
+) -> Union[tuple, dict, np.ndarray]:
     raise ValueError(
         f"Space of type `{type(space)}` is not a valid `gymnasium.Space` instance."
     )
 
 
 @single_random_action.register(Discrete)
-def _single_random_action_discrete(space):
-    return [space.sample()]
+def _single_random_action_discrete(
+    space, available_action: Optional[Union[List[int], np.ndarray]] = None
+):
+    if available_action is not None:
+        if isinstance(available_action, list):
+            available_action = np.array(available_action, dtype=np.int8)
+    return [space.sample(mask=available_action)]
 
 
 @single_random_action.register(Box)
-def _single_random_action_discrete(space):
+def _single_random_action_box(
+    space, available_action: Optional[Union[List[int], np.ndarray]] = None
+):
     return space.sample()

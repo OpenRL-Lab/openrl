@@ -7,8 +7,13 @@ from openrl.envs.common import make
 from openrl.modules.common import PPONet as Net
 from openrl.runners.common import PPOAgent as Agent
 from openrl.envs.wrappers.monitor import Monitor
+from openrl.envs.vec_env.vec_info import VecInfoFactory
 
 from smac_env import make_smac_envs
+from custom_vecinfo import SMACInfo
+
+
+VecInfoFactory.register("SMACInfo", SMACInfo)
 
 env_wrappers = [
     Monitor,
@@ -16,29 +21,38 @@ env_wrappers = [
 
 
 def train():
+    cfg_parser = create_config_parser()
+    cfg = cfg_parser.parse_args()
+
     # create environment
-    env_num = 2
+    env_num = 8
     env = make(
         "2s_vs_1sc",
         env_num=env_num,
         asynchronous=False,
+        cfg=cfg,
         make_custom_envs=make_smac_envs,
         env_wrappers=env_wrappers,
     )
+    # obs, infos = env.reset(seed=0)
+    #
+    # obs, r, done, infos = env.step(env.random_action(infos=infos))
+    # obs, r, done, infos = env.step(env.random_action(infos=infos))
+    # exit()
+
     # create the neural network
-    cfg_parser = create_config_parser()
-    cfg = cfg_parser.parse_args()
-    # net = Net(env, cfg=cfg, device="cuda")
-    net = Net(
-        env,
-        cfg=cfg,
-    )
+
+    net = Net(env, cfg=cfg, device="cuda")
+
     # initialize the trainer
-    agent = Agent(net, use_wandb=False)
+    agent = Agent(net, use_wandb=False, project_name="SMAC")
     # start training, set total number of training steps to 5000000
-    # agent.train(total_time_steps=10000000)
+    agent.train(total_time_steps=10000000)
+    # agent.train(total_time_steps=2000)
     env.close()
-    # agent.save("./ppo_agent/")
+    print("Saving agent to ./ppo_agent/")
+    agent.save("./ppo_agent/")
+    # exit()
     return agent
 
 
@@ -57,10 +71,11 @@ def evaluation(agent):
     total_reward = 0
     while not np.any(done):
         # Based on environmental observation input, predict next action.
-        action, _ = agent.act(obs, deterministic=True)
+        action, _ = agent.act(obs, info=info, deterministic=True)
         obs, r, done, info = env.step(action)
         step += 1
         total_reward += np.mean(r)
+        print(f"step:{step}, total_reward: {total_reward}")
     print(f"total_reward: {total_reward}")
     env.close()
 

@@ -23,7 +23,7 @@ from s2clientprotocol import raw_pb2 as r_pb
 from s2clientprotocol import debug_pb2 as d_pb
 
 import random
-from gym.spaces import Discrete
+from gymnasium.spaces import Discrete
 
 races = {
     "R": sc_common.Random,
@@ -507,7 +507,8 @@ class StarCraft2Env(MultiAgentEnv):
         """A single environment step. Returns reward, terminated, info."""
         terminated = False
         bad_transition = False
-        infos = [{} for i in range(self.n_agents)]
+        # infos = [{} for i in range(self.n_agents)]
+        infos = {"game_state": "playing"}
         dones = np.zeros((self.n_agents), dtype=bool)
 
         actions_int = [int(a) for a in actions]
@@ -542,7 +543,8 @@ class StarCraft2Env(MultiAgentEnv):
             available_actions = []
             for i in range(self.n_agents):
                 available_actions.append(self.get_avail_agent_actions(i))
-                infos[i] = {
+
+                infos_single_agent = {
                     "battles_won": self.battles_won,
                     "battles_game": self.battles_game,
                     "battles_draw": self.timeouts,
@@ -550,6 +552,13 @@ class StarCraft2Env(MultiAgentEnv):
                     "bad_transition": bad_transition,
                     "won": self.win_counted,
                 }
+
+                for key in infos_single_agent:
+                    if key in infos:
+                        infos[key].append(infos_single_agent[key])
+                    else:
+                        infos[key] = [infos_single_agent[key]]
+
                 if terminated:
                     dones[i] = True
                 else:
@@ -605,9 +614,11 @@ class StarCraft2Env(MultiAgentEnv):
         if game_end_code is not None:
             # Battle is over
             terminated = True
+            infos["game_state"] = "lose"
             self.battles_game += 1
             if game_end_code == 1 and not self.win_counted:
                 self.battles_won += 1
+                infos["game_state"] = "win"
                 self.win_counted = True
                 if not self.reward_sparse:
                     reward += self.reward_win
@@ -625,12 +636,12 @@ class StarCraft2Env(MultiAgentEnv):
             terminated = True
             self.bad_transition = True
             if self.continuing_episode:
-                info["episode_limit"] = True
+                infos["episode_limit"] = True
             self.battles_game += 1
             self.timeouts += 1
 
         for i in range(self.n_agents):
-            infos[i] = {
+            infos_single_agent = {
                 "battles_won": self.battles_won,
                 "battles_game": self.battles_game,
                 "battles_draw": self.timeouts,
@@ -638,6 +649,12 @@ class StarCraft2Env(MultiAgentEnv):
                 "bad_transition": bad_transition,
                 "won": self.win_counted,
             }
+
+            for key in infos_single_agent:
+                if key in infos:
+                    infos[key].append(infos_single_agent[key])
+                else:
+                    infos[key] = [infos_single_agent[key]]
 
             if terminated:
                 dones[i] = True

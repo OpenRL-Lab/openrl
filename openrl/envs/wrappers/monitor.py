@@ -34,7 +34,7 @@ class Monitor(BaseWrapper):
         super().__init__(env=env)
         self.t_start = time.time()
 
-        self.rewards: List[float] = []
+        self.rewards = []
         self.episode_returns: List[float] = []
         self.episode_lengths: List[int] = []
         self.episode_times: List[float] = []
@@ -68,12 +68,13 @@ class Monitor(BaseWrapper):
             raise ValueError(
                 "returns should have length 4 or 5, got length {}".format(len(returns))
             )
+        # print("step", len(self.rewards), "rewards:", returns[1], "done:", done)
 
         self.rewards.append(returns[1])
         info = returns[-1]
 
-        if done:
-            ep_rew = sum(self.rewards)
+        if np.all(done):
+            ep_rew = np.sum(self.rewards)
             ep_len = len(self.rewards)
             ep_info = {
                 "r": round(ep_rew, 6),

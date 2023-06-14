@@ -190,6 +190,8 @@ class ReplayData(object):
     ):
         assert hasattr(self, data_name)
         data = getattr(self, data_name)
+        if data is None:
+            return None
 
         if isinstance(data, ObsData):
             return data.step_batch(step)
@@ -555,9 +557,7 @@ class ReplayData(object):
         batch_size = n_rollout_threads * episode_length * num_agents
 
         if mini_batch_size is None:
-            assert (
-                batch_size >= num_mini_batch
-            ), (
+            assert batch_size >= num_mini_batch, (
                 "PPO requires the number of processes ({}) "
                 "* number of steps ({}) * number of agents ({}) = {} "
                 "to be greater than or equal to the number of PPO mini batches ({})."
@@ -652,9 +652,7 @@ class ReplayData(object):
         batch_size = n_rollout_threads * episode_length
 
         if mini_batch_size is None:
-            assert (
-                batch_size >= num_mini_batch
-            ), (
+            assert batch_size >= num_mini_batch, (
                 "PPO requires the number of processes ({}) "
                 "* number of steps ({}) * number of agents ({}) = {} "
                 "to be greater than or equal to the number of PPO mini batches ({})."
@@ -715,9 +713,7 @@ class ReplayData(object):
         batch_size = n_rollout_threads * episode_length
 
         if mini_batch_size is None:
-            assert (
-                batch_size >= num_mini_batch
-            ), (
+            assert batch_size >= num_mini_batch, (
                 "PPO requires the number of processes ({}) "
                 "* number of steps ({}) = {} "
                 "to be greater than or equal to the number of PPO mini batches ({})."
@@ -958,9 +954,7 @@ class ReplayData(object):
         batch_size = n_rollout_threads * episode_length
 
         if mini_batch_size is None:
-            assert (
-                batch_size >= num_mini_batch
-            ), (
+            assert batch_size >= num_mini_batch, (
                 "PPO requires the number of processes ({}) "
                 "* number of steps ({}) = {} "
                 "to be greater than or equal to the number of PPO mini batches ({})."

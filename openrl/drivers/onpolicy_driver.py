@@ -24,6 +24,7 @@ from torch.nn.parallel import DistributedDataParallel
 from openrl.drivers.rl_driver import RLDriver
 from openrl.utils.logger import Logger
 from openrl.utils.util import _t2n
+from openrl.envs.vec_env.utils.util import prepare_available_actions
 
 
 class OnPolicyDriver(RLDriver):
@@ -69,19 +70,53 @@ class OnPolicyDriver(RLDriver):
             rnn_states,
             rnn_states_critic,
         ) = data
+
+        dones_env = np.all(dones, axis=1)
+
         if rnn_states is not None:
-            rnn_states[dones] = np.zeros(
-                (dones.sum(), self.recurrent_N, self.hidden_size),
+            rnn_states[dones_env] = np.zeros(
+                (dones_env.sum(), self.num_agents, self.recurrent_N, self.hidden_size),
                 dtype=np.float32,
             )
 
         if rnn_states_critic is not None:
-            rnn_states_critic[dones] = np.zeros(
-                (dones.sum(), *self.buffer.data.rnn_states_critic.shape[3:]),
+            rnn_states_critic[dones_env] = np.zeros(
+                (
+                    dones_env.sum(),
+                    self.num_agents,
+                    *self.buffer.data.rnn_states_critic.shape[3:],
+                ),
                 dtype=np.float32,
             )
+
         masks = np.ones((self.n_rollout_threads, self.num_agents, 1), dtype=np.float32)
-        masks[dones] = np.zeros((dones.sum(), 1), dtype=np.float32)
+        masks[dones_env] = np.zeros(
+            (dones_env.sum(), self.num_agents, 1), dtype=np.float32
+        )
+
+        available_actions = prepare_available_actions(
+            infos, agent_num=self.num_agents, as_batch=False
+        )
+
+        active_masks = np.ones(
+            (self.n_rollout_threads, self.num_agents, 1), dtype=np.float32
+        )
+        active_masks[dones] = np.zeros((dones.sum(), 1), dtype=np.float32)
+        active_masks[dones_env] = np.ones(
+            (dones_env.sum(), self.num_agents, 1), dtype=np.float32
+        )
+
+        bad_masks = np.array(
+            [
+                [
+                    [0.0]
+                    if "bad_transition" in info and info["bad_transition"][agent_id]
+                    else [1.0]
+                    for agent_id in range(self.num_agents)
+                ]
+                for info in infos
+            ]
+        )
 
         self.buffer.insert(
             obs,
@@ -92,6 +127,9 @@ class OnPolicyDriver(RLDriver):
             values,
             rewards,
             masks,
+            active_masks=active_masks,
+            bad_masks=bad_masks,
+            available_actions=available_actions,
         )
 
     def actor_rollout(self):
@@ -178,9 +216,15 @@ class OnPolicyDriver(RLDriver):
         ) = self.trainer.algo_module.get_actions(
             self.buffer.data.get_batch_data("critic_obs", step),
             self.buffer.data.get_batch_data("policy_obs", step),
-            np.concatenate(self.buffer.data.rnn_states[step]),
-            np.concatenate(self.buffer.data.rnn_states_critic[step]),
-            np.concatenate(self.buffer.data.masks[step]),
+            # np.concatenate(self.buffer.data.rnn_states[step]),
+            # np.concatenate(self.buffer.data.rnn_states_critic[step]),
+            # np.concatenate(self.buffer.data.masks[step]),
+            self.buffer.data.get_batch_data("rnn_states", step),
+            self.buffer.data.get_batch_data("rnn_states_critic", step),
+            self.buffer.data.get_batch_data("masks", step),
+            available_actions=self.buffer.data.get_batch_data(
+                "available_actions", step
+            ),
         )
 
         values = np.array(np.split(_t2n(value), self.n_rollout_threads))
