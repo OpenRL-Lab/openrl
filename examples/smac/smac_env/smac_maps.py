@@ -1,6 +1,4 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+from __future__ import absolute_import, division, print_function
 
 from pysc2.maps import lib
 
@@ -221,7 +219,6 @@ map_param_registry = {
         "unit_type_bits": 0,
         "map_type": "colossus",
     },
-
     # This is adhoc environment
     "1c2z_vs_1c1s1z": {
         "n_agents": 3,
@@ -268,7 +265,6 @@ map_param_registry = {
         "unit_type_bits": 3,
         "map_type": "colossi_stalkers_zealots",
     },
-
     "3s5z_vs_4s4z": {
         "n_agents": 8,
         "n_enemies": 8,
@@ -314,7 +310,6 @@ map_param_registry = {
         "unit_type_bits": 2,
         "map_type": "stalkers_and_zealots",
     },
-
     "6m_vs_6m_tz": {
         "n_agents": 6,
         "n_enemies": 6,
@@ -378,7 +373,6 @@ map_param_registry = {
         "unit_type_bits": 2,
         "map_type": "stalkers_and_zealots_vs_zergling",
     },
-
     "2s2z_vs_zg_easy": {
         "n_agents": 4,
         "n_enemies": 18,

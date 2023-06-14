@@ -16,7 +16,7 @@
 
 """"""
 
-from typing import Sequence, List, Any, Dict, Optional
+from typing import Any, Dict, List, Optional, Sequence
 
 import numpy as np
 

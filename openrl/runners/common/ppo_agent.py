@@ -15,7 +15,7 @@
 # limitations under the License.
 
 """"""
-from typing import Dict, Optional, Tuple, Type, Union, List, Any
+from typing import Any, Dict, List, Optional, Tuple, Type, Union
 
 import gym
 import numpy as np
@@ -26,12 +26,12 @@ from openrl.algorithms.ppo import PPOAlgorithm
 from openrl.buffers import NormalReplayBuffer as ReplayBuffer
 from openrl.buffers.utils.obs_data import ObsData
 from openrl.drivers.onpolicy_driver import OnPolicyDriver as Driver
+from openrl.envs.vec_env.utils.util import prepare_available_actions
 from openrl.modules.common import BaseNet
 from openrl.runners.common.base_agent import SelfAgent
 from openrl.runners.common.rl_agent import RLAgent
 from openrl.utils.logger import Logger
 from openrl.utils.util import _t2n
-from openrl.envs.vec_env.utils.util import prepare_available_actions
 
 
 class PPOAgent(RLAgent):

@@ -1,10 +1,7 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+from __future__ import absolute_import, division, print_function
 
 
 class MultiAgentEnv(object):
-
     def step(self, actions):
         """Returns reward, terminated, info."""
         raise NotImplementedError
@@ -59,10 +56,12 @@ class MultiAgentEnv(object):
         raise NotImplementedError
 
     def get_env_info(self):
-        env_info = {"state_shape": self.get_state_size(),
-                    "obs_shape": self.get_obs_size(),
-                    "obs_alone_shape": self.get_obs_alone_size(),
-                    "n_actions": self.get_total_actions(),
-                    "n_agents": self.n_agents,
-                    "episode_limit": self.episode_limit}
+        env_info = {
+            "state_shape": self.get_state_size(),
+            "obs_shape": self.get_obs_size(),
+            "obs_alone_shape": self.get_obs_alone_size(),
+            "n_actions": self.get_total_actions(),
+            "n_agents": self.n_agents,
+            "episode_limit": self.episode_limit,
+        }
         return env_info

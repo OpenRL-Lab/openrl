@@ -2,7 +2,7 @@
 """Numpy utility functions: concatenate space samples and create empty array."""
 from collections import OrderedDict
 from functools import singledispatch
-from typing import Callable, Iterable, Iterator, Union, Optional, List
+from typing import Callable, Iterable, Iterator, List, Optional, Union
 
 import numpy as np
 from gymnasium.error import CustomSpaceError

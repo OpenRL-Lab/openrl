@@ -16,9 +16,9 @@
 
 """"""
 
-from typing import Any, Dict
-from functools import reduce
 from collections import deque
+from functools import reduce
+from typing import Any, Dict
 
 import numpy as np
 

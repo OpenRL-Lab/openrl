@@ -18,8 +18,8 @@
 
 from functools import reduce
 
-import numpy as np
 import gymnasium as gym
+import numpy as np
 from gymnasium import spaces
 
 from .StarCraft2_Env import StarCraft2Env

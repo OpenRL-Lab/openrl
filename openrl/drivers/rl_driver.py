@@ -19,8 +19,8 @@ from abc import ABC, abstractmethod
 from typing import Any, Dict, Optional
 
 from openrl.drivers.base_driver import BaseDriver
-from openrl.utils.logger import Logger
 from openrl.envs.vec_env.utils.util import prepare_available_actions
+from openrl.utils.logger import Logger
 
 
 class RLDriver(BaseDriver, ABC):

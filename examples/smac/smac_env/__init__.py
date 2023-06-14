@@ -1,11 +1,10 @@
 import copy
 from typing import Callable, List, Optional, Union
 
-
 from gymnasium import Env
 
-from openrl.envs.common import build_envs
 from openrl.configs.config import create_config_parser
+from openrl.envs.common import build_envs
 
 from .smac_env import SMACEnv
 

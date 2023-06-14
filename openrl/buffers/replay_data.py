@@ -557,7 +557,9 @@ class ReplayData(object):
         batch_size = n_rollout_threads * episode_length * num_agents
 
         if mini_batch_size is None:
-            assert batch_size >= num_mini_batch, (
+            assert (
+                batch_size >= num_mini_batch
+            ), (
                 "PPO requires the number of processes ({}) "
                 "* number of steps ({}) * number of agents ({}) = {} "
                 "to be greater than or equal to the number of PPO mini batches ({})."
@@ -652,7 +654,9 @@ class ReplayData(object):
         batch_size = n_rollout_threads * episode_length
 
         if mini_batch_size is None:
-            assert batch_size >= num_mini_batch, (
+            assert (
+                batch_size >= num_mini_batch
+            ), (
                 "PPO requires the number of processes ({}) "
                 "* number of steps ({}) * number of agents ({}) = {} "
                 "to be greater than or equal to the number of PPO mini batches ({})."
@@ -713,7 +717,9 @@ class ReplayData(object):
         batch_size = n_rollout_threads * episode_length
 
         if mini_batch_size is None:
-            assert batch_size >= num_mini_batch, (
+            assert (
+                batch_size >= num_mini_batch
+            ), (
                 "PPO requires the number of processes ({}) "
                 "* number of steps ({}) = {} "
                 "to be greater than or equal to the number of PPO mini batches ({})."
@@ -954,7 +960,9 @@ class ReplayData(object):
         batch_size = n_rollout_threads * episode_length
 
         if mini_batch_size is None:
-            assert batch_size >= num_mini_batch, (
+            assert (
+                batch_size >= num_mini_batch
+            ), (
                 "PPO requires the number of processes ({}) "
                 "* number of steps ({}) = {} "
                 "to be greater than or equal to the number of PPO mini batches ({})."

@@ -22,9 +22,9 @@ import torch
 from torch.nn.parallel import DistributedDataParallel
 
 from openrl.drivers.rl_driver import RLDriver
+from openrl.envs.vec_env.utils.util import prepare_available_actions
 from openrl.utils.logger import Logger
 from openrl.utils.util import _t2n
-from openrl.envs.vec_env.utils.util import prepare_available_actions
 
 
 class OnPolicyDriver(RLDriver):
@@ -109,9 +109,11 @@ class OnPolicyDriver(RLDriver):
         bad_masks = np.array(
             [
                 [
-                    [0.0]
-                    if "bad_transition" in info and info["bad_transition"][agent_id]
-                    else [1.0]
+                    (
+                        [0.0]
+                        if "bad_transition" in info and info["bad_transition"][agent_id]
+                        else [1.0]
+                    )
                     for agent_id in range(self.num_agents)
                 ]
                 for info in infos

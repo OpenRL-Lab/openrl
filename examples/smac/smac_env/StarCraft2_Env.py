@@ -1,29 +1,24 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+from __future__ import absolute_import, division, print_function
+
+import atexit
+import enum
+import math
+import random
+from copy import deepcopy
+from operator import attrgetter
+
+import numpy as np
+from absl import logging
+from gymnasium.spaces import Discrete
+from pysc2 import maps, run_configs
+from pysc2.lib import protocol
+from s2clientprotocol import common_pb2 as sc_common
+from s2clientprotocol import debug_pb2 as d_pb
+from s2clientprotocol import raw_pb2 as r_pb
+from s2clientprotocol import sc2api_pb2 as sc_pb
 
 from .multiagentenv import MultiAgentEnv
 from .smac_maps import get_map_params
-
-import atexit
-from operator import attrgetter
-from copy import deepcopy
-import numpy as np
-import enum
-import math
-from absl import logging
-
-from pysc2 import maps
-from pysc2 import run_configs
-from pysc2.lib import protocol
-
-from s2clientprotocol import common_pb2 as sc_common
-from s2clientprotocol import sc2api_pb2 as sc_pb
-from s2clientprotocol import raw_pb2 as r_pb
-from s2clientprotocol import debug_pb2 as d_pb
-
-import random
-from gymnasium.spaces import Discrete
 
 races = {
     "R": sc_common.Random,
@@ -1122,9 +1117,9 @@ class StarCraft2Env(MultiAgentEnv):
             ind = self.n_actions_move
 
             if self.obs_pathing_grid:
-                move_feats[
-                    ind : ind + self.n_obs_pathing
-                ] = self.get_surrounding_pathing(unit)
+                move_feats[ind : ind + self.n_obs_pathing] = (
+                    self.get_surrounding_pathing(unit)
+                )
                 ind += self.n_obs_pathing
 
             if self.obs_terrain_height:
@@ -1323,9 +1318,9 @@ class StarCraft2Env(MultiAgentEnv):
             ind = self.n_actions_move
 
             if self.state_pathing_grid:
-                move_state[
-                    0, ind : ind + self.n_obs_pathing
-                ] = self.get_surrounding_pathing(unit)
+                move_state[0, ind : ind + self.n_obs_pathing] = (
+                    self.get_surrounding_pathing(unit)
+                )
                 ind += self.n_obs_pathing
 
             if self.state_terrain_height:
@@ -1522,9 +1517,9 @@ class StarCraft2Env(MultiAgentEnv):
             ind = self.n_actions_move
 
             if self.state_pathing_grid:
-                move_feats[
-                    ind : ind + self.n_obs_pathing
-                ] = self.get_surrounding_pathing(unit)
+                move_feats[ind : ind + self.n_obs_pathing] = (
+                    self.get_surrounding_pathing(unit)
+                )
                 ind += self.n_obs_pathing
 
             if self.state_terrain_height:
@@ -1846,9 +1841,11 @@ class StarCraft2Env(MultiAgentEnv):
                 all_feats += timestep_feats
 
             return [
-                all_feats * self.stacked_frames
-                if self.use_stacked_frames
-                else all_feats,
+                (
+                    all_feats * self.stacked_frames
+                    if self.use_stacked_frames
+                    else all_feats
+                ),
                 [n_allies, n_ally_feats],
                 [n_enemies, n_enemy_feats],
                 [1, move_feats],

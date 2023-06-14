@@ -18,13 +18,13 @@
 import sys
 import warnings
 from abc import ABC, abstractmethod
-from typing import Any, List, Optional, Sequence, Union, Dict
+from typing import Any, Dict, List, Optional, Sequence, Union
 
 import gymnasium as gym
 import numpy as np
 
 from openrl.envs.vec_env.utils.numpy_utils import single_random_action
-from openrl.envs.vec_env.utils.util import tile_images, prepare_available_actions
+from openrl.envs.vec_env.utils.util import prepare_available_actions, tile_images
 
 IN_COLAB = "google.colab" in sys.modules
 
@@ -267,9 +267,11 @@ class BaseVecEnv(
                 [
                     single_random_action(
                         self.action_space,
-                        available_actions[env_index][agent_index]
-                        if available_actions is not None
-                        else None,
+                        (
+                            available_actions[env_index][agent_index]
+                            if available_actions is not None
+                            else None
+                        ),
                     )
                     for agent_index in range(self.agent_num)
                 ]

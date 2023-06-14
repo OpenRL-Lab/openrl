@@ -15,7 +15,7 @@
 # limitations under the License.
 
 """"""
-from typing import Optional, Callable
+from typing import Callable, Optional
 
 import gymnasium as gym
 from gymnasium import Env
