@@ -190,6 +190,8 @@ class ReplayData(object):
     ):
         assert hasattr(self, data_name)
         data = getattr(self, data_name)
+        if data is None:
+            return None
 
         if isinstance(data, ObsData):
             return data.step_batch(step)

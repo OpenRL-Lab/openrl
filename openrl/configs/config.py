@@ -708,7 +708,7 @@ def create_config_parser():
     )
     parser.add_argument(
         "--use_value_active_masks",
-        action="store_false",
+        type=bool,
         default=True,
         help="by default True, whether to mask useless data in value loss.",
     )

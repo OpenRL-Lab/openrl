@@ -15,7 +15,7 @@
 # limitations under the License.
 
 """"""
-from typing import Dict, Optional, Tuple, Type, Union
+from typing import Any, Dict, List, Optional, Tuple, Type, Union
 
 import gym
 import numpy as np
@@ -26,6 +26,7 @@ from openrl.algorithms.ppo import PPOAlgorithm
 from openrl.buffers import NormalReplayBuffer as ReplayBuffer
 from openrl.buffers.utils.obs_data import ObsData
 from openrl.drivers.onpolicy_driver import OnPolicyDriver as Driver
+from openrl.envs.vec_env.utils.util import prepare_available_actions
 from openrl.modules.common import BaseNet
 from openrl.runners.common.base_agent import SelfAgent
 from openrl.runners.common.rl_agent import RLAgent
@@ -44,9 +45,18 @@ class PPOAgent(RLAgent):
         world_size: int = 1,
         use_wandb: bool = False,
         use_tensorboard: bool = False,
+        project_name: str = "PPOAgent",
     ) -> None:
         super(PPOAgent, self).__init__(
-            net, env, run_dir, env_num, rank, world_size, use_wandb, use_tensorboard
+            net,
+            env,
+            run_dir,
+            env_num,
+            rank,
+            world_size,
+            use_wandb,
+            use_tensorboard,
+            project_name=project_name,
         )
 
     def train(
@@ -82,7 +92,7 @@ class PPOAgent(RLAgent):
         if logger is None:
             logger = Logger(
                 cfg=self._cfg,
-                project_name="PPOAgent",
+                project_name=self.project_name,
                 scenario_name=self._env.env_name,
                 wandb_entity=self._cfg.wandb_entity,
                 exp_name=self.exp_name,
@@ -104,11 +114,22 @@ class PPOAgent(RLAgent):
     def act(
         self,
         observation: Union[np.ndarray, Dict[str, np.ndarray]],
+        info: Optional[List[Dict[str, Any]]] = None,
         deterministic: bool = True,
     ) -> Tuple[np.ndarray, Optional[Tuple[np.ndarray, ...]]]:
         assert self.net is not None, "net is None"
         observation = ObsData.prepare_input(observation)
-        action, rnn_state = self.net.act(observation, deterministic=deterministic)
+        if info is not None:
+            available_actions = prepare_available_actions(
+                info, agent_num=self.agent_num, as_batch=True
+            )
+        else:
+            available_actions = None
+        action, rnn_state = self.net.act(
+            observation,
+            available_actions=available_actions,
+            deterministic=deterministic,
+        )
 
         action = np.array(np.split(_t2n(action), self.env_num))
 

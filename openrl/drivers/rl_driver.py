@@ -19,6 +19,7 @@ from abc import ABC, abstractmethod
 from typing import Any, Dict, Optional
 
 from openrl.drivers.base_driver import BaseDriver
+from openrl.envs.vec_env.utils.util import prepare_available_actions
 from openrl.utils.logger import Logger
 
 
@@ -115,8 +116,11 @@ class RLDriver(BaseDriver, ABC):
             obs, info = returns
         else:
             obs = returns
-
-        self.buffer.init_buffer(obs.copy())
+            info = None
+        available_actions = prepare_available_actions(
+            info, agent_num=self.num_agents, as_batch=False
+        )
+        self.buffer.init_buffer(obs.copy(), available_actions=available_actions)
 
     @abstractmethod
     def add2buffer(self, data):
