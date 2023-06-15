@@ -13,7 +13,7 @@ def train():
     cfg = cfg_parser.parse_args(["--config", "dqn_cartpole.yaml"])
 
     # 创建 环境
-    env = make("CartPole-v1", render_mode="group_human", env_num=1)
+    env = make("CartPole-v1")
     # 创建 神经网络
     net = Net(env, cfg=cfg)
     # 初始化训练器
@@ -26,7 +26,7 @@ def train():
 
 def evaluation(agent):
     # 开始测试环境
-    env = make("CartPole-v1", render_mode="group_human", env_num=1, asynchronous=True)
+    env = make("CartPole-v1")
     agent.set_env(env)
     obs, info = env.reset()
     done = False
@@ -42,4 +42,4 @@ def evaluation(agent):
 
 if __name__ == "__main__":
     agent = train()
-    evaluation(agent)
+    # evaluation(agent)

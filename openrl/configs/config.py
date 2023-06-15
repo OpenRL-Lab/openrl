@@ -961,6 +961,12 @@ def create_config_parser():
         default=False,
         help="Whether the actor input takes in previous actions as part of its input",
     )
+    parser.add_argument(
+        "--target_update",
+        type=int,
+        default=10,
+        help="After how many evaluation network updates target network should be updated",
+    )
     # update parameters
     parser.add_argument(
         "--use_soft_update",
