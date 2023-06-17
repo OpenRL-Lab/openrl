@@ -127,6 +127,8 @@ class DQNAlgorithm(BaseAlgorithm):
             self.algo_module.models["target_q_net"].load_state_dict(
                 self.algo_module.models["q_net"].state_dict()
             )
+        else:
+            self.update_count += 1
         return loss
 
     def cal_value_loss(

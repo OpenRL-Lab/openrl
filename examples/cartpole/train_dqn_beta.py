@@ -26,7 +26,7 @@ def train():
 
 def evaluation(agent):
     # 开始测试环境
-    env = make("CartPole-v1", render_mode="group_human", env_num=1, asynchronous=True)
+    env = make("Acrobot-v1", render_mode="group_human", env_num=1, asynchronous=True)
     agent.set_env(env)
     obs, info = env.reset()
     done = False
