@@ -1,0 +1,8 @@
+callbacks:
+  - id: "CheckpointCallback"
+    args: {
+        "save_freq": 500,
+        "save_path": "./checkpoints/",
+        "name_prefix": "ppo",
+        "save_replay_buffer": True
+    }

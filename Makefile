@@ -21,6 +21,9 @@ format:
 	isort ${PYTHON_FILES}
 	# Reformat using black
 	black ${PYTHON_FILES} --preview
+    # do format agent
+	isort ${PYTHON_FILES}
+	black ${PYTHON_FILES} --preview
 
 commit-checks: format lint
 

@@ -145,7 +145,7 @@ class LMActorCriticPolicy(nn.Module):
             model_name (str): name of the causal or seq2seq model from transformers library
             optimizer_kwargs (Dict[str, Any], optional): optimizer kwargs. Defaults to {}.
             weight_decay (float, optional): weight decay. Defaults to 1e-6.
-            use_sde (bool, optional): Use state-dependent exploration. Defaults to None. (Unused parameter from stable-baselines3)
+            use_sde (bool, optional): Use state-dependent exploration. Defaults to None.
             apply_model_parallel (bool, optional): whether to apply model parallel. Defaults to True.
             optimizer_class (torch.optim.Optimizer, optional): Optimizer class. Defaults to torch.optim.AdamW.
             generation_kwargs (Dict[str, Any], optional): generation parameters for rollout. Defaults to {}.
