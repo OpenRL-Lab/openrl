@@ -21,10 +21,9 @@ except ImportError:
     # if the progress bar is used
     tqdm = None
 
+from openrl.envs.vec_env import BaseVecEnv, SyncVectorEnv
 from openrl.runners.common.base_agent import BaseAgent
 from openrl.utils.evaluation import evaluate_policy
-
-from openrl.envs.vec_env import BaseVecEnv, SyncVectorEnv
 
 
 class BaseCallback(ABC):
@@ -488,8 +487,9 @@ class StopTrainingOnRewardThreshold(BaseCallback):
         continue_training = bool(self.parent.best_mean_reward < self.reward_threshold)
         if self.verbose >= 1 and not continue_training:
             print(
-                f"Stopping training because the mean reward {self.parent.best_mean_reward:.2f} "
-                f" is above the threshold {self.reward_threshold}"
+                "Stopping training because the mean reward"
+                f" {self.parent.best_mean_reward:.2f}  is above the threshold"
+                f" {self.reward_threshold}"
             )
         return continue_training
 
@@ -539,9 +539,10 @@ class StopTrainingOnMaxEpisodes(BaseCallback):
 
     def _on_step(self) -> bool:
         # Check that the `dones` local variable is defined
-        assert (
-            "dones" in self.locals
-        ), "`dones` variable is not defined, please check your code next to `callback.on_step()`"
+        assert "dones" in self.locals, (
+            "`dones` variable is not defined, please check your code next to"
+            " `callback.on_step()`"
+        )
         self.n_episodes += np.sum(self.locals["dones"]).item()
 
         continue_training = self.n_episodes < self._total_max_episodes
@@ -555,10 +556,10 @@ class StopTrainingOnMaxEpisodes(BaseCallback):
             )
 
             print(
-                f"Stopping training with a total of {self.num_time_steps} steps because the "
-                f"{self.locals.get('tb_log_name')} model reached max_episodes={self.max_episodes}, "
-                f"by playing for {self.n_episodes} episodes "
-                f"{mean_ep_str}"
+                f"Stopping training with a total of {self.num_time_steps} steps because"
+                f" the {self.locals.get('tb_log_name')} model reached"
+                f" max_episodes={self.max_episodes}, by playing for"
+                f" {self.n_episodes} episodes {mean_ep_str}"
             )
         return continue_training
 
@@ -586,9 +587,10 @@ class StopTrainingOnNoModelImprovement(BaseCallback):
         self.no_improvement_evals = 0
 
     def _on_step(self) -> bool:
-        assert (
-            self.parent is not None
-        ), "``StopTrainingOnNoModelImprovement`` callback must be used with an ``EvalCallback``"
+        assert self.parent is not None, (
+            "``StopTrainingOnNoModelImprovement`` callback must be used with an"
+            " ``EvalCallback``"
+        )
 
         continue_training = True
 
@@ -604,7 +606,8 @@ class StopTrainingOnNoModelImprovement(BaseCallback):
 
         if self.verbose >= 1 and not continue_training:
             print(
-                f"Stopping training because there was no new best model in the last {self.no_improvement_evals:d} evaluations"
+                "Stopping training because there was no new best model in the last"
+                f" {self.no_improvement_evals:d} evaluations"
             )
 
         return continue_training
@@ -620,7 +623,8 @@ class ProgressBarCallback(BaseCallback):
         super().__init__()
         if tqdm is None:
             raise ImportError(
-                "You must install tqdm and rich in order to use the progress bar callback. "
+                "You must install tqdm and rich in order to use the progress bar"
+                " callback. "
             )
         self.pbar = None
 

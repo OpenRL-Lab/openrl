@@ -1,4 +1,4 @@
-from typing import Dict, Any, Type, List, Union
+from typing import Any, Dict, List, Type, Union
 
 from openrl.utils.callbacks.callbacks import BaseCallback, CallbackList
 from openrl.utils.callbacks.checkpoint_callback import CheckpointCallback

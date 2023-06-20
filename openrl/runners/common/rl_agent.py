@@ -17,16 +17,15 @@
 """"""
 import io
 import pathlib
-from abc import abstractmethod
-from typing import Optional, Union, Tuple
 import time
+from abc import abstractmethod
+from typing import Optional, Tuple, Union
 
 import gym
 import torch
 
 from openrl.modules.common import BaseNet
 from openrl.runners.common.base_agent import BaseAgent, SelfAgent
-from openrl.utils.type_aliases import MaybeCallback
 from openrl.utils.callbacks.callbacks import (
     BaseCallback,
     CallbackList,
@@ -34,6 +33,7 @@ from openrl.utils.callbacks.callbacks import (
     ProgressBarCallback,
 )
 from openrl.utils.callbacks.callbacks_factory import CallbackFactory
+from openrl.utils.type_aliases import MaybeCallback
 
 
 class RLAgent(BaseAgent):

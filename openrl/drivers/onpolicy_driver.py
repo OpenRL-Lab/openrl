@@ -23,10 +23,10 @@ from torch.nn.parallel import DistributedDataParallel
 
 from openrl.drivers.rl_driver import RLDriver
 from openrl.envs.vec_env.utils.util import prepare_available_actions
-from openrl.utils.logger import Logger
-from openrl.utils.util import _t2n
-from openrl.utils.type_aliases import MaybeCallback
 from openrl.runners.common.base_agent import BaseAgent
+from openrl.utils.logger import Logger
+from openrl.utils.type_aliases import MaybeCallback
+from openrl.utils.util import _t2n
 
 
 class OnPolicyDriver(RLDriver):

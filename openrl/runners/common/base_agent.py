@@ -18,7 +18,7 @@
 import io
 import pathlib
 from abc import ABC, abstractmethod
-from typing import TypeVar, Union, Optional
+from typing import Optional, TypeVar, Union
 
 from openrl.envs.vec_env import BaseVecEnv
 from openrl.utils.logger import Logger

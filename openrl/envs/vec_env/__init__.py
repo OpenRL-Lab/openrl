@@ -1,7 +1,7 @@
-from typing import Union, Type, Optional
+from typing import Optional, Type, Union
 
-from openrl.envs.vec_env.base_venv import BaseVecEnv
 from openrl.envs.vec_env.async_venv import AsyncVectorEnv
+from openrl.envs.vec_env.base_venv import BaseVecEnv
 from openrl.envs.vec_env.sync_venv import SyncVectorEnv
 from openrl.envs.vec_env.wrappers.base_wrapper import VecEnvWrapper
 from openrl.envs.vec_env.wrappers.reward_wrapper import RewardWrapper

@@ -4,17 +4,14 @@
 
 
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+from typing import Any, Callable, Dict, List, Optional, Protocol, Tuple, Union
 
 import gym
 import numpy as np
 import torch as th
 
-from typing import Protocol
-
-
-from openrl.utils.callbacks import callbacks
 from openrl.envs import vec_env
+from openrl.utils.callbacks import callbacks
 
 GymEnv = Union[gym.Env, vec_env.BaseVecEnv]
 GymObs = Union[Tuple, Dict[str, Any], np.ndarray, int]

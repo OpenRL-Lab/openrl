@@ -6,9 +6,9 @@ from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 import gym
 import numpy as np
 
-from openrl.utils import type_aliases
 from openrl.envs.vec_env import BaseVecEnv, SyncVectorEnv, is_vecenv_wrapped
 from openrl.envs.vec_env.wrappers.vec_monitor_wrapper import VecMonitorWrapper
+from openrl.utils import type_aliases
 
 
 def evaluate_policy(
@@ -69,9 +69,12 @@ def evaluate_policy(
 
     if not is_monitor_wrapped and warn:
         warnings.warn(
-            "Evaluation environment is not wrapped with a ``Monitor`` wrapper. "
-            "This may result in reporting modified episode lengths and rewards, if other wrappers happen to modify these. "
-            "Consider wrapping environment first with ``Monitor`` wrapper.",
+            (
+                "Evaluation environment is not wrapped with a ``Monitor`` wrapper. This"
+                " may result in reporting modified episode lengths and rewards, if"
+                " other wrappers happen to modify these. Consider wrapping environment"
+                " first with ``Monitor`` wrapper."
+            ),
             UserWarning,
         )
 
@@ -137,10 +140,9 @@ def evaluate_policy(
     mean_reward = np.mean(episode_rewards)
     std_reward = np.std(episode_rewards)
     if reward_threshold is not None:
-        assert mean_reward > reward_threshold, (
-            "Mean reward below threshold: "
-            f"{mean_reward:.2f} < {reward_threshold:.2f}"
-        )
+        assert (
+            mean_reward > reward_threshold
+        ), f"Mean reward below threshold: {mean_reward:.2f} < {reward_threshold:.2f}"
     if return_episode_rewards:
         return episode_rewards, episode_lengths
     return mean_reward, std_reward
