@@ -141,7 +141,7 @@ class OffPolicyDriver(RLDriver):
             }
 
             next_obs, rewards, dones, infos = self.envs.step(actions, extra_data)
-            if type(self.episode_steps)==int:
+            if type(self.episode_steps) == int:
                 if not dones:
                     self.episode_steps += 1
                 else:
@@ -162,7 +162,6 @@ class OffPolicyDriver(RLDriver):
             #           "q_values: ", q_values,
             #           "actions: ", actions)
             # print("rewards: ", rewards)
-
 
             data = (
                 obs,
