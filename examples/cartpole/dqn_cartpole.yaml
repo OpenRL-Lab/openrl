@@ -1,13 +1,14 @@
 seed: 0
 lr: 7e-4
 gamma: 0.9
-episode_length: 1000
-mini_batch_size: 64
-train_interval: 10
+episode_length: 2000
+epsilon_anneal_time: 20000
+mini_batch_size: 128
+train_interval: 50
 num_mini_batch: 50
 run_dir: ./run_results/
 experiment_name: train_dqn
-log_interval: 10
+log_interval: 50
 
 use_recurrent_policy: false
 use_joint_action_loss: false
