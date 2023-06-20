@@ -18,7 +18,10 @@
 import io
 import pathlib
 from abc import ABC, abstractmethod
-from typing import TypeVar, Union
+from typing import TypeVar, Union, Optional
+
+from openrl.envs.vec_env import BaseVecEnv
+from openrl.utils.logger import Logger
 
 SelfAgent = TypeVar("SelfAgent", bound="BaseAgent")
 
@@ -43,3 +46,16 @@ class BaseAgent(ABC):
         path: Union[str, pathlib.Path, io.BufferedIOBase],
     ):
         raise NotImplementedError
+
+    def get_env(self) -> Optional[BaseVecEnv]:
+        """
+        Returns the current environment (can be None if not defined).
+
+        :return: The current environment
+        """
+        return self._env
+
+    @property
+    def logger(self) -> Logger:
+        """Getter for the logger object."""
+        return self._logger

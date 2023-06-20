@@ -32,6 +32,7 @@ from openrl.runners.common.base_agent import SelfAgent
 from openrl.runners.common.rl_agent import RLAgent
 from openrl.utils.logger import Logger
 from openrl.utils.util import _t2n
+from openrl.utils.type_aliases import MaybeCallback
 
 
 class PPOAgent(RLAgent):
@@ -62,6 +63,7 @@ class PPOAgent(RLAgent):
     def train(
         self: SelfAgent,
         total_time_steps: int,
+        callback: MaybeCallback = None,
         train_algo_class: Type[BaseAlgorithm] = PPOAlgorithm,
         logger: Optional[Logger] = None,
     ) -> None:
@@ -100,16 +102,32 @@ class PPOAgent(RLAgent):
                 use_wandb=self._use_wandb,
                 use_tensorboard=self._use_tensorboard,
             )
+        self._logger = logger
+
+        total_time_steps, callback = self._setup_train(
+            total_time_steps,
+            callback,
+            reset_num_time_steps=True,
+            progress_bar=False,
+        )
+
         driver = Driver(
             config=self.config,
             trainer=trainer,
             buffer=buffer,
+            agent=self,
             client=self.client,
             rank=self.rank,
             world_size=self.world_size,
             logger=logger,
+            callback=callback,
         )
+
+        callback.on_training_start(locals(), globals())
+
         driver.run()
+
+        callback.on_training_end()
 
     def act(
         self,
