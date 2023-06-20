@@ -46,6 +46,12 @@ class OffPolicyDriver(RLDriver):
         self.epsilon_start = config["cfg"].epsilon_start
         self.epsilon_finish = config["cfg"].epsilon_finish
         self.epsilon_anneal_time = config["cfg"].epsilon_anneal_time
+        if self.envs.parallel_env_num > 1:
+            self.episode_steps = np.zeros((self.envs.parallel_env_num,))
+        else:
+            self.episode_steps = 0
+        self.verbose_flag = False
+        self.first_insert_buffer = True
 
     def _inner_loop(
         self,
@@ -96,8 +102,6 @@ class OffPolicyDriver(RLDriver):
                 dtype=np.float32,
             )
 
-        # rewards[dones] = np.zeros((dones.sum(), 1), dtype=np.float32)
-
         masks = np.ones((self.n_rollout_threads, self.num_agents, 1), dtype=np.float32)
         masks[dones] = np.zeros((dones.sum(), 1), dtype=np.float32)
 
@@ -123,10 +127,7 @@ class OffPolicyDriver(RLDriver):
         obs = self.buffer.data.critic_obs[0]
         for step in range(self.episode_length):
             q_values, actions, rnn_states = self.act(step)
-            # print("step: ", step,
-            #       "state: ", self.buffer.data.get_batch_data("next_policy_obs" if step != 0 else "policy_obs", step),
-            #       "q_values: ", q_values,
-            #       "actions: ", actions)
+
             extra_data = {
                 "q_values": q_values,
                 "step": step,
@@ -134,7 +135,28 @@ class OffPolicyDriver(RLDriver):
             }
 
             next_obs, rewards, dones, infos = self.envs.step(actions, extra_data)
+            if type(self.episode_steps)==int:
+                if not dones:
+                    self.episode_steps += 1
+                else:
+                    # print("steps: ", self.episode_steps)
+                    self.episode_steps = 0
+            else:
+                done_index = list(np.where(dones == True)[0])
+                self.episode_steps += 1
+                for i in range(len(done_index)):
+                    if self.episode_steps[done_index[i]] > 200:
+                        self.verbose_flag = True
+                    # print("steps: ", self.episode_steps[done_index[i]])
+                    self.episode_steps[done_index[i]] = 0
+
+            # if self.verbose_flag:
+            #     print("step: ", step,
+            #           "state: ", self.buffer.data.get_batch_data("next_policy_obs" if step != 0 else "policy_obs", step),
+            #           "q_values: ", q_values,
+            #           "actions: ", actions)
             # print("rewards: ", rewards)
+
 
             data = (
                 obs,
@@ -151,6 +173,7 @@ class OffPolicyDriver(RLDriver):
             obs = next_obs
 
         batch_rew_infos = self.envs.batch_rewards(self.buffer)
+        self.first_insert_buffer = False
 
         if self.envs.use_monitor:
             statistics_info = self.envs.statistics(self.buffer)
@@ -194,7 +217,7 @@ class OffPolicyDriver(RLDriver):
 
         actions = np.expand_dims(q_values.argmax(axis=-1), axis=-1)
 
-        if random.random() >= epsilon:
+        if random.random() >= epsilon or self.first_insert_buffer:
             actions = np.random.randint(
                 low=0, high=self.envs.action_space.n, size=actions.shape
             )
