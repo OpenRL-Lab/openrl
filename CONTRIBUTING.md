@@ -38,9 +38,7 @@ Firstly, you should install the test-related packages: `pip install -e ".[test]"
 
 Then, ensure that unit tests pass by executing `make test`.
 
-Next, format your code by running `make format`.
-
-Lastly, run `make commit-checks` to check if your code complies with OpenRL's coding style.
+Lastly, format your code by running `make format`.
 
 > Tip: OpenRL uses [black](https://github.com/psf/black) coding style. 
 You can install black plugins in your editor as shown in the [official website](https://black.readthedocs.io/en/stable/integrations/editors.html)

@@ -33,13 +33,14 @@ class OffPolicyDriver(RLDriver):
         config: Dict[str, Any],
         trainer,
         buffer,
+        agent,
         rank: int = 0,
         world_size: int = 1,
         client=None,
         logger: Optional[Logger] = None,
     ) -> None:
         super(OffPolicyDriver, self).__init__(
-            config, trainer, buffer, rank, world_size, client, logger
+            config, trainer, buffer, agent, rank, world_size, client, logger
         )
 
         self.buffer_minimal_size = int(config["cfg"].buffer_size * 0.2)
@@ -55,7 +56,10 @@ class OffPolicyDriver(RLDriver):
 
     def _inner_loop(
         self,
-    ) -> None:
+    ) -> bool:
+        """
+        :return: True if training should continue, False if training should stop
+        """
         rollout_infos = self.actor_rollout()
 
         if self.buffer.get_buffer_size() >= 0:
@@ -72,6 +76,8 @@ class OffPolicyDriver(RLDriver):
             # rollout_infos can only be used when env is wrapped with VevMonitor
             self.logger.log_info(rollout_infos, step=self.total_num_steps)
             self.logger.log_info(train_infos, step=self.total_num_steps)
+
+        return True
 
     def add2buffer(self, data):
         (
@@ -135,7 +141,7 @@ class OffPolicyDriver(RLDriver):
             }
 
             next_obs, rewards, dones, infos = self.envs.step(actions, extra_data)
-            if type(self.episode_steps)==int:
+            if type(self.episode_steps) == int:
                 if not dones:
                     self.episode_steps += 1
                 else:
@@ -156,7 +162,6 @@ class OffPolicyDriver(RLDriver):
             #           "q_values: ", q_values,
             #           "actions: ", actions)
             # print("rewards: ", rewards)
-
 
             data = (
                 obs,

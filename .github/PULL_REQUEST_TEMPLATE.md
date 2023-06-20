@@ -9,4 +9,4 @@
 ## Checklist
 <!--- Go over all the following points, and put an `x` in all the boxes that apply. -->
 - [ ] I have ensured `make test` pass (**required**).
-- [ ] I have checked the code using `make commit-checks` (**required**).
+- [ ] I have checked the code using `make format` (**required**).

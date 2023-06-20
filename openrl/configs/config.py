@@ -14,6 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """"""
+from typing import List
+
 from jsonargparse import ActionConfigFile, ArgumentParser
 
 
@@ -32,6 +34,9 @@ def create_config_parser():
     parser.add_argument("--n_head", type=int, default=1)
     parser.add_argument("--dec_actor", action="store_true", default=False)
     parser.add_argument("--share_actor", action="store_true", default=False)
+
+    parser.add_argument("--callbacks", type=List[dict])
+
     # For Hierarchical RL
     parser.add_argument(
         "--step_difference",

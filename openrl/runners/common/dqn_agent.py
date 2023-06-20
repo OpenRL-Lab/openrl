@@ -88,6 +88,7 @@ class DQNAgent(RLAgent):
             config=self.config,
             trainer=trainer,
             buffer=buffer,
+            agent=self,
             client=self.client,
             rank=self.rank,
             world_size=self.world_size,
