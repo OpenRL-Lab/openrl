@@ -1,5 +1,7 @@
 from typing import Optional, Type, Union
 
+from gymnasium import Env as GymEnv
+
 from openrl.envs.vec_env.async_venv import AsyncVectorEnv
 from openrl.envs.vec_env.base_venv import BaseVecEnv
 from openrl.envs.vec_env.sync_venv import SyncVectorEnv
@@ -17,7 +19,7 @@ __all__ = [
 
 
 def unwrap_vec_wrapper(
-    env: Union["GymEnv", BaseVecEnv], vec_wrapper_class: Type[VecEnvWrapper]
+    env: Union[GymEnv, BaseVecEnv], vec_wrapper_class: Type[VecEnvWrapper]
 ) -> Optional[VecEnvWrapper]:
     """
     Retrieve a ``VecEnvWrapper`` object by recursively searching.
@@ -35,7 +37,7 @@ def unwrap_vec_wrapper(
 
 
 def is_vecenv_wrapped(
-    env: Union["GymEnv", BaseVecEnv], vec_wrapper_class: Type[VecEnvWrapper]
+    env: Union[GymEnv, BaseVecEnv], vec_wrapper_class: Type[VecEnvWrapper]
 ) -> bool:
     """
     Check if an environment is already wrapped by a given ``VecEnvWrapper``.
