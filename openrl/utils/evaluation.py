@@ -7,12 +7,11 @@ import gym
 import numpy as np
 
 from openrl.envs.vec_env import BaseVecEnv, SyncVectorEnv, is_vecenv_wrapped
-from openrl.envs.vec_env.wrappers.vec_monitor_wrapper import VecMonitorWrapper
 from openrl.utils import type_aliases
 
 
 def evaluate_policy(
-    model: "type_aliases.AgentActor",
+    agent: "type_aliases.AgentActor",
     env: Union[gym.Env, BaseVecEnv],
     n_eval_episodes: int = 10,
     deterministic: bool = True,
@@ -21,7 +20,9 @@ def evaluate_policy(
     reward_threshold: Optional[float] = None,
     return_episode_rewards: bool = False,
     warn: bool = True,
-) -> Union[Tuple[float, float], Tuple[List[float], List[int]]]:
+) -> Union[
+    Tuple[np.ndarray, np.ndarray], Tuple[float, float], Tuple[List[float], List[int]]
+]:
     """
     Runs policy for ``n_eval_episodes`` episodes and returns average reward.
     If a vector env is passed in, this divides the episodes to evaluate onto the
@@ -36,7 +37,7 @@ def evaluate_policy(
         results as well. You can avoid this by wrapping environment with ``Monitor``
         wrapper before anything else.
 
-    :param model: The RL agent you want to evaluate. This can be any object
+    :param agent: The RL agent you want to evaluate. This can be any object
         that implements a `predict` method, such as an RL algorithm (``BaseAlgorithm``)
         or policy (``BasePolicy``).
     :param env: The gym environment or ``BaseVecEnv`` environment.
@@ -58,14 +59,12 @@ def evaluate_policy(
     """
     is_monitor_wrapped = False
     # Avoid circular import
-    from stable_baselines3.common.monitor import Monitor
+    from openrl.envs.wrappers.monitor import Monitor
 
     if not isinstance(env, BaseVecEnv):
         env = SyncVectorEnv([lambda: env])
 
-    is_monitor_wrapped = (
-        is_vecenv_wrapped(env, VecMonitorWrapper) or env.env_is_wrapped(Monitor)[0]
-    )
+    is_monitor_wrapped = env.env_is_wrapped(Monitor, indices=0)[0]
 
     if not is_monitor_wrapped and warn:
         warnings.warn(
@@ -78,7 +77,7 @@ def evaluate_policy(
             UserWarning,
         )
 
-    n_envs = env.num_envs
+    n_envs = env.parallel_env_num
     episode_rewards = []
     episode_lengths = []
 
@@ -88,19 +87,22 @@ def evaluate_policy(
         [(n_eval_episodes + i) // n_envs for i in range(n_envs)], dtype="int"
     )
 
-    current_rewards = np.zeros(n_envs)
+    current_rewards = np.zeros([n_envs, env.agent_num])
     current_lengths = np.zeros(n_envs, dtype="int")
-    observations = env.reset()
+    # get the train_env, and will set it back after evaluation
+    train_env = agent.get_env()
+    agent.set_env(env)
+    observations, info = env.reset()
     states = None
-    episode_starts = np.ones((env.num_envs,), dtype=bool)
+    episode_starts = np.ones((env.parallel_env_num,), dtype=bool)
+
     while (episode_counts < episode_count_targets).any():
-        actions, states = model.predict(
+        actions, states = agent.act(
             observations,
-            state=states,
-            episode_start=episode_starts,
             deterministic=deterministic,
         )
         observations, rewards, dones, infos = env.step(actions)
+        rewards = np.squeeze(rewards, axis=-1)
         current_rewards += rewards
         current_lengths += 1
         for i in range(n_envs):
@@ -119,24 +121,34 @@ def evaluate_policy(
                         # Atari wrapper can send a "done" signal when
                         # the agent loses a life, but it does not correspond
                         # to the true end of episode
-                        if "episode" in info.keys():
+                        assert "final_info" in info.keys(), (
+                            "final_info should be in info keys",
+                            info.keys(),
+                        )
+                        assert "episode" in info["final_info"].keys(), (
+                            "episode should be in final_info keys",
+                            info["final_info"].keys(),
+                        )
+                        if "episode" in info["final_info"].keys():
                             # Do not trust "done" with episode endings.
                             # Monitor wrapper includes "episode" key in info if environment
                             # has been wrapped with it. Use those rewards instead.
-                            episode_rewards.append(info["episode"]["r"])
-                            episode_lengths.append(info["episode"]["l"])
+                            episode_rewards.append(info["final_info"]["episode"]["r"])
+                            episode_lengths.append(info["final_info"]["episode"]["l"])
                             # Only increment at the real end of an episode
                             episode_counts[i] += 1
                     else:
                         episode_rewards.append(current_rewards[i])
                         episode_lengths.append(current_lengths[i])
                         episode_counts[i] += 1
+
                     current_rewards[i] = 0
                     current_lengths[i] = 0
 
-        if render:
-            env.render()
-
+        # if render:
+        #     env.render()
+    # set env to train_env
+    agent.set_env(train_env)
     mean_reward = np.mean(episode_rewards)
     std_reward = np.std(episode_rewards)
     if reward_threshold is not None:

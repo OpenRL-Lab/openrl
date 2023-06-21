@@ -18,11 +18,11 @@
 from typing import Callable, Optional
 
 import gymnasium as gym
-from gymnasium import Env
 
 import openrl
 from openrl.envs.vec_env import (
     AsyncVectorEnv,
+    BaseVecEnv,
     RewardWrapper,
     SyncVectorEnv,
     VecMonitorWrapper,
@@ -40,7 +40,7 @@ def make(
     render_mode: Optional[str] = None,
     make_custom_envs: Optional[Callable] = None,
     **kwargs,
-) -> Env:
+) -> BaseVecEnv:
     if render_mode in [None, "human", "rgb_array"]:
         convert_render_mode = render_mode
     elif render_mode in ["group_human", "group_rgb_array"]:

@@ -18,15 +18,21 @@
 import sys
 import warnings
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional, Sequence, Union
+from typing import Any, Callable, Dict, Iterable, List, Optional, Sequence, Type, Union
 
 import gymnasium as gym
 import numpy as np
 
 from openrl.envs.vec_env.utils.numpy_utils import single_random_action
 from openrl.envs.vec_env.utils.util import prepare_available_actions, tile_images
+from openrl.envs.wrappers.base_wrapper import BaseWrapper
+from openrl.envs.wrappers.util import is_wrapped
 
 IN_COLAB = "google.colab" in sys.modules
+
+# Define type aliases here to avoid circular import
+# Used when we want to access one or more VecEnv
+VecEnvIndices = Union[None, int, Iterable[int]]
 
 
 class BaseVecEnv(
@@ -233,6 +239,52 @@ class BaseVecEnv(
         self.call_send(name, *args, **kwargs)
         return self.call_fetch()
 
+    def exec_func_send(self, func: Callable, indices, *args, **kwargs):
+        """Calls the method with name asynchronously and apply args and kwargs to the method.
+
+        Args:
+            func: a function.
+            indices: Indices of the environments to call the method on.
+            *args: Arguments to apply to the method call.
+            **kwargs: Keyword arguments to apply to the method call.
+
+        Raises:
+            ClosedEnvironmentError: If the environment was closed (if :meth:`close` was previously called).
+            AlreadyPendingCallError: Calling `call_send` while waiting for a pending call to complete
+        """
+
+    def exec_func_fetch(self, timeout: Union[int, float, None] = None) -> list:
+        """Calls all parent pipes and waits for the results.
+
+        Args:
+            timeout: Number of seconds before the call to `step_fetch` times out.
+                If `None` (default), the call to `step_fetch` never times out.
+
+        Returns:
+            List of the results of the individual calls to the method or property for each environment.
+
+        Raises:
+            NoAsyncCallError: Calling `call_fetch` without any prior call to `call_send`.
+            TimeoutError: The call to `call_fetch` has timed out after timeout second(s).
+        """
+
+    def exec_func(
+        self, func: Callable, indices: List[int], *args, **kwargs
+    ) -> List[Any]:
+        """Call a method, or get a property, from each parallel environment.
+
+        Args:
+            func : Name of the method to call.
+            indices: Indices of the environments to call the method on.
+            *args: Arguments to apply to the method call.
+            **kwargs: Keyword arguments to apply to the method call.
+
+        Returns:
+            List of the results of the individual calls to the method or property for each environment.
+        """
+        self.exec_func_send(func, indices, *args, **kwargs)
+        return self.exec_func_fetch()
+
     def get_attr(self, name: str):
         """Get a property from each parallel environment.
 
@@ -278,3 +330,26 @@ class BaseVecEnv(
                 for env_index in range(self.parallel_env_num)
             ]
         )
+
+    def env_is_wrapped(
+        self, wrapper_class: Type[BaseWrapper], indices: VecEnvIndices = None
+    ) -> List[bool]:
+        """Check if worker environments are wrapped with a given wrapper"""
+        indices = self._get_indices(indices)
+        results = self.exec_func(
+            is_wrapped, indices=indices, wrapper_class=wrapper_class
+        )
+        return [results[i] for i in indices]
+
+    def _get_indices(self, indices: VecEnvIndices) -> Iterable[int]:
+        """
+        Convert a flexibly-typed reference to environment indices to an implied list of indices.
+
+        :param indices: refers to indices of envs.
+        :return: the implied list of indices.
+        """
+        if indices is None:
+            indices = range(self.parallel_env_num)
+        elif isinstance(indices, int):
+            indices = [indices]
+        return indices

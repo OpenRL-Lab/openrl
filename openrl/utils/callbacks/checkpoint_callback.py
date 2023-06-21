@@ -81,6 +81,7 @@ class CheckpointCallback(BaseCallback):
                 print(f"Saving model checkpoint to {model_path}")
 
             if (
+                # TODO: add buffer save support
                 self.save_replay_buffer
                 and hasattr(self.agent, "replay_buffer")
                 and self.agent.replay_buffer is not None

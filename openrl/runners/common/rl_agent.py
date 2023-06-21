@@ -26,13 +26,13 @@ import torch
 
 from openrl.modules.common import BaseNet
 from openrl.runners.common.base_agent import BaseAgent, SelfAgent
+from openrl.utils.callbacks import CallbackFactory
 from openrl.utils.callbacks.callbacks import (
     BaseCallback,
     CallbackList,
     ConvertCallback,
     ProgressBarCallback,
 )
-from openrl.utils.callbacks.callbacks_factory import CallbackFactory
 from openrl.utils.type_aliases import MaybeCallback
 
 
