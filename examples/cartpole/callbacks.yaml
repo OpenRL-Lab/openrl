@@ -2,7 +2,18 @@ callbacks:
   - id: "CheckpointCallback"
     args: {
         "save_freq": 500,
-        "save_path": "./checkpoints/",
+        "save_path": "./results/checkpoints/",
         "name_prefix": "ppo",
         "save_replay_buffer": True
+    }
+  - id: "EvalCallback"
+    args: {
+      "eval_env": {"id": "CartPole-v1","env_num":4},
+      "n_eval_episodes": 4,
+      "eval_freq":500,
+      "log_path": "./results/eval_log_path",
+      "best_model_save_path": "./results/best_model/",
+      "deterministic": True,
+      "render": True,
+      "asynchronous": True,
     }

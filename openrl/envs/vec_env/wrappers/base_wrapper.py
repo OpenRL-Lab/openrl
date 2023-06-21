@@ -16,20 +16,32 @@
 
 """"""
 
-
-from typing import Any, Dict, Optional, Sequence, SupportsFloat, Tuple, TypeVar, Union
+from abc import ABC
+from typing import (
+    Any,
+    Dict,
+    List,
+    Optional,
+    Sequence,
+    SupportsFloat,
+    Tuple,
+    Type,
+    TypeVar,
+    Union,
+)
 
 import numpy as np
 from gymnasium import spaces
 from gymnasium.core import ActType, ObsType, WrapperActType, WrapperObsType
 from gymnasium.utils import seeding
 
-from openrl.envs.vec_env.base_venv import BaseVecEnv
+from openrl.envs.vec_env.base_venv import BaseVecEnv, VecEnvIndices
+from openrl.envs.wrappers import BaseWrapper
 
 ArrayType = TypeVar("ArrayType")
 
 
-class VecEnvWrapper(BaseVecEnv):
+class VecEnvWrapper(BaseVecEnv, ABC):
     """Wraps the vectorized environment to allow a modular transformation.
 
     This class is the base class for all wrappers for vectorized environments. The subclass
@@ -178,6 +190,11 @@ class VecEnvWrapper(BaseVecEnv):
     @np_random.setter
     def np_random(self, value: np.random.Generator):
         self._np_random = value
+
+    def env_is_wrapped(
+        self, wrapper_class: Type[BaseWrapper], indices: VecEnvIndices = None
+    ) -> List[bool]:
+        return self.env.env_is_wrapped(wrapper_class, indices=indices)
 
 
 class VectorObservationWrapper(VecEnvWrapper):

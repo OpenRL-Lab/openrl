@@ -30,10 +30,7 @@ def make_connect3_envs(
     render_mode: Optional[Union[str, List[str]]] = None,
     **kwargs,
 ) -> List[Callable[[], Env]]:
-    from openrl.envs.wrappers import (
-        RemoveTruncated,
-        Single2MultiAgentWrapper,
-    )
+    from openrl.envs.wrappers import RemoveTruncated, Single2MultiAgentWrapper
 
     env_wrappers = [
         Single2MultiAgentWrapper,
@@ -48,5 +45,3 @@ def make_connect3_envs(
         **kwargs,
     )
     return env_fns
-
-

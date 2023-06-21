@@ -40,6 +40,7 @@ def build_envs(
                         env = wrapper(env)
                 else:
                     raise NotImplementedError
+
             return env
 
         return _make_env

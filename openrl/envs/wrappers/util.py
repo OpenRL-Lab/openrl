@@ -16,10 +16,13 @@
 
 """"""
 
-from typing import Any
+from typing import Any, Optional, Type
 
+import gymnasium as gym
 import numpy as np
 from gymnasium.spaces.box import Box
+
+from openrl.envs.wrappers.base_wrapper import BaseWrapper
 
 
 def nest_expand_dim(input: Any) -> Any:
@@ -35,3 +38,32 @@ def nest_expand_dim(input: Any) -> Any:
         return [input]
     else:
         raise NotImplementedError("Not support type: {}".format(type(input)))
+
+
+def unwrap_wrapper(
+    env: gym.Env, wrapper_class: Type[BaseWrapper]
+) -> Optional[BaseWrapper]:
+    """
+    Retrieve a ``BaseWrapper`` object by recursively searching.
+
+    :param env: Environment to unwrap
+    :param wrapper_class: Wrapper to look for
+    :return: Environment unwrapped till ``wrapper_class`` if it has been wrapped with it
+    """
+    env_tmp = env
+    while isinstance(env_tmp, BaseWrapper):
+        if isinstance(env_tmp, wrapper_class):
+            return env_tmp
+        env_tmp = env_tmp.env
+    return None
+
+
+def is_wrapped(env: gym.Env, wrapper_class: Type[BaseWrapper]) -> bool:
+    """
+    Check if a given environment has been wrapped with a given wrapper.
+
+    :param env: Environment to check
+    :param wrapper_class: Wrapper class to look for
+    :return: True if environment has been wrapped with ``wrapper_class``.
+    """
+    return unwrap_wrapper(env, wrapper_class) is not None

@@ -49,4 +49,4 @@ def evaluation(agent):
 
 if __name__ == "__main__":
     agent = train()
-    # evaluation(agent)
+    evaluation(agent)

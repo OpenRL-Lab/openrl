@@ -15,3 +15,8 @@
 # limitations under the License.
 
 """"""
+
+
+from openrl.utils.callbacks.callbacks_factory import CallbackFactory
+
+__all__ = ["CallbackFactory"]
