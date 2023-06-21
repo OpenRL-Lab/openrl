@@ -14,7 +14,7 @@
 [![Hits-of-Code](https://hitsofcode.com/github/OpenRL-Lab/openrl?branch=main)](https://hitsofcode.com/github/OpenRL-Lab/openrl/view?branch=main)
 [![codecov](https://codecov.io/gh/OpenRL-Lab/openrl_release/branch/main/graph/badge.svg?token=4FMEYMR83U)](https://codecov.io/gh/OpenRL-Lab/openrl_release)
 
-[![Documentation Status](https://readthedocs.org/projects/openrl-docs/badge/?version=latest)](https://openrl-docs.readthedocs.io/zh/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/openrl-docs/badge/?version=latest)](https://openrl-docs.readthedocs.io/en/latest/?badge=latest)
 [![Read the Docs](https://img.shields.io/readthedocs/openrl-docs-zh?label=%E4%B8%AD%E6%96%87%E6%96%87%E6%A1%A3)](https://openrl-docs.readthedocs.io/zh/latest/)
 
 ![GitHub Org's stars](https://img.shields.io/github/stars/OpenRL-Lab)
@@ -29,13 +29,13 @@
 [![Embark](https://img.shields.io/badge/discord-OpenRL-%237289da.svg?logo=discord)](https://discord.gg/tyy96TGbep)
 [![slack badge](https://img.shields.io/badge/Slack-join-blueviolet?logo=slack&amp)](https://join.slack.com/t/openrlhq/shared_invite/zt-1tqwpvthd-Eeh0IxQ~DIaGqYXoW2IUQg)
 
-OpenRL-v0.0.11 is updated on May 19, 2023
+OpenRL-v0.0.12 is updated on June 14, 2023
 
 The main branch is the latest version of OpenRL, which is under active development. If you just want to have a try with OpenRL, you can switch to the stable branch.
 
 ## Welcome to OpenRL
 
-[中文介绍](README_zh.md) | [Documentation](https://openrl-docs.readthedocs.io/en/latest/) | [中文文档](https://openrl-docs.readthedocs.io/zh/latest/)
+[Documentation](https://openrl-docs.readthedocs.io/en/latest/) | [中文介绍](README_zh.md) |  [中文文档](https://openrl-docs.readthedocs.io/zh/latest/)
 
 OpenRL is an open-source general reinforcement learning research framework that supports training for various tasks 
 such as single-agent, multi-agent, and natural language. 
@@ -74,12 +74,18 @@ Algorithms currently supported by OpenRL (for more details, please refer to [Gal
 - [Dual-clip PPO](https://arxiv.org/abs/1912.09729)
 - [Multi-agent PPO (MAPPO)](https://arxiv.org/abs/2103.01955)
 - [Joint-ratio Policy Optimization (JRPO)](https://arxiv.org/abs/2302.07515)
+- [Deep Q-Network (DQN)](https://arxiv.org/abs/1312.5602)
 - [Multi-Agent Transformer (MAT)](https://arxiv.org/abs/2205.14953)
 
 Environments currently supported by OpenRL (for more details, please refer to [Gallery](./Gallery.md)):
 - [Gymnasium](https://gymnasium.farama.org/)
 - [MuJoCo](https://github.com/deepmind/mujoco)
 - [MPE](https://github.com/openai/multiagent-particle-envs)
+- [Chat Bot](https://openrl-docs.readthedocs.io/en/latest/quick_start/train_nlp.html)
+- [Atari](https://gymnasium.farama.org/environments/atari/)
+- [StarCraft II](https://github.com/oxwhirl/smac)
+- [GridWorld](./examples/gridworld/)
+- [Tic-Tac-Toe](https://en.wikipedia.org/wiki/Tic-tac-toe)
 - [Super Mario Bros](https://github.com/Kautenja/gym-super-mario-bros)
 - [Gym Retro](https://github.com/openai/retro)
 
@@ -204,7 +210,7 @@ while True:
     if any(done): break
 env.close() # Close test environment
 ```
-Executing the above code on a regular laptop only takes a few seconds 
+Executing the above code on a regular laptop only takes **a few seconds**
 to complete the training. Below shows the visualization of the agent:
 
 <div align="center">

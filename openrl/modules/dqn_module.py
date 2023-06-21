@@ -110,11 +110,13 @@ class DQNModule(RLModule):
         q_values, _ = self.models["q_net"](
             obs_batch, rnn_states_batch, masks_batch, available_actions
         )
+        index = torch.from_numpy(actions_batch).long()
+        q_values = q_values.gather(1, index)
 
         max_next_q_values, _ = self.models["target_q_net"](
             next_obs_batch, rnn_states_batch, masks_batch, available_actions
         )
-
+        max_next_q_values = max_next_q_values.max(1)[0].view(-1, 1)
         return q_values, max_next_q_values
 
     def act(self, obs, rnn_states_actor, masks, available_actions=None):

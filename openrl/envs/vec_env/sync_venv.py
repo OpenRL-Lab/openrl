@@ -16,19 +16,20 @@
 
 """"""
 from copy import deepcopy
-from typing import Any, Callable, Iterable, List, Optional, Sequence, Union
+from typing import Any, Callable, Iterable, List, Optional, Sequence, Type, Union
 
 import numpy as np
 from gymnasium import Env
 from gymnasium.core import ActType
 from gymnasium.spaces import Space
 
-from openrl.envs.vec_env.base_venv import BaseVecEnv
+from openrl.envs.vec_env.base_venv import BaseVecEnv, VecEnvIndices
 from openrl.envs.vec_env.utils.numpy_utils import (
     concatenate,
     create_empty_array,
     iterate_action,
 )
+from openrl.envs.wrappers.base_wrapper import BaseWrapper
 
 
 class SyncVectorEnv(BaseVecEnv):
@@ -56,8 +57,10 @@ class SyncVectorEnv(BaseVecEnv):
             RuntimeError: If the observation space of some sub-environment does not match observation_space
                 (or, by default, the observation space of the first sub-environment).
         """
+        self.viewer = None
         self.env_fns = env_fns
-        self.envs = [env_fn() for env_fn in env_fns]
+        self.envs = []
+        self.envs += [env_fn() for env_fn in env_fns]
 
         self.copy = copy
         self.metadata = self.envs[0].metadata
@@ -186,6 +189,7 @@ class SyncVectorEnv(BaseVecEnv):
             ), "step return must be tuple, but got: {}".format(type(returns))
 
             _need_reset = not self._subenv_auto_reset
+
             if len(returns) == 5:
                 (
                     observation,
@@ -269,6 +273,29 @@ class SyncVectorEnv(BaseVecEnv):
             return self.envs[0].env_name
         else:
             return self.envs[0].unwrapped.spec.id
+
+    def exec_func(self, func: Callable, indices: List[int], *args, **kwargs) -> tuple:
+        """Calls the method with name and applies args and kwargs.
+
+        Args:
+            func: The method name
+            *args: The method args
+            **kwargs: The method kwargs
+
+        Returns:
+            Tuple of results
+        """
+        results = []
+        for i, env in enumerate(self.envs):
+            if i in indices:
+                if callable(func):
+                    results.append(func(env, *args, **kwargs))
+                else:
+                    results.append(func)
+            else:
+                results.append(None)
+
+        return tuple(results)
 
     def call(self, name, *args, **kwargs) -> tuple:
         """Calls the method with name and applies args and kwargs.

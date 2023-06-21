@@ -190,6 +190,8 @@ class ReplayData(object):
     ):
         assert hasattr(self, data_name)
         data = getattr(self, data_name)
+        if data is None:
+            return None
 
         if isinstance(data, ObsData):
             return data.step_batch(step)
@@ -1063,6 +1065,7 @@ class ReplayData(object):
         episode_length, n_rollout_threads, num_agents = self.rewards.shape[0:3]
         batch_size = n_rollout_threads * episode_length * num_agents
         data_chunks = batch_size // data_chunk_length  # [C=r*T*M/L]
+
         mini_batch_size = data_chunks // num_mini_batch
 
         assert n_rollout_threads * episode_length * num_agents >= data_chunk_length, (

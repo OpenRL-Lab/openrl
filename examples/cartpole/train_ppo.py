@@ -8,11 +8,13 @@ from openrl.runners.common import PPOAgent as Agent
 
 
 def train():
-    # create environment, set environment parallelism to 9
-    env = make("CartPole-v1", env_num=9)
     # create the neural network
     cfg_parser = create_config_parser()
     cfg = cfg_parser.parse_args()
+
+    # create environment, set environment parallelism to 9
+    env = make("CartPole-v1", env_num=9)
+
     net = Net(
         env,
         cfg=cfg,

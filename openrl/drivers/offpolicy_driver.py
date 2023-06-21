@@ -33,28 +33,38 @@ class OffPolicyDriver(RLDriver):
         config: Dict[str, Any],
         trainer,
         buffer,
+        agent,
         rank: int = 0,
         world_size: int = 1,
         client=None,
         logger: Optional[Logger] = None,
     ) -> None:
         super(OffPolicyDriver, self).__init__(
-            config, trainer, buffer, rank, world_size, client, logger
+            config, trainer, buffer, agent, rank, world_size, client, logger
         )
 
         self.buffer_minimal_size = int(config["cfg"].buffer_size * 0.2)
         self.epsilon_start = config["cfg"].epsilon_start
         self.epsilon_finish = config["cfg"].epsilon_finish
         self.epsilon_anneal_time = config["cfg"].epsilon_anneal_time
+        if self.envs.parallel_env_num > 1:
+            self.episode_steps = np.zeros((self.envs.parallel_env_num,))
+        else:
+            self.episode_steps = 0
+        self.verbose_flag = False
+        self.first_insert_buffer = True
 
     def _inner_loop(
         self,
-    ) -> None:
+    ) -> bool:
+        """
+        :return: True if training should continue, False if training should stop
+        """
         rollout_infos = self.actor_rollout()
 
-        # if self.buffer.get_buffer_size() > self.buffer_minimal_size:
-        if self.buffer.get_buffer_size() > 0:
+        if self.buffer.get_buffer_size() >= 0:
             train_infos = self.learner_update()
+            self.buffer.after_update()
         else:
             train_infos = {"q_loss": 0}
 
@@ -66,6 +76,8 @@ class OffPolicyDriver(RLDriver):
             # rollout_infos can only be used when env is wrapped with VevMonitor
             self.logger.log_info(rollout_infos, step=self.total_num_steps)
             self.logger.log_info(train_infos, step=self.total_num_steps)
+
+        return True
 
     def add2buffer(self, data):
         (
@@ -83,28 +95,18 @@ class OffPolicyDriver(RLDriver):
             dtype=np.float32,
         )
 
-        # temp = np.zeros(
-        #     (dones.sum(), self.recurrent_N, self.hidden_size),
-        #     dtype=np.float32,
-        # )
-        # a = dones.sum()
-        # temp2 = np.zeros(
-        #     (dones.sum(), next_obs["policy"].shape[2:]),
-        #     dtype=np.float32,
-        # )
-
-        # todo add mask of next_obs
-        # if "Dict" in next_obs.__class__.__name__:
-        #     for key in next_obs.keys():
-        #         next_obs[key][dones] = np.zeros(
-        #             (dones.sum(), next_obs[key].shape[2:]),
-        #             dtype=np.float32,
-        #         )
-        # else:
-        #     next_obs[dones] = np.zeros(
-        #         (dones.sum(), next_obs.shape[2:]),
-        #         dtype=np.float32,
-        #     )
+        # todo add image obs
+        if "Dict" in next_obs.__class__.__name__:
+            for key in next_obs.keys():
+                next_obs[key][dones] = np.zeros(
+                    (dones.sum(), next_obs[key].shape[2]),
+                    dtype=np.float32,
+                )
+        else:
+            next_obs[dones] = np.zeros(
+                (dones.sum(), next_obs.shape[2]),
+                dtype=np.float32,
+            )
 
         masks = np.ones((self.n_rollout_threads, self.num_agents, 1), dtype=np.float32)
         masks[dones] = np.zeros((dones.sum(), 1), dtype=np.float32)
@@ -128,14 +130,7 @@ class OffPolicyDriver(RLDriver):
         self.trainer.prep_rollout()
         import time
 
-        q_values, actions, rnn_states = self.act(0)
-        extra_data = {
-            "q_values": q_values,
-            "step": 0,
-            "buffer": self.buffer,
-        }
-
-        obs, rewards, dones, infos = self.envs.step(actions, extra_data)
+        obs = self.buffer.data.critic_obs[0]
         for step in range(self.episode_length):
             q_values, actions, rnn_states = self.act(step)
 
@@ -145,8 +140,28 @@ class OffPolicyDriver(RLDriver):
                 "buffer": self.buffer,
             }
 
-            # todo how to handle next obs in initialized state and terminal state
             next_obs, rewards, dones, infos = self.envs.step(actions, extra_data)
+            if type(self.episode_steps) == int:
+                if not dones:
+                    self.episode_steps += 1
+                else:
+                    # print("steps: ", self.episode_steps)
+                    self.episode_steps = 0
+            else:
+                done_index = list(np.where(dones == True)[0])
+                self.episode_steps += 1
+                for i in range(len(done_index)):
+                    if self.episode_steps[done_index[i]] > 200:
+                        self.verbose_flag = True
+                    # print("steps: ", self.episode_steps[done_index[i]])
+                    self.episode_steps[done_index[i]] = 0
+
+            # if self.verbose_flag:
+            #     print("step: ", step,
+            #           "state: ", self.buffer.data.get_batch_data("next_policy_obs" if step != 0 else "policy_obs", step),
+            #           "q_values: ", q_values,
+            #           "actions: ", actions)
+            # print("rewards: ", rewards)
 
             data = (
                 obs,
@@ -158,10 +173,12 @@ class OffPolicyDriver(RLDriver):
                 actions,
                 rnn_states,
             )
-            obs = next_obs
+
             self.add2buffer(data)
+            obs = next_obs
 
         batch_rew_infos = self.envs.batch_rewards(self.buffer)
+        self.first_insert_buffer = False
 
         if self.envs.use_monitor:
             statistics_info = self.envs.statistics(self.buffer)
@@ -177,11 +194,15 @@ class OffPolicyDriver(RLDriver):
     ):
         self.trainer.prep_rollout()
 
+        if step != 0:
+            step = step - 1
         (
             q_values,
             rnn_states,
         ) = self.trainer.algo_module.get_actions(
-            self.buffer.data.get_batch_data("policy_obs", step),
+            self.buffer.data.get_batch_data(
+                "next_policy_obs" if step != 0 else "policy_obs", step
+            ),
             np.concatenate(self.buffer.data.rnn_states[step]),
             np.concatenate(self.buffer.data.masks[step]),
         )
@@ -189,16 +210,19 @@ class OffPolicyDriver(RLDriver):
         q_values = np.array(np.split(_t2n(q_values), self.n_rollout_threads))
         rnn_states = np.array(np.split(_t2n(rnn_states), self.n_rollout_threads))
 
-        epsilon = (
-            self.epsilon_finish
-            + (self.epsilon_start - self.epsilon_finish)
-            / self.epsilon_anneal_time
-            * step
+        epsilon = np.min(
+            (
+                self.epsilon_finish
+                + (self.epsilon_start - self.epsilon_finish)
+                / self.epsilon_anneal_time
+                * (self.episode * self.episode_length + step),
+                self.epsilon_start,
+            )
         )
 
         actions = np.expand_dims(q_values.argmax(axis=-1), axis=-1)
 
-        if random.random() > epsilon:
+        if random.random() >= epsilon or self.first_insert_buffer:
             actions = np.random.randint(
                 low=0, high=self.envs.action_space.n, size=actions.shape
             )

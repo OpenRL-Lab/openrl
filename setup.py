@@ -39,6 +39,7 @@ def get_install_requires() -> list:
         "opencv-python",
         "pygame",
         "mujoco",
+        "tqdm",
     ]
 
 

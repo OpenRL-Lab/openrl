@@ -14,6 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """"""
+from typing import List
+
 from jsonargparse import ActionConfigFile, ArgumentParser
 
 
@@ -32,6 +34,9 @@ def create_config_parser():
     parser.add_argument("--n_head", type=int, default=1)
     parser.add_argument("--dec_actor", action="store_true", default=False)
     parser.add_argument("--share_actor", action="store_true", default=False)
+
+    parser.add_argument("--callbacks", type=List[dict])
+
     # For Hierarchical RL
     parser.add_argument(
         "--step_difference",
@@ -516,7 +521,7 @@ def create_config_parser():
     # recurrent parameters
     parser.add_argument(
         "--use_naive_recurrent_policy",
-        action="store_true",
+        type=bool,
         default=False,
         help="Whether to use a naive recurrent policy",
     )
@@ -532,7 +537,7 @@ def create_config_parser():
     parser.add_argument(
         "--data_chunk_length",
         type=int,
-        default=10,
+        default=2,
         help="Time length of chunks used to train a recurrent_policy",
     )
     parser.add_argument(
@@ -641,6 +646,12 @@ def create_config_parser():
         help="number of batches for ppo (default: 1)",
     )
     parser.add_argument(
+        "--mini_batch_size",
+        type=int,
+        default=128,
+        help="number of batches for ppo (default: 1)",
+    )
+    parser.add_argument(
         "--policy_value_loss_coef",
         type=float,
         default=0.5,
@@ -702,7 +713,7 @@ def create_config_parser():
     )
     parser.add_argument(
         "--use_value_active_masks",
-        action="store_false",
+        type=bool,
         default=True,
         help="by default True, whether to mask useless data in value loss.",
     )
@@ -743,8 +754,8 @@ def create_config_parser():
     # run parameters
     parser.add_argument(
         "--use_linear_lr_decay",
-        action="store_true",
         default=False,
+        type=bool,
         help="use a linear schedule on the learning rate",
     )
     # save parameters
@@ -990,7 +1001,7 @@ def create_config_parser():
     parser.add_argument(
         "--epsilon_anneal_time",
         type=int,
-        default=50000,
+        default=5000,
         help="Number of episodes until epsilon reaches epsilon_finish",
     )
     # qmix parameters
@@ -1048,7 +1059,7 @@ def create_config_parser():
     )
     parser.add_argument(
         "--use_share_model",
-        action="store_true",
+        type=bool,
         default=False,
         help="use one class to implement policy and value networks",
     )
@@ -1090,4 +1101,43 @@ def create_config_parser():
         help="the id of the vec env's info class",
     )
     parser.add_argument("--config", action=ActionConfigFile)
+
+    # selfplay parameters
+    parser.add_argument(
+        "--disable_update_enemy",
+        default=False,
+        type=bool,
+        help="whether update enemy model",
+    )
+    parser.add_argument(
+        "--least_win_rate",
+        default=0.5,
+        type=float,
+        help="least_win_rate",
+    )
+    parser.add_argument(
+        "--recent_list_max_len",
+        default=100,
+        type=int,
+        help="max length of recent player list",
+    )
+    parser.add_argument(
+        "--latest_weight",
+        default=0.5,
+        type=float,
+        help="latest_weight",
+    )
+    parser.add_argument(
+        "--newest_pos",
+        default=1,
+        type=int,
+        help="newest_pos",
+    )
+    parser.add_argument(
+        "--newest_weight",
+        default=0.5,
+        type=float,
+        help="newest_weight",
+    )
+
     return parser

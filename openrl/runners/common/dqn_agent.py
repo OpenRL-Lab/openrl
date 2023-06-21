@@ -71,7 +71,7 @@ class DQNAgent(RLAgent):
             self._env.observation_space,
             self._env.action_space,
             data_client=None,
-            episode_length=self._cfg.buffer_size,
+            episode_length=self._cfg.episode_length,
         )
 
         logger = Logger(
@@ -88,6 +88,7 @@ class DQNAgent(RLAgent):
             config=self.config,
             trainer=trainer,
             buffer=buffer,
+            agent=self,
             client=self.client,
             rank=self.rank,
             world_size=self.world_size,
@@ -102,6 +103,6 @@ class DQNAgent(RLAgent):
         observation = ObsData.prepare_input(observation)
         action, rnn_state = self.net.act(observation)
 
-        action = np.array(np.split(_t2n(action), self.env_num))
+        action = np.array(np.split(action, self.env_num))
 
         return action, rnn_state

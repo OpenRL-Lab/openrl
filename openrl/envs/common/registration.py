@@ -15,14 +15,14 @@
 # limitations under the License.
 
 """"""
-from typing import Optional
+from typing import Callable, Optional
 
 import gymnasium as gym
-from gymnasium import Env
 
 import openrl
 from openrl.envs.vec_env import (
     AsyncVectorEnv,
+    BaseVecEnv,
     RewardWrapper,
     SyncVectorEnv,
     VecMonitorWrapper,
@@ -38,8 +38,9 @@ def make(
     asynchronous: bool = False,
     add_monitor: bool = True,
     render_mode: Optional[str] = None,
+    make_custom_envs: Optional[Callable] = None,
     **kwargs,
-) -> Env:
+) -> BaseVecEnv:
     if render_mode in [None, "human", "rgb_array"]:
         convert_render_mode = render_mode
     elif render_mode in ["group_human", "group_rgb_array"]:
@@ -58,32 +59,53 @@ def make(
     else:
         raise NotImplementedError(f"render_mode {render_mode} is not supported.")
 
-    if id in gym.envs.registry.keys():
-        from openrl.envs.gymnasium import make_gym_envs
-
-        env_fns = make_gym_envs(
-            id=id, env_num=env_num, render_mode=convert_render_mode, **kwargs
-        )
-    elif id in openrl.envs.mpe_all_envs:
-        from openrl.envs.mpe import make_mpe_envs
-
-        env_fns = make_mpe_envs(
-            id=id, env_num=env_num, render_mode=convert_render_mode, **kwargs
-        )
-    elif id in openrl.envs.nlp_all_envs:
-        from openrl.envs.nlp import make_nlp_envs
-
-        env_fns = make_nlp_envs(
-            id=id, env_num=env_num, render_mode=convert_render_mode, cfg=cfg, **kwargs
-        )
-    elif id[0:14] in openrl.envs.super_mario_all_envs:
-        from openrl.envs.super_mario import make_super_mario_envs
-
-        env_fns = make_super_mario_envs(
+    if make_custom_envs is not None:
+        env_fns = make_custom_envs(
             id=id, env_num=env_num, render_mode=convert_render_mode, **kwargs
         )
     else:
-        raise NotImplementedError(f"env {id} is not supported.")
+        if id in gym.envs.registry.keys():
+            from openrl.envs.gymnasium import make_gym_envs
+
+            env_fns = make_gym_envs(
+                id=id, env_num=env_num, render_mode=convert_render_mode, **kwargs
+            )
+        elif id in openrl.envs.mpe_all_envs:
+            from openrl.envs.mpe import make_mpe_envs
+
+            env_fns = make_mpe_envs(
+                id=id, env_num=env_num, render_mode=convert_render_mode, **kwargs
+            )
+        elif id in openrl.envs.nlp_all_envs:
+            from openrl.envs.nlp import make_nlp_envs
+
+            env_fns = make_nlp_envs(
+                id=id,
+                env_num=env_num,
+                render_mode=convert_render_mode,
+                cfg=cfg,
+                **kwargs,
+            )
+        elif id[0:14] in openrl.envs.super_mario_all_envs:
+            from openrl.envs.super_mario import make_super_mario_envs
+
+            env_fns = make_super_mario_envs(
+                id=id, env_num=env_num, render_mode=convert_render_mode, **kwargs
+            )
+        elif id in openrl.envs.connect3_all_envs:
+            from openrl.envs.connect3 import make_connect3_envs
+
+            env_fns = make_connect3_envs(
+                id=id, env_num=env_num, render_mode=convert_render_mode, **kwargs
+            )
+        elif id in openrl.envs.gridworld_all_envs:
+            from openrl.envs.gridworld import make_gridworld_envs
+
+            env_fns = make_gridworld_envs(
+                id=id, env_num=env_num, render_mode=convert_render_mode, **kwargs
+            )
+        else:
+            raise NotImplementedError(f"env {id} is not supported.")
 
     if asynchronous:
         env = AsyncVectorEnv(env_fns, render_mode=render_mode)

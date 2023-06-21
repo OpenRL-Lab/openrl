@@ -16,7 +16,7 @@
 
 """"""
 
-from typing import Any, Dict, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import gymnasium as gym
 import numpy as np
@@ -86,13 +86,14 @@ class PPONet(BaseNet):
     def act(
         self,
         observation: Union[np.ndarray, Dict[str, np.ndarray]],
+        available_actions: Optional[np.ndarray] = None,
         deterministic: bool = False,
     ) -> Tuple[np.ndarray, Optional[Tuple[np.ndarray, ...]]]:
         actions, self.rnn_states_actor = self.module.act(
             obs=observation,
             rnn_states_actor=self.rnn_states_actor,
             masks=self.masks,
-            available_actions=None,
+            available_actions=available_actions,
             deterministic=deterministic,
         )
 

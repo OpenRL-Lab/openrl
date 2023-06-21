@@ -1,0 +1,23 @@
+seed: 0
+lr: 2.5e-4
+critic_lr: 2.5e-4
+episode_length: 128
+ppo_epoch: 4
+gain: 0.01
+use_linear_lr_decay: true
+use_share_model: true
+entropy_coef: 0.01
+hidden_size: 512
+num_mini_batch: 4
+clip_param: 0.1
+value_loss_coef: 0.5
+run_dir: ./run_results/
+experiment_name: atari_ppo
+log_interval: 1
+use_recurrent_policy: false
+use_valuenorm: true
+use_adv_normalize: true
+wandb_entity: openrl-lab
+
+vec_info_class:
+  id: "EPS_RewardInfo"

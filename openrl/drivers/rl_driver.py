@@ -19,7 +19,9 @@ from abc import ABC, abstractmethod
 from typing import Any, Dict, Optional
 
 from openrl.drivers.base_driver import BaseDriver
+from openrl.envs.vec_env.utils.util import prepare_available_actions
 from openrl.utils.logger import Logger
+from openrl.utils.type_aliases import MaybeCallback
 
 
 class RLDriver(BaseDriver, ABC):
@@ -28,10 +30,12 @@ class RLDriver(BaseDriver, ABC):
         config: Dict[str, Any],
         trainer,
         buffer,
+        agent,
         rank: int = 0,
         world_size: int = 1,
         client=None,
         logger: Optional[Logger] = None,
+        callback: MaybeCallback = None,
     ) -> None:
         self.trainer = trainer
         self.buffer = buffer
@@ -44,6 +48,8 @@ class RLDriver(BaseDriver, ABC):
         self.program_type = cfg.program_type
         self.envs = config["envs"]
         self.device = config["device"]
+        self.callback = callback
+        self.agent = agent
 
         assert not (
             self.program_type != "actor" and self.world_size is None
@@ -103,7 +109,10 @@ class RLDriver(BaseDriver, ABC):
         self.cfg = cfg
 
     @abstractmethod
-    def _inner_loop(self):
+    def _inner_loop(self) -> bool:
+        """
+        :return: True if training should continue, False if training should stop
+        """
         raise NotImplementedError
 
     def reset_and_buffer_init(self):
@@ -115,8 +124,11 @@ class RLDriver(BaseDriver, ABC):
             obs, info = returns
         else:
             obs = returns
-
-        self.buffer.init_buffer(obs.copy())
+            info = None
+        available_actions = prepare_available_actions(
+            info, agent_num=self.num_agents, as_batch=False
+        )
+        self.buffer.init_buffer(obs.copy(), available_actions=available_actions)
 
     @abstractmethod
     def add2buffer(self, data):
@@ -139,7 +151,9 @@ class RLDriver(BaseDriver, ABC):
         for episode in range(episodes):
             self.logger.info("Episode: {}/{}".format(episode, episodes))
             self.episode = episode
-            self._inner_loop()
+            continue_training = self._inner_loop()
+            if not continue_training:
+                break
 
     def learner_update(self):
         if self.use_linear_lr_decay:
