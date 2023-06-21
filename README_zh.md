@@ -70,6 +70,7 @@ OpenRL目前支持的环境（更多详情请参考 [Gallery](Gallery.md)）：
 - [Atari](https://gymnasium.farama.org/environments/atari/)
 - [StarCraft II](https://github.com/oxwhirl/smac)
 - [GridWorld](./examples/gridworld/)
+- [Tic-Tac-Toe](https://en.wikipedia.org/wiki/Tic-tac-toe)
 - [Super Mario Bros](https://github.com/Kautenja/gym-super-mario-bros)
 - [Gym Retro](https://github.com/openai/retro)
 
