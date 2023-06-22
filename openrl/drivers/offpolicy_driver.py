@@ -24,6 +24,7 @@ from torch.nn.parallel import DistributedDataParallel
 
 from openrl.drivers.rl_driver import RLDriver
 from openrl.utils.logger import Logger
+from openrl.utils.type_aliases import MaybeCallback
 from openrl.utils.util import _t2n
 
 
@@ -38,9 +39,18 @@ class OffPolicyDriver(RLDriver):
         world_size: int = 1,
         client=None,
         logger: Optional[Logger] = None,
+        callback: MaybeCallback = None,
     ) -> None:
         super(OffPolicyDriver, self).__init__(
-            config, trainer, buffer, agent, rank, world_size, client, logger
+            config,
+            trainer,
+            buffer,
+            agent,
+            rank,
+            world_size,
+            client,
+            logger,
+            callback=callback
         )
 
         self.buffer_minimal_size = int(config["cfg"].buffer_size * 0.2)
@@ -127,6 +137,7 @@ class OffPolicyDriver(RLDriver):
         )
 
     def actor_rollout(self):
+        self.callback.on_rollout_start()
         self.trainer.prep_rollout()
         import time
 
@@ -156,6 +167,11 @@ class OffPolicyDriver(RLDriver):
                     # print("steps: ", self.episode_steps[done_index[i]])
                     self.episode_steps[done_index[i]] = 0
 
+            # Give access to local variables
+            self.callback.update_locals(locals())
+            if self.callback.on_step() is False:
+                return {}, False
+
             # if self.verbose_flag:
             #     print("step: ", step,
             #           "state: ", self.buffer.data.get_batch_data("next_policy_obs" if step != 0 else "policy_obs", step),
@@ -179,6 +195,8 @@ class OffPolicyDriver(RLDriver):
 
         batch_rew_infos = self.envs.batch_rewards(self.buffer)
         self.first_insert_buffer = False
+
+        self.callback.on_rollout_end()
 
         if self.envs.use_monitor:
             statistics_info = self.envs.statistics(self.buffer)
