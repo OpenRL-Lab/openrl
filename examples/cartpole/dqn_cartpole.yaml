@@ -15,3 +15,12 @@ use_joint_action_loss: false
 use_valuenorm: false
 use_adv_normalize: false
 wandb_entity: openrl-lab
+
+callbacks:
+  - id: "CheckpointCallback"
+    args: {
+        "save_freq": 500, # how often to save the model
+        "save_path": "./results/checkpoints/",  # where to save the model
+        "name_prefix": "ppo", # the prefix of the saved model
+        "save_replay_buffer": True # not work yet
+    }
