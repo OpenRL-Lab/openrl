@@ -26,7 +26,10 @@ class MIXBase(nn.Module):
         self.n_mlp_input = 0
 
         for key in obs_shape:
-            if obs_shape[key].__class__.__name__ == "Box":
+            if (
+                obs_shape[key].__class__.__name__ == "Box"
+                or obs_shape[key].__class__.__name__ == "MultiBinary"
+            ):
                 key_obs_shape = obs_shape[key].shape
                 if len(key_obs_shape) == 3:
                     self.cnn_keys.append(key)

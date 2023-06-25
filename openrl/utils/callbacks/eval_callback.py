@@ -17,6 +17,7 @@
 """"""
 import os
 import warnings
+from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
 import gymnasium as gym
@@ -88,14 +89,15 @@ class EvalCallback(EventCallback):
         ] = None,
         n_eval_episodes: int = 5,
         eval_freq: int = 10000,
-        log_path: Optional[str] = None,
-        best_model_save_path: Optional[str] = None,
+        log_path: Optional[Union[str, Path]] = None,
+        best_model_save_path: Optional[Union[str, Path]] = None,
         deterministic: bool = True,
         render: bool = False,
         asynchronous: bool = True,
         verbose: int = 1,
         warn: bool = True,
         stop_logic: str = "OR",
+        close_env_at_end: bool = True,
     ):
         if isinstance(callbacks_after_eval, list):
             callbacks_after_eval = callbacks_factory.CallbackFactory.get_callbacks(
@@ -122,7 +124,7 @@ class EvalCallback(EventCallback):
         self.deterministic = deterministic
         self.render = render
         self.warn = warn
-
+        self.close_env_at_end = close_env_at_end
         if isinstance(eval_env, str) or isinstance(eval_env, dict):
             eval_env = _make_env(eval_env, render, asynchronous)
         # Convert to BaseVecEnv for consistency
@@ -174,9 +176,11 @@ class EvalCallback(EventCallback):
         info = locals_["info"]
 
         if locals_["done"]:
-            maybe_is_success = info.get("is_success")
-            if maybe_is_success is not None:
-                self._is_success_buffer.append(maybe_is_success)
+            maybe_final_info = info.get("final_info")
+            if maybe_final_info is not None:
+                maybe_is_success = maybe_final_info.get("is_success")
+                if maybe_is_success is not None:
+                    self._is_success_buffer.append(maybe_is_success)
 
     def _on_step(self) -> bool:
         continue_training = True
@@ -267,4 +271,5 @@ class EvalCallback(EventCallback):
             self.callback.update_locals(locals_)
 
     def _on_training_end(self):
-        self.eval_env.close()
+        if self.close_env_at_end:
+            self.eval_env.close()

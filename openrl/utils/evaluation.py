@@ -1,5 +1,5 @@
 # Modified from https://github.com/DLR-RM/stable-baselines3/blob/master/stable_baselines3/common/evaluation.py
-
+import copy
 import warnings
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
@@ -138,8 +138,8 @@ def evaluate_policy(
                             # Only increment at the real end of an episode
                             episode_counts[i] += 1
                     else:
-                        episode_rewards.append(current_rewards[i])
-                        episode_lengths.append(current_lengths[i])
+                        episode_rewards.append(copy.copy(current_rewards[i]))
+                        episode_lengths.append(copy.copy(current_lengths[i]))
                         episode_counts[i] += 1
 
                     current_rewards[i] = 0

@@ -63,6 +63,8 @@ def get_shape_from_obs_space_v2(obs_space, model_name=None):
         obs_shape = obs_space
     elif obs_space.__class__.__name__ == "Dict":
         obs_shape = obs_space.spaces
+    elif obs_space.__class__.__name__ == "Discrete":
+        obs_shape = [obs_space.n]
     else:
         raise NotImplementedError(
             "obs_space type {} not supported".format(obs_space.__class__.__name__)

@@ -86,6 +86,13 @@ def make(
                 cfg=cfg,
                 **kwargs,
             )
+        elif id in openrl.envs.toy_all_envs:
+            from openrl.envs.toy_envs import make_toy_envs
+
+            env_fns = make_toy_envs(
+                id=id, env_num=env_num, render_mode=convert_render_mode, **kwargs
+            )
+
         elif id[0:14] in openrl.envs.super_mario_all_envs:
             from openrl.envs.super_mario import make_super_mario_envs
 
