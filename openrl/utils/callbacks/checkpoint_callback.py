@@ -16,6 +16,8 @@
 
 """"""
 import os
+from pathlib import Path
+from typing import Union
 
 from openrl.utils.callbacks.callbacks import BaseCallback
 
@@ -44,7 +46,7 @@ class CheckpointCallback(BaseCallback):
     def __init__(
         self,
         save_freq: int,
-        save_path: str,
+        save_path: Union[str, Path],
         name_prefix: str = "rl_model",
         save_replay_buffer: bool = False,
         verbose: int = 0,
@@ -70,7 +72,9 @@ class CheckpointCallback(BaseCallback):
         """
         return os.path.join(
             self.save_path,
-            f"{self.name_prefix}_{checkpoint_type}{self.num_time_steps}_steps.{extension}",
+            (
+                f"{self.name_prefix}_{checkpoint_type}{self.num_time_steps}_steps{'.' if extension else ''}{extension}"
+            ),
         )
 
     def _on_step(self) -> bool:

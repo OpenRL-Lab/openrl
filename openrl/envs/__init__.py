@@ -12,4 +12,14 @@ connect3_all_envs = [
     "connect3",
 ]
 
+toy_all_envs = [
+    "BitFlippingEnv",
+    "FakeImageEnv",
+    "IdentityEnv",
+    "IdentityEnvBox",
+    "IdentityEnvMultiBinary",
+    "IdentityEnvMultiDiscrete",
+    "SimpleMultiObsEnv",
+    "SimpleMultiObsEnv",
+]
 gridworld_all_envs = ["GridWorldEnv", "GridWorldEnvRandomGoal"]

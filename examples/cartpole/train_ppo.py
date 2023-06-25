@@ -23,6 +23,7 @@ def train():
     agent = Agent(net)
     # start training, set total number of training steps to 20000
     agent.train(total_time_steps=20000)
+
     env.close()
     return agent
 

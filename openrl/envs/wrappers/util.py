@@ -36,6 +36,8 @@ def nest_expand_dim(input: Any) -> Any:
         return input
     elif isinstance(input, Box):
         return [input]
+    elif isinstance(input, np.int64):
+        return [input]
     else:
         raise NotImplementedError("Not support type: {}".format(type(input)))
 
