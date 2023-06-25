@@ -31,8 +31,8 @@ from openrl.utils.callbacks.callbacks import (
     BaseCallback,
     CallbackList,
     ConvertCallback,
-    ProgressBarCallback,
 )
+from openrl.utils.callbacks.processbar_callback import ProgressBarCallback
 from openrl.utils.type_aliases import MaybeCallback
 
 
