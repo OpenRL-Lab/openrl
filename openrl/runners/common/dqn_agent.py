@@ -50,11 +50,11 @@ class DQNAgent(RLAgent):
         )
 
     def train(
-            self: SelfAgent,
-            total_time_steps: int,
-            callback: MaybeCallback = None,
-            train_algo_class: Type[BaseAlgorithm] = DQNAlgorithm,
-            logger: Optional[Logger] = None,
+        self: SelfAgent,
+        total_time_steps: int,
+        callback: MaybeCallback = None,
+        train_algo_class: Type[BaseAlgorithm] = DQNAlgorithm,
+        logger: Optional[Logger] = None,
     ) -> None:
         self._cfg.num_env_steps = total_time_steps
 
@@ -120,9 +120,7 @@ class DQNAgent(RLAgent):
         callback.on_training_end()
 
     def act(
-        self,
-        observation: Union[np.ndarray, Dict[str, np.ndarray]],
-        deterministic=None
+        self, observation: Union[np.ndarray, Dict[str, np.ndarray]], deterministic=None
     ) -> Tuple[np.ndarray, Optional[Tuple[np.ndarray, ...]]]:
         assert self.net is not None, "net is None"
         observation = ObsData.prepare_input(observation)

@@ -97,7 +97,7 @@ class StopTrainingOnMaxEpisodes(BaseCallback):
 
             print(
                 f"Stopping training with a total of {self.num_time_steps} steps because"
-                f" the training agent reached"
+                " the training agent reached"
                 f" max_episodes={self.max_episodes}, by playing for"
                 f" {self.n_episodes} episodes {mean_ep_str}"
             )

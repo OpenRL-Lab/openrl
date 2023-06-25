@@ -3,12 +3,12 @@ from typing import Any, Dict, List, Type, Union
 from openrl.utils.callbacks.callbacks import BaseCallback, CallbackList, EveryNTimesteps
 from openrl.utils.callbacks.checkpoint_callback import CheckpointCallback
 from openrl.utils.callbacks.eval_callback import EvalCallback
+from openrl.utils.callbacks.processbar_callback import ProgressBarCallback
 from openrl.utils.callbacks.stop_callback import (
-    StopTrainingOnRewardThreshold,
     StopTrainingOnMaxEpisodes,
     StopTrainingOnNoModelImprovement,
+    StopTrainingOnRewardThreshold,
 )
-from openrl.utils.callbacks.processbar_callback import ProgressBarCallback
 
 callbacks_dict = {
     "CheckpointCallback": CheckpointCallback,

@@ -6,12 +6,10 @@ from typing import Any, Callable, Dict, List, Optional, Union
 
 import gym
 
-from openrl.utils.logger import Logger
-
-
+import openrl.utils.callbacks.callbacks_factory as callbacks_factory
 from openrl.envs.vec_env import BaseVecEnv
 from openrl.runners.common.base_agent import BaseAgent
-import openrl.utils.callbacks.callbacks_factory as callbacks_factory
+from openrl.utils.logger import Logger
 
 
 class BaseCallback(ABC):

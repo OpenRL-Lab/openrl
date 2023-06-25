@@ -50,7 +50,7 @@ class OffPolicyDriver(RLDriver):
             world_size,
             client,
             logger,
-            callback=callback
+            callback=callback,
         )
 
         self.buffer_minimal_size = int(config["cfg"].buffer_size * 0.2)

@@ -17,17 +17,17 @@
 """"""
 import os
 import warnings
-from typing import Any, Dict, Optional, Union, List
+from typing import Any, Dict, List, Optional, Union
 
 import gymnasium as gym
 import numpy as np
 
+import openrl.utils.callbacks.callbacks_factory as callbacks_factory
 from openrl.envs.common import make
 from openrl.envs.vec_env import BaseVecEnv, SyncVectorEnv
 from openrl.envs.wrappers.monitor import Monitor
 from openrl.utils.callbacks.callbacks import BaseCallback, EventCallback
 from openrl.utils.evaluation import evaluate_policy
-import openrl.utils.callbacks.callbacks_factory as callbacks_factory
 
 env_wrappers = [
     Monitor,
