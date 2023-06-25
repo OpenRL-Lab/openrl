@@ -166,7 +166,7 @@ class BitFlippingEnv(Env):
         self,
         *,
         seed: Optional[int] = None,
-        options: Optional[dict[str, Any]] = None,
+        options: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Union[int, np.ndarray]]:
         if seed is not None:
             self.seed(seed)

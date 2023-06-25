@@ -49,7 +49,7 @@ class IdentityEnv(gym.Env, Generic[T]):
         self,
         *,
         seed: Optional[int] = None,
-        options: Optional[dict[str, Any]] = None,
+        options: Optional[Dict[str, Any]] = None,
     ) -> T:
         if seed is not None:
             self.seed = seed
