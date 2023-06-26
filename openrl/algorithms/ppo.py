@@ -107,7 +107,6 @@ class PPOAlgorithm(BaseAlgorithm):
                 active_masks_batch,
                 turn_on,
             )
-
             for loss in loss_list:
                 loss.backward()
 
