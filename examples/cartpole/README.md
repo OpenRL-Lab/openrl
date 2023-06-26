@@ -18,3 +18,5 @@ If you want to evaluate the agent during training and save the best model and sa
 ```shell
 python train_ppo.py --config callbacks.yaml
 ```
+
+More details about callbacks can be found in [Callbacks](https://openrl-docs.readthedocs.io/en/latest/callbacks/index.html).
