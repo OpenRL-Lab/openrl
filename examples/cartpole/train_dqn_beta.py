@@ -19,7 +19,7 @@ def train():
     # 初始化训练器
     agent = Agent(net)
     # 开始训练
-    agent.train(total_time_steps=40000)
+    agent.train(total_time_steps=4000)
     env.close()
     return agent
 
@@ -33,8 +33,8 @@ def evaluation(agent):
     step = 0
     while not np.any(done):
         # 智能体根据 observation 预测下一个动作
-        action, _ = agent.act(obs["policy"])
-        obs, r, done, info = env.step(action[0])
+        action, _ = agent.act(obs)
+        obs, r, done, info = env.step(action)
         step += 1
         print(f"{step}: reward:{np.mean(r)}")
     env.close()
