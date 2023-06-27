@@ -16,13 +16,13 @@
 
 """"""
 
-import numpy as np
 import pickle
-from tqdm.rich import tqdm
+
+import numpy as np
 from gymnasium.core import ActType
+from tqdm.rich import tqdm
 
 from openrl.envs.vec_env.base_venv import BaseVecEnv
-
 from openrl.envs.vec_env.wrappers.base_wrapper import VecEnvWrapper
 from openrl.envs.wrappers.monitor import Monitor
 

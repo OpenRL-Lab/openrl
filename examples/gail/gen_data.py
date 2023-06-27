@@ -1,16 +1,16 @@
 """
 Used for generate offline data for GAIL.
 """
-import numpy as np
 import pickle
+
+import numpy as np
 from tqdm.rich import tqdm
 
 from openrl.configs.config import create_config_parser
 from openrl.envs.common import make
+from openrl.envs.wrappers.monitor import Monitor
 from openrl.modules.common import PPONet as Net
 from openrl.runners.common import PPOAgent as Agent
-from openrl.envs.wrappers.monitor import Monitor
-
 
 env_wrappers = [
     Monitor,

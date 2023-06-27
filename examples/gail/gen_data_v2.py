@@ -2,12 +2,12 @@
 Used for generate offline data for GAIL.
 """
 
+from openrl.configs.config import create_config_parser
 from openrl.envs.common import make
+from openrl.envs.vec_env.wrappers.gen_data import GenDataWrapper
+from openrl.envs.wrappers.monitor import Monitor
 from openrl.modules.common import PPONet as Net
 from openrl.runners.common import PPOAgent as Agent
-from openrl.envs.wrappers.monitor import Monitor
-from openrl.envs.vec_env.wrappers.gen_data import GenDataWrapper
-from openrl.configs.config import create_config_parser
 
 env_wrappers = [
     Monitor,
