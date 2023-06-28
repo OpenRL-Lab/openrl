@@ -29,7 +29,7 @@ from openrl.modules.utils.util import get_gard_norm, huber_loss, mse_loss
 from openrl.utils.util import check
 
 
-class PPOAlgorithm(BaseAlgorithm):
+class GAILAlgorithm(BaseAlgorithm):
     def __init__(
         self,
         cfg,
@@ -39,7 +39,7 @@ class PPOAlgorithm(BaseAlgorithm):
     ) -> None:
         self._use_share_model = cfg.use_share_model
         self.use_joint_action_loss = cfg.use_joint_action_loss
-        super(PPOAlgorithm, self).__init__(cfg, init_module, agent_num, device)
+        super(GAILAlgorithm, self).__init__(cfg, init_module, agent_num, device)
 
     def ppo_update(self, sample, turn_on=True):
         for optimizer in self.algo_module.optimizers.values():

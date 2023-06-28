@@ -3,6 +3,7 @@ mpe_all_envs = [
 ]
 nlp_all_envs = [
     "daily_dialog",
+    "fake_dialog_data",
 ]
 super_mario_all_envs = [
     "SuperMarioBros",

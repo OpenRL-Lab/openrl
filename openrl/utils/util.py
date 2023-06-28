@@ -39,7 +39,6 @@ def get_system_info() -> Dict[str, str]:
     """
     Retrieve system and python env info for the current system.
 
-    :param print_info: Whether to print or not those infos
     :return: Dictionary summing up the version for each relevant package
         and a formatted string.
     """

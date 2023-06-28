@@ -2,9 +2,11 @@ from typing import Any, Dict, List, Union
 
 import numpy as np
 
+from openrl.envs.vec_env.base_venv import BaseVecEnv
+
 
 class BaseReward(object):
-    def __init__(self):
+    def __init__(self, env: BaseVecEnv):
         self.step_reward_fn = dict()
         self.inner_reward_fn = dict()
         self.batch_reward_fn = dict()

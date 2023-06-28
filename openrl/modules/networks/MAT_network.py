@@ -294,6 +294,7 @@ class MultiAgentTransformer(BaseValuePolicyNetwork):
         action_space,
         device=torch.device("cpu"),
         use_half=False,
+        extra_args=None,
     ):
         assert use_half == False, "half precision not supported for MAT algorithm"
         super(MultiAgentTransformer, self).__init__(cfg, device)

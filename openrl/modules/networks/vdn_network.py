@@ -38,6 +38,7 @@ class VDNNetwork(BaseValuePolicyNetwork):
         action_space,
         device=torch.device("cpu"),
         use_half=False,
+        extra_args=None,
     ) -> None:
         super(VDNNetwork, self).__init__(cfg, device)
         self.hidden_size = cfg.hidden_size

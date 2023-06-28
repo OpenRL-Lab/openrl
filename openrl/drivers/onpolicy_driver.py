@@ -23,7 +23,6 @@ from torch.nn.parallel import DistributedDataParallel
 
 from openrl.drivers.rl_driver import RLDriver
 from openrl.envs.vec_env.utils.util import prepare_available_actions
-from openrl.runners.common.base_agent import BaseAgent
 from openrl.utils.logger import Logger
 from openrl.utils.type_aliases import MaybeCallback
 from openrl.utils.util import _t2n
@@ -157,7 +156,6 @@ class OnPolicyDriver(RLDriver):
         self.callback.on_rollout_start()
 
         self.trainer.prep_rollout()
-        import time
 
         for step in range(self.episode_length):
             values, actions, action_log_probs, rnn_states, rnn_states_critic = self.act(

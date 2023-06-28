@@ -87,14 +87,5 @@ def test_dqn_algorithm(config, init_module, buffer_data):
     dqn_algo.train(buffer_data)
 
 
-@pytest.mark.unittest
-def test_dqn_algorithm_amp(config, init_module, buffer_data):
-    from openrl.algorithms.dqn import DQNAlgorithm
-
-    dqn_algo = DQNAlgorithm(config, init_module)
-
-    dqn_algo.train(buffer_data)
-
-
 if __name__ == "__main__":
     sys.exit(pytest.main(["-sv", os.path.basename(__file__)]))

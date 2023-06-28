@@ -13,7 +13,7 @@ class RewardFactory:
     def get_reward_class(reward_class: Any, env: BaseVecEnv):
         RewardFactory.auto_register(reward_class)
         if reward_class is None or reward_class.id is None:
-            return registed_rewards["default"]()
+            return registed_rewards["default"](env)
         return registed_rewards[reward_class.id](env, **reward_class.args)
 
     @staticmethod
@@ -28,3 +28,7 @@ class RewardFactory:
             from openrl.rewards.nlp_reward import NLPReward
 
             registed_rewards.update({"NLPReward": NLPReward})
+        elif reward_class.id == "GAILReward":
+            from openrl.rewards.gail_reward import GAILReward
+
+            registed_rewards.update({"GAILReward": GAILReward})
