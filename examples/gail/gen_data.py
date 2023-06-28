@@ -38,7 +38,6 @@ def train():
 def gen_data():
     # begin to test
     # Create an environment for testing and set the number of environments to interact with to 9. Set rendering mode to group_human.
-    render_mode = "group_human"
     render_mode = None
     env = make(
         "CartPole-v1",
@@ -47,11 +46,9 @@ def gen_data():
         asynchronous=True,
         env_wrappers=env_wrappers,
     )
-    # env = GenDataWrapper(env, data_save_path="data.pkl", total_episode=5000)
 
     agent = Agent(Net(env))
     agent.load("ppo_agent")
-    # Initialize the environment and get initial observations and environmental information.
 
     env = GenDataWrapper(env, data_save_path="data.pkl", total_episode=5000)
     obs, info = env.reset()
@@ -64,5 +61,5 @@ def gen_data():
 
 
 if __name__ == "__main__":
-    # agent = train()
+    train()
     gen_data()
