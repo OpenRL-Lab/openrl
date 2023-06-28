@@ -52,7 +52,8 @@ def create_config_parser():
         help="do imitation learning with gail",
     )
     parser.add_argument(
-        "--gail-experts-dir",
+        "--expert_data",
+        type=str,
         default="./gail_experts",
         help="directory that contains expert demonstrations for gail",
     )

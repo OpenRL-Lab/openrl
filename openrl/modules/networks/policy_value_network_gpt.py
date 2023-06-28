@@ -32,6 +32,7 @@ class PolicyValueNetworkGPT(CausalLMActorCriticPolicy):
         device=torch.device("cpu"),
         use_half=False,
         disable_drop_out: bool = True,
+        extra_args=None,
     ):
         self.disable_drop_out = disable_drop_out
         self._use_valuenorm = cfg.use_valuenorm

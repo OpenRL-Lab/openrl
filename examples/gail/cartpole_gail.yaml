@@ -1,0 +1,3 @@
+expert_data: "./data.pkl"
+reward_class:
+  id: "GAILReward"

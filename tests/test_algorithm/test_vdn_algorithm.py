@@ -88,14 +88,5 @@ def test_vdn_algorithm(config, init_module, buffer_data):
     vdn_algo.train(buffer_data)
 
 
-@pytest.mark.unittest
-def test_vdn_algorithm_amp(config, init_module, buffer_data):
-    from openrl.algorithms.vdn import VDNAlgorithm
-
-    vdn_algo = VDNAlgorithm(config, init_module)
-
-    vdn_algo.train(buffer_data)
-
-
 if __name__ == "__main__":
     sys.exit(pytest.main(["-sv", os.path.basename(__file__)]))

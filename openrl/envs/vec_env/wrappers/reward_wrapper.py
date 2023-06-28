@@ -51,7 +51,8 @@ class RewardWrapper(VecEnvWrapper):
                     for j in range(len(infos[i])):
                         infos[i][j].update(new_infos[i])
                 else:
-                    infos[i].update(new_infos[i])
+                    if len(new_infos) > 0:
+                        infos[i].update(new_infos[i])
 
         return obs, rewards, dones, infos
 

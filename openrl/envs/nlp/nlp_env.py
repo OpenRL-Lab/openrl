@@ -3,6 +3,7 @@ from typing import Any, Optional
 from gymnasium import Env
 
 from .daily_dialog_env import DailyDialogEnv
+from .fake_dialog_env import FakeDialogEnv
 
 
 def make(
@@ -13,6 +14,8 @@ def make(
 ) -> Env:
     if id == "daily_dialog":
         env = DailyDialogEnv(cfg=cfg)
+    elif id == "fake_dialog_data":
+        env = FakeDialogEnv(cfg=cfg)
     else:
         raise NotImplementedError
 

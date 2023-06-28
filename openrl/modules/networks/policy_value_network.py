@@ -38,6 +38,7 @@ class PolicyValueNetwork(BaseValuePolicyNetwork):
         action_space,
         device=torch.device("cpu"),
         use_half=False,
+        extra_args=None,
     ):
         super(PolicyValueNetwork, self).__init__(cfg, device)
         self._gain = cfg.gain
