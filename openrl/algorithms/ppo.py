@@ -40,6 +40,7 @@ class PPOAlgorithm(BaseAlgorithm):
         self._use_share_model = cfg.use_share_model
         self.use_joint_action_loss = cfg.use_joint_action_loss
         super(PPOAlgorithm, self).__init__(cfg, init_module, agent_num, device)
+        self.train_list = [self.train_ppo]
 
     def ppo_update(self, sample, turn_on=True):
         for optimizer in self.algo_module.optimizers.values():
@@ -357,7 +358,7 @@ class PPOAlgorithm(BaseAlgorithm):
             )
         return data_generator
 
-    def train(self, buffer, turn_on=True):
+    def train_ppo(self, buffer, turn_on):
         if self._use_popart or self._use_valuenorm:
             if self._use_share_model:
                 value_normalizer = self.algo_module.models["model"].value_normalizer
@@ -428,6 +429,13 @@ class PPOAlgorithm(BaseAlgorithm):
 
         for k in train_info.keys():
             train_info[k] /= num_updates
+
+        return train_info
+
+    def train(self, buffer, turn_on=True):
+        train_info = {}
+        for train_func in self.train_list:
+            train_info.update(train_func(buffer, turn_on))
 
         for optimizer in self.algo_module.optimizers.values():
             if hasattr(optimizer, "sync_lookahead"):

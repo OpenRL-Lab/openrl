@@ -163,6 +163,7 @@ class OnPolicyDriver(RLDriver):
             )
 
             extra_data = {
+                "actions": actions,
                 "values": values,
                 "action_log_probs": action_log_probs,
                 "step": step,
@@ -170,6 +171,7 @@ class OnPolicyDriver(RLDriver):
             }
 
             obs, rewards, dones, infos = self.envs.step(actions, extra_data)
+
             self.agent.num_time_steps += self.envs.parallel_env_num
             # Give access to local variables
             self.callback.update_locals(locals())
@@ -244,9 +246,6 @@ class OnPolicyDriver(RLDriver):
         ) = self.trainer.algo_module.get_actions(
             self.buffer.data.get_batch_data("critic_obs", step),
             self.buffer.data.get_batch_data("policy_obs", step),
-            # np.concatenate(self.buffer.data.rnn_states[step]),
-            # np.concatenate(self.buffer.data.rnn_states_critic[step]),
-            # np.concatenate(self.buffer.data.masks[step]),
             self.buffer.data.get_batch_data("rnn_states", step),
             self.buffer.data.get_batch_data("rnn_states_critic", step),
             self.buffer.data.get_batch_data("masks", step),

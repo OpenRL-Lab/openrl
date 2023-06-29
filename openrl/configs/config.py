@@ -54,7 +54,7 @@ def create_config_parser():
     parser.add_argument(
         "--expert_data",
         type=str,
-        default="./gail_experts",
+        default=None,
         help="directory that contains expert demonstrations for gail",
     )
     parser.add_argument(
@@ -76,10 +76,10 @@ def create_config_parser():
         "--gail_epoch", type=int, default=5, help="gail epochs (default: 5)"
     )
     parser.add_argument(
-        "--disable_action",
-        action="store_true",
-        default=False,
-        help="whether to use action as the input of the discriminator",
+        "--gail_use_action",
+        type=bool,
+        default=True,
+        help="whether to use action as the input of the gail discriminator",
     )
     parser.add_argument(
         "--gail_hidden_size",
