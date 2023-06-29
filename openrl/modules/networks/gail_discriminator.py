@@ -41,9 +41,9 @@ class Discriminator(nn.Module):
         layer_num = cfg.gail_layer_num
         self.cfg = cfg
         self.device = device
-        self.share_obs_process_func = (
-            extra_args["share_obs_process_func"]
-            if extra_args is not None and "share_obs_process_func" in extra_args
+        self.critic_obs_process_func = (
+            extra_args["critic_obs_process_func"]
+            if extra_args is not None and "critic_obs_process_func" in extra_args
             else lambda _: _
         )
 
@@ -72,9 +72,9 @@ class Discriminator(nn.Module):
     ):
         alpha = torch.rand(expert_state.size(0), 1)
 
-        if not self.cfg.disable_action:
-            expert_data = torch.cat([expert_state, expert_action], dim=1)
-            policy_data = torch.cat([policy_state, policy_action], dim=1)
+        if self.cfg.gail_use_action:
+            expert_data = torch.cat([expert_state, expert_action], dim=-1)
+            policy_data = torch.cat([policy_state, policy_action], dim=-1)
         else:
             expert_data = expert_state
             policy_data = policy_state
@@ -101,10 +101,10 @@ class Discriminator(nn.Module):
     def update(self, expert_loader, buffer, obsfilt=None):
         self.train()
 
-        policy_data_generator = buffer.feed_forward_share_obs_generator(
+        policy_data_generator = buffer.feed_forward_critic_obs_generator(
             None,
             mini_batch_size=expert_loader.batch_size,
-            share_obs_process_func=self.share_obs_process_func,
+            critic_obs_process_func=self.critic_obs_process_func,
         )
 
         loss = 0
@@ -113,27 +113,32 @@ class Discriminator(nn.Module):
             policy_state, policy_action = policy_batch[0], policy_batch[4]
             policy_state = torch.from_numpy(policy_state).to(self.device)
 
-            if not self.cfg.disable_action:
+            if self.cfg.gail_use_action:
                 policy_action = torch.from_numpy(policy_action).to(self.device)
 
-            if self.cfg.disable_action:
-                policy_d = self.gail_out(self.base(policy_state))
-            else:
+            if self.cfg.gail_use_action:
                 policy_d = self.gail_out(
-                    self.base(torch.cat([policy_state, policy_action], dim=1))
+                    self.base(torch.cat([policy_state, policy_action], dim=-1))
                 )
 
+            else:
+                policy_d = self.gail_out(self.base(policy_state))
+
             expert_state, expert_action = expert_batch
+            expert_state = expert_state.reshape(-1, *expert_state.shape[2:])
+            expert_action = expert_action.reshape(-1, *expert_action.shape[2:])
+
             if obsfilt is not None:
                 expert_state = obsfilt(expert_state.numpy(), update=False)
                 expert_state = torch.FloatTensor(expert_state).to(self.device)
             else:
                 expert_state = expert_state.to(self.device)
 
-            if not self.cfg.disable_action:
+            if self.cfg.gail_use_action:
                 expert_action = expert_action.to(self.device)
+
                 expert_d = self.gail_out(
-                    self.base(torch.cat([expert_state, expert_action], dim=1))
+                    self.base(torch.cat([expert_state, expert_action], dim=-1))
                 )
             else:
                 expert_d = self.gail_out(self.base(expert_state))
@@ -161,67 +166,23 @@ class Discriminator(nn.Module):
             self.optimizer.step()
         return loss / n if n > 0 else 0
 
-    def predict_share_obs_reward(self, state, action, gamma, masks, update_rms=True):
-        with torch.no_grad():
-            self.eval()
-            state_shape = state.shape
-            masks_shape = masks.shape
-
-            state = self.share_obs_process_func(state.reshape(-1, state_shape[-1]))
-
-            state = torch.from_numpy(state).to(self.device)
-
-            masks = torch.from_numpy(masks).to(self.device).reshape(-1, masks_shape[-1])
-            if not self.cfg.disable_action:
-                action_shape = action.shape
-                action = (
-                    torch.from_numpy(action)
-                    .to(self.device)
-                    .reshape(-1, action_shape[-1])
-                )
-                d = self.gail_out(self.base(torch.cat([state, action], dim=1)))
-            else:
-                d = self.gail_out(self.base(state))
-
-            s = torch.sigmoid(d) + 1e-8
-            reward = 1 - s
-            reward = reward - 0.5
-
-            if self.returns is None:
-                self.returns = reward.clone()
-
-            if update_rms:
-                self.returns = self.returns * masks * gamma + reward
-                self.ret_rms.update(self.returns.cpu().numpy())
-
-                reward = reward / np.sqrt(self.ret_rms.var[0] + 1e-8)
-
-            reward = (
-                reward.reshape((state_shape[0], 1, reward.shape[-1]))
-                .cpu()
-                .numpy()
-                .repeat(masks_shape[1], axis=1)
-            )
-
-            return reward
-
     def predict_reward(self, state, action, gamma, masks, update_rms=True):
         with torch.no_grad():
             self.eval()
             state_shape = state.shape
             masks_shape = masks.shape
-            state = self.share_obs_process_func(state.reshape(-1, state_shape[-1]))
+            state = self.critic_obs_process_func(state.reshape(-1, state_shape[-1]))
             state = torch.from_numpy(state).to(self.device)
 
             masks = torch.from_numpy(masks).to(self.device).reshape(-1, masks_shape[-1])
-            if not self.cfg.disable_action:
+            if self.cfg.gail_use_action:
                 action_shape = action.shape
                 action = (
                     torch.from_numpy(action)
                     .to(self.device)
                     .reshape(-1, action_shape[-1])
                 )
-                d = self.gail_out(self.base(torch.cat([state, action], dim=1)))
+                d = self.gail_out(self.base(torch.cat([state, action], dim=-1)))
             else:
                 d = self.gail_out(self.base(state))
 

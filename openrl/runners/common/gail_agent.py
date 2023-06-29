@@ -15,13 +15,18 @@
 # limitations under the License.
 
 """"""
-from typing import Optional, Union
+from typing import Optional, Type, Union
 
 import gym
 import torch
 
+from openrl.algorithms.base_algorithm import BaseAlgorithm
+from openrl.algorithms.gail import GAILAlgorithm
 from openrl.modules.common import BaseNet
+from openrl.runners.common.base_agent import SelfAgent
 from openrl.runners.common.ppo_agent import PPOAgent
+from openrl.utils.logger import Logger
+from openrl.utils.type_aliases import MaybeCallback
 
 
 class GAILAgent(PPOAgent):
@@ -35,7 +40,7 @@ class GAILAgent(PPOAgent):
         world_size: int = 1,
         use_wandb: bool = False,
         use_tensorboard: bool = False,
-        project_name: str = "PPOAgent",
+        project_name: str = "GAILAgent",
     ) -> None:
         super(GAILAgent, self).__init__(
             net,
@@ -48,3 +53,12 @@ class GAILAgent(PPOAgent):
             use_tensorboard,
             project_name=project_name,
         )
+
+    def train(
+        self: SelfAgent,
+        total_time_steps: int,
+        callback: MaybeCallback = None,
+        train_algo_class: Type[BaseAlgorithm] = GAILAlgorithm,
+        logger: Optional[Logger] = None,
+    ) -> None:
+        super().train(total_time_steps, callback, train_algo_class, logger)

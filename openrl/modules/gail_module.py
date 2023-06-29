@@ -34,12 +34,13 @@ class GAILModule(PPOModule):
             ), "critic_input_space must be 1D, but got {}".format(
                 self.critic_input_space.shape
             )
-            if cfg.disable_action:
-                gail_input_space = self.critic_input_space.shape[0]
-            else:
+
+            if cfg.gail_use_action:
                 gail_input_space = self.critic_input_space.shape[
                     0
                 ] + get_shape_from_act_space(self.act_space)
+            else:
+                gail_input_space = self.critic_input_space.shape[0]
         else:
             gail_input_space = cfg.dis_input_len
 
@@ -53,9 +54,3 @@ class GAILModule(PPOModule):
             input_space=gail_input_space,
         )
         return model_configs
-
-    def lr_decay(self, episode, episodes):
-        super(GAILModule, self).lr_decay(episode, episodes)
-        update_linear_schedule(
-            self.optimizers["gail_discriminator"], episode, episodes, self.cfg.gail_lr
-        )
