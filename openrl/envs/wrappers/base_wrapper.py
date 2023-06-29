@@ -15,7 +15,7 @@
 # limitations under the License.
 
 """"""
-from typing import Any, SupportsFloat, TypeVar
+from typing import Any, SupportsFloat, TypeVar, Dict
 
 import gymnasium as gym
 from gymnasium.core import ActType, ObsType
@@ -67,7 +67,7 @@ class BaseRewardWrapper(BaseWrapper):
 
     def step(
         self, action: ActType
-    ) -> tuple[ObsType, SupportsFloat, bool, bool, dict[str, Any]]:
+    ) -> tuple[ObsType, SupportsFloat, bool, bool, Dict[str, Any]]:
         """Modifies the :attr:`env` :meth:`step` reward using :meth:`self.reward`."""
         returns = self.env.step(action)
         return returns[0], self.reward(returns[1]), *returns[2:]
