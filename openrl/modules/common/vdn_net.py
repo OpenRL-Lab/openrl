@@ -26,6 +26,7 @@ from openrl.configs.config import create_config_parser
 from openrl.modules.common.base_net import BaseNet
 from openrl.modules.vdn_module import VDNModule
 from openrl.utils.util import set_seed
+from openrl.utils.util import _t2n
 
 
 class VDNNet(BaseNet):
@@ -73,6 +74,7 @@ class VDNNet(BaseNet):
             model_dict=model_dict,
         )
 
+        self.n_rollout_threads = cfg.n_rollout_threads
         self.cfg = cfg
         self.env = env
         self.device = device
@@ -82,14 +84,17 @@ class VDNNet(BaseNet):
     def act(
         self, observation: Union[np.ndarray, Dict[str, np.ndarray]]
     ) -> Tuple[np.ndarray, Optional[Tuple[np.ndarray, ...]]]:
-        actions, self.rnn_states_actor = self.module.act(
+        q_values, self.rnn_states_actor = self.module.act(
             obs=observation,
             rnn_states_actor=self.rnn_states_actor,
             masks=self.masks,
             available_actions=None,
         )
+        q_values = np.array(np.split(_t2n(q_values), self.n_rollout_threads))
+        actions = np.expand_dims(q_values.argmax(axis=-1), axis=-1)
 
         return actions, self.rnn_states_actor
+
 
     def reset(self, env: Optional[gym.Env] = None) -> None:
         if env is not None:

@@ -109,14 +109,15 @@ def evaluate_policy(
             if episode_counts[i] < episode_count_targets[i]:
                 # unpack values so that the callback can access the local variables
                 reward = rewards[i]
-                done = dones[i]
+                all_dones = np.all(dones[i])
+                done = all_dones
                 info = infos[i]
                 episode_starts[i] = done
 
                 if callback is not None:
                     callback(locals(), globals())
 
-                if dones[i]:
+                if all_dones:
                     if is_monitor_wrapped:
                         # Atari wrapper can send a "done" signal when
                         # the agent loses a life, but it does not correspond

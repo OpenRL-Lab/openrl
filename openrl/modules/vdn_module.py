@@ -129,10 +129,10 @@ class VDNModule(RLModule):
         return q_tot, max_next_q_tot
 
     def act(self, obs, rnn_states_actor, masks, available_actions=None):
-        model = self.models["qmix_net"]
+        model = self.models["vdn_net"]
 
         q_values, rnn_states_actor = model(
-            "get_values",
+            "eval_values",
             obs,
             rnn_states_actor,
             masks,
@@ -142,7 +142,7 @@ class VDNModule(RLModule):
         return q_values, rnn_states_actor
 
     def get_critic_value_normalizer(self):
-        return self.models["q_net"].value_normalizer
+        return self.models["vdn_net"].value_normalizer
 
     @staticmethod
     def init_rnn_states(

@@ -245,7 +245,7 @@ class OffPolicyReplayData(ReplayData):
 
         assert (batch_size - n_rollout_threads) >= mini_batch_size
         sampler = BatchSampler(
-            SubsetRandomSampler(range(batch_size - n_rollout_threads)),
+            SubsetRandomSampler(range(batch_size - n_rollout_threads - (num_agents - 1))),
             mini_batch_size,
             drop_last=True,
         )
