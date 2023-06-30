@@ -20,14 +20,15 @@ GAMMA = 0.9  # reward discount
 TAU = 0.01  # soft replacement
 MEMORY_CAPACITY = 10000
 BATCH_SIZE = 32
-TAU = 0.01
 RENDER = False
 ENV_NAME = 'Pendulum-v1'
+# ENV_NAME = "MountainCarContinuous-v0"
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
 ###############################  DDPG  ####################################
+
 
 class ANet(nn.Module):  # ae(s)=a
     def __init__(self, s_dim, a_dim):
@@ -65,9 +66,20 @@ class CNet(nn.Module):  # ae(s)=a
 
 
 class DDPG(object):
-    def __init__(self, a_dim, s_dim, a_bound, ):
-        self.a_dim, self.s_dim, self.a_bound = a_dim, s_dim, a_bound,
-        self.memory = np.zeros((MEMORY_CAPACITY, s_dim * 2 + a_dim + 1), dtype=np.float32)
+    def __init__(
+        self,
+        a_dim,
+        s_dim,
+        a_bound,
+    ):
+        self.a_dim, self.s_dim, self.a_bound = (
+            a_dim,
+            s_dim,
+            a_bound,
+        )
+        self.memory = np.zeros(
+            (MEMORY_CAPACITY, s_dim * 2 + a_dim + 1), dtype=np.float32
+        )
         self.pointer = 0
 
         self.Actor_eval = ANet(s_dim, a_dim).to(device)
@@ -86,18 +98,30 @@ class DDPG(object):
 
     def learn(self):
         for x in self.Actor_target.state_dict().keys():
-            eval('self.Actor_target.' + x + '.data.mul_((1-TAU))')
-            eval('self.Actor_target.' + x + '.data.add_(TAU*self.Actor_eval.' + x + '.data)')
+            eval("self.Actor_target." + x + ".data.mul_((1-TAU))")
+            eval(
+                "self.Actor_target."
+                + x
+                + ".data.add_(TAU*self.Actor_eval."
+                + x
+                + ".data)"
+            )
         for x in self.Critic_target.state_dict().keys():
-            eval('self.Critic_target.' + x + '.data.mul_((1-TAU))')
-            eval('self.Critic_target.' + x + '.data.add_(TAU*self.Critic_eval.' + x + '.data)')
+            eval("self.Critic_target." + x + ".data.mul_((1-TAU))")
+            eval(
+                "self.Critic_target."
+                + x
+                + ".data.add_(TAU*self.Critic_eval."
+                + x
+                + ".data)"
+            )
 
         indices = np.random.choice(MEMORY_CAPACITY, size=BATCH_SIZE)
         bt = self.memory[indices, :]
-        bs = torch.FloatTensor(bt[:, :self.s_dim]).to(device)
-        ba = torch.FloatTensor(bt[:, self.s_dim: self.s_dim + self.a_dim]).to(device)
-        br = torch.FloatTensor(bt[:, -self.s_dim - 1: -self.s_dim]).to(device)
-        bs_ = torch.FloatTensor(bt[:, -self.s_dim:]).to(device)
+        bs = torch.FloatTensor(bt[:, : self.s_dim]).to(device)
+        ba = torch.FloatTensor(bt[:, self.s_dim : self.s_dim + self.a_dim]).to(device)
+        br = torch.FloatTensor(bt[:, -self.s_dim - 1 : -self.s_dim]).to(device)
+        bs_ = torch.FloatTensor(bt[:, -self.s_dim :]).to(device)
 
         a = self.Actor_eval(bs)
         q = self.Critic_eval(bs, a)  # loss=-q=-ce（s,ae（s））更新ae   ae（s）=a   ae（s_）=a_
@@ -105,12 +129,15 @@ class DDPG(object):
         loss_a = -torch.mean(q)
         # print(q)
         # print(loss_a)
+
         self.atrain.zero_grad()
         loss_a.backward()
         self.atrain.step()
 
         a_ = self.Actor_target(bs_)  # 这个网络不及时更新参数, 用于预测 Critic 的 Q_target 中的 action
-        q_ = self.Critic_target(bs_, a_)  # 这个网络不及时更新参数, 用于给出 Actor 更新参数时的 Gradient ascent 强度
+        q_ = self.Critic_target(
+            bs_, a_
+        )  # 这个网络不及时更新参数, 用于给出 Actor 更新参数时的 Gradient ascent 强度
         q_target = br + GAMMA * q_  # q_target = 负的
         # print(q_target)
         q_v = self.Critic_eval(bs, ba)
@@ -118,15 +145,37 @@ class DDPG(object):
         td_error = self.loss_td(q_target, q_v)
         # td_error=R + GAMMA * ct（bs_,at(bs_)）-ce(s,ba) 更新ce ,但这个ae(s)是记忆中的ba，让ce得出的Q靠近Q_target,让评价更准确
         # print(td_error)
+
         self.ctrain.zero_grad()
         td_error.backward()
         self.ctrain.step()
+
 
     def store_transition(self, s, a, r, s_):
         transition = np.hstack((s, a, [r], s_))
         index = self.pointer % MEMORY_CAPACITY  # replace the old memory with new memory
         self.memory[index, :] = transition
         self.pointer += 1
+
+
+def tt(ddpg):
+    env = gym.make(ENV_NAME, render_mode="human")
+    s, _ = env.reset()
+    done = False
+    step = 0
+    while not done:
+        a = ddpg.choose_action(s)
+        a = np.clip(
+            np.random.normal(a, var), -2, 2
+        )  # add randomness to action selection for exploration
+        s_, r, done, _, info = env.step(a)
+        s = s_
+        env.render()
+        step += 1
+
+        if step >= 500:
+            break
+    print("运行步数为：%d" % step)
 
 
 ###############################  training  ####################################
@@ -146,24 +195,30 @@ if __name__ == "__main__":
         s, _ = env.reset()
         ep_reward = 0
         for j in range(MAX_EP_STEPS):
-            if RENDER:
-                env.render()
-
             # Add exploration noise
             a = ddpg.choose_action(s)
-            a = np.clip(np.random.normal(a, var), -2, 2)  # add randomness to action selection for exploration
+            a = np.clip(
+                np.random.normal(a, var), -2, 2
+            )  # add randomness to action selection for exploration
             s_, r, done, _, info = env.step(a)
 
-            ddpg.store_transition(s, a, r / 10, s_)
+            # print(a)
+
+            ddpg.store_transition(s, a, r, s_)
 
             if ddpg.pointer > MEMORY_CAPACITY:
-                var *= .9995  # decay the action randomness
+                var *= 0.9995  # decay the action randomness
                 ddpg.learn()
 
             s = s_
             ep_reward += r
             if j == MAX_EP_STEPS - 1:
-                print('Episode:', i, ' Reward: %i' % int(ep_reward), 'Explore: %.2f' % var, )
-                if ep_reward > -300: RENDER = True
-                break
-    print('Running time: ', time.time() - t1)
+                print(
+                    "Episode:",
+                    i,
+                    " Reward: %i" % int(ep_reward),
+                    "Explore: %.2f" % var,
+                )
+    print("Running time: ", time.time() - t1)
+    env.close()
+    tt(ddpg)

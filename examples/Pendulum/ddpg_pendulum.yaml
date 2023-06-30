@@ -1,0 +1,21 @@
+seed: 0
+hidden_size: 30
+actor_lr: 0.00003
+critic_lr: 0.00003
+gamma: 0.99
+tau: 0.005
+var: 5
+episode_length: 200
+mini_batch_size: 64
+buffer_size: 10000
+train_interval: 10
+num_mini_batch: 50
+run_dir: ./run_results/
+experiment_name: train_ddpg
+log_interval: 10
+
+use_recurrent_policy: false
+use_joint_action_loss: false
+use_valuenorm: false
+use_adv_normalize: false
+wandb_entity: openrl-lab

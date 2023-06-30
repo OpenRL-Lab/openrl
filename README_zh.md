@@ -29,7 +29,7 @@
 [![Embark](https://img.shields.io/badge/discord-OpenRL-%237289da.svg?logo=discord)](https://discord.gg/tyy96TGbep)
 [![slack badge](https://img.shields.io/badge/Slack-join-blueviolet?logo=slack&amp)](https://join.slack.com/t/openrlhq/shared_invite/zt-1tqwpvthd-Eeh0IxQ~DIaGqYXoW2IUQg)
 
-OpenRL-v0.0.12 is updated on May 26, 2023
+OpenRL-v0.0.12 is updated on June 14, 2023
 
 The main branch is the latest version of OpenRL, which is under active development. If you just want to have a try with OpenRL, you can switch to the stable branch.
 
@@ -59,6 +59,7 @@ OpenRL目前支持的算法（更多详情请参考 [Gallery](Gallery.md)）：
 - [Dual-clip PPO](https://arxiv.org/abs/1912.09729)
 - [Multi-agent PPO (MAPPO)](https://arxiv.org/abs/2103.01955)
 - [Joint-ratio Policy Optimization (JRPO)](https://arxiv.org/abs/2302.07515)
+- [Deep Q-Network (DQN)](https://arxiv.org/abs/1312.5602)
 - [Multi-Agent Transformer (MAT)](https://arxiv.org/abs/2205.14953)
 
 OpenRL目前支持的环境（更多详情请参考 [Gallery](Gallery.md)）：
@@ -66,6 +67,9 @@ OpenRL目前支持的环境（更多详情请参考 [Gallery](Gallery.md)）：
 - [MuJoCo](https://github.com/deepmind/mujoco)
 - [MPE](https://github.com/openai/multiagent-particle-envs)
 - [Chat Bot](https://openrl-docs.readthedocs.io/en/latest/quick_start/train_nlp.html)
+- [Atari](https://gymnasium.farama.org/environments/atari/)
+- [StarCraft II](https://github.com/oxwhirl/smac)
+- [GridWorld](./examples/gridworld/)
 - [Super Mario Bros](https://github.com/Kautenja/gym-super-mario-bros)
 - [Gym Retro](https://github.com/openai/retro)
 

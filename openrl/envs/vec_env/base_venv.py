@@ -18,13 +18,13 @@
 import sys
 import warnings
 from abc import ABC, abstractmethod
-from typing import Any, List, Optional, Sequence, Union
+from typing import Any, Dict, List, Optional, Sequence, Union
 
 import gymnasium as gym
 import numpy as np
 
 from openrl.envs.vec_env.utils.numpy_utils import single_random_action
-from openrl.envs.vec_env.utils.util import tile_images
+from openrl.envs.vec_env.utils.util import prepare_available_actions, tile_images
 
 IN_COLAB = "google.colab" in sys.modules
 
@@ -254,14 +254,27 @@ class BaseVecEnv(
                 is set for all environments.
         """
 
-    def random_action(self):
+    def random_action(self, infos: Optional[List[Dict[str, Any]]] = None):
         """
         Get a random action from the action space
         """
+        available_actions = prepare_available_actions(
+            infos, agent_num=self.agent_num, as_batch=False
+        )
 
         return np.array(
             [
-                [single_random_action(self.action_space) for _ in range(self.agent_num)]
-                for _ in range(self.parallel_env_num)
+                [
+                    single_random_action(
+                        self.action_space,
+                        (
+                            available_actions[env_index][agent_index]
+                            if available_actions is not None
+                            else None
+                        ),
+                    )
+                    for agent_index in range(self.agent_num)
+                ]
+                for env_index in range(self.parallel_env_num)
             ]
         )

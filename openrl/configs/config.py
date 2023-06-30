@@ -516,7 +516,7 @@ def create_config_parser():
     # recurrent parameters
     parser.add_argument(
         "--use_naive_recurrent_policy",
-        action="store_true",
+        type=bool,
         default=False,
         help="Whether to use a naive recurrent policy",
     )
@@ -532,7 +532,7 @@ def create_config_parser():
     parser.add_argument(
         "--data_chunk_length",
         type=int,
-        default=10,
+        default=2,
         help="Time length of chunks used to train a recurrent_policy",
     )
     parser.add_argument(
@@ -708,7 +708,7 @@ def create_config_parser():
     )
     parser.add_argument(
         "--use_value_active_masks",
-        action="store_false",
+        type=bool,
         default=True,
         help="by default True, whether to mask useless data in value loss.",
     )
@@ -749,8 +749,8 @@ def create_config_parser():
     # run parameters
     parser.add_argument(
         "--use_linear_lr_decay",
-        action="store_true",
         default=False,
+        type=bool,
         help="use a linear schedule on the learning rate",
     )
     # save parameters
@@ -967,6 +967,25 @@ def create_config_parser():
         default=10,
         help="After how many evaluation network updates target network should be updated",
     )
+    ## for DDPG
+    parser.add_argument(
+        "--var",
+        type=int,
+        default=3,
+        help="Control the exploration variance of the generated actions"
+    )
+    parser.add_argument(
+        "actor_lr",
+        type=float,
+        default=0.001,
+        help="The learning rate of actor network"
+    )
+    parser.add_argument(
+        "critic_lr",
+        type=float,
+        default=0.002,
+        help="The learning rate of critic network"
+    )
     # update parameters
     parser.add_argument(
         "--use_soft_update",
@@ -1060,7 +1079,7 @@ def create_config_parser():
     )
     parser.add_argument(
         "--use_share_model",
-        action="store_true",
+        type=bool,
         default=False,
         help="use one class to implement policy and value networks",
     )
@@ -1142,4 +1161,3 @@ def create_config_parser():
     )
 
     return parser
-

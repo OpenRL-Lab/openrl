@@ -54,3 +54,9 @@ class BaseValuePolicyNetwork(ABC, nn.Module):
     @abstractmethod
     def get_values(self, *args, **kwargs):
         raise NotImplementedError
+
+    def get_actor_para(self):
+        return self.parameters()
+
+    def get_critic_para(self):
+        return self.parameters()

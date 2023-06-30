@@ -102,6 +102,6 @@ class DQNAgent(RLAgent):
         observation = ObsData.prepare_input(observation)
         action, rnn_state = self.net.act(observation)
 
-        action = np.array(np.split(_t2n(action), self.env_num))
+        action = np.array(np.split(action, self.env_num))
 
         return action, rnn_state

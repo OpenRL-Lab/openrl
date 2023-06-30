@@ -40,7 +40,7 @@ class DDPGModule(RLModule):
     ):
         model_configs = {}
         model_configs["actor"] = ModelTrainConfig(
-            lr=cfg.lr,
+            lr=cfg.actor_lr,
             model=(
                 model_dict["actor"]
                 if model_dict and "actor" in model_dict
@@ -49,7 +49,7 @@ class DDPGModule(RLModule):
             input_space=input_space,
         )
         model_configs["actor_target"] = ModelTrainConfig(
-            lr=cfg.lr,
+            lr=cfg.actor_lr,
             model=(
                 model_dict["actor_target"]
                 if model_dict and "actor_target" in model_dict
@@ -58,7 +58,7 @@ class DDPGModule(RLModule):
             input_space=input_space,
         )
         model_configs["critic"] = ModelTrainConfig(
-            lr=cfg.lr,
+            lr=cfg.critic_lr,
             model=(
                 model_dict["critic"]
                 if model_dict and "critic" in model_dict
@@ -67,7 +67,7 @@ class DDPGModule(RLModule):
             input_space=input_space,
         )
         model_configs["critic_target"] = ModelTrainConfig(
-            lr=cfg.lr,
+            lr=cfg.critic_lr,
             model=(
                 model_dict["critic_target"]
                 if model_dict and "critic_target" in model_dict
@@ -84,11 +84,13 @@ class DDPGModule(RLModule):
             world_size=world_size,
             device=device,
         )
-        self.cfg=cfg
+        self.obs_space = input_space
+        self.act_space = act_space
+        self.cfg = cfg
 
     def lr_decay(self, episode, episodes):
-        update_linear_schedule(self.optimizers["critic"], episode, episodes, self.lr)
-        update_linear_schedule(self.optimizers["actor"], episode, episodes, self.lr)
+        update_linear_schedule(self.optimizers["critic"], episode, episodes, self.cfg.critic_lr)
+        update_linear_schedule(self.optimizers["actor"], episode, episodes, self.cfg.actor_lr)
 
     def get_actions(
             self,
@@ -108,9 +110,47 @@ class DDPGModule(RLModule):
             rnn_states_critic,
             masks
     ):
-        critic_values = self.models["critic"](obs, action, rnn_states_critic, masks)
+        critic_values, _ = self.models["critic"](obs, action, rnn_states_critic, masks)
 
         return critic_values
+
+    def evaluate_actor_loss(
+            self,
+            obs_batch,
+            next_obs_batch,
+            rnn_states_batch,
+            rewards_batch,
+            actions_batch,
+            masks,
+            available_actions=None,
+            masks_batch=None,
+    ):
+        if masks_batch is None:
+            masks_batch = masks
+
+        actor_loss, _ = self.models['critic'](obs_batch, self.get_actions(obs_batch), rnn_states_batch, masks_batch)
+        actor_loss = - actor_loss.mean()
+
+        return actor_loss
+
+    def evaluate_critic_loss(
+            self,
+            obs_batch,
+            next_obs_batch,
+            rnn_states_batch,
+            rewards_batch,
+            actions_batch,
+            masks,
+            available_actions=None,
+            masks_batch=None,
+    ):
+        if masks_batch is None:
+            masks_batch = masks
+
+        target_q_values, _ = self.models['critic_target'](next_obs_batch, self.models['actor_target'](next_obs_batch), rnn_states_batch, masks_batch)
+        current_q_values, _ = self.models['critic'](obs_batch, actions_batch, rnn_states_batch, masks_batch)
+
+        return target_q_values, current_q_values
 
     def evaluate_actions(
             self,
@@ -122,12 +162,8 @@ class DDPGModule(RLModule):
             masks,
             available_actions=None,
             masks_batch=None,
-            critic_masks_batch=None,
     ):
-        if masks_batch is None:
-            masks_batch = masks
-
-        print("调用evaluate actions函数")
+        print("在ddpg_module中调用了evaluate_actions函数，该函数未实现")
 
     def act(
             self,

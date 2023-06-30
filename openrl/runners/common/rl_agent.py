@@ -38,6 +38,7 @@ class RLAgent(BaseAgent):
         world_size: int = 1,
         use_wandb: bool = False,
         use_tensorboard: bool = False,
+        project_name: str = "RLAgent",
     ) -> None:
         self.net = net
         if self.net is not None:
@@ -45,6 +46,7 @@ class RLAgent(BaseAgent):
         self._cfg = net.cfg
         self._use_wandb = use_wandb
         self._use_tensorboard = not use_wandb and use_tensorboard
+        self.project_name = project_name
 
         if env is not None:
             self._env = env
@@ -93,12 +95,13 @@ class RLAgent(BaseAgent):
 
     def set_env(
         self,
-        env: Union[gym.Env, str] = None,
+        env: Union[gym.Env, str],
     ):
         self.net.reset()
         if env is not None:
             self._env = env
             self.env_num = env.parallel_env_num
+            self.agent_num = env.agent_num
         env.reset(seed=self._cfg.seed)
         self.net.reset(env)
 

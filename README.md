@@ -14,7 +14,7 @@
 [![Hits-of-Code](https://hitsofcode.com/github/OpenRL-Lab/openrl?branch=main)](https://hitsofcode.com/github/OpenRL-Lab/openrl/view?branch=main)
 [![codecov](https://codecov.io/gh/OpenRL-Lab/openrl_release/branch/main/graph/badge.svg?token=4FMEYMR83U)](https://codecov.io/gh/OpenRL-Lab/openrl_release)
 
-[![Documentation Status](https://readthedocs.org/projects/openrl-docs/badge/?version=latest)](https://openrl-docs.readthedocs.io/zh/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/openrl-docs/badge/?version=latest)](https://openrl-docs.readthedocs.io/en/latest/?badge=latest)
 [![Read the Docs](https://img.shields.io/readthedocs/openrl-docs-zh?label=%E4%B8%AD%E6%96%87%E6%96%87%E6%A1%A3)](https://openrl-docs.readthedocs.io/zh/latest/)
 
 ![GitHub Org's stars](https://img.shields.io/github/stars/OpenRL-Lab)
@@ -29,7 +29,7 @@
 [![Embark](https://img.shields.io/badge/discord-OpenRL-%237289da.svg?logo=discord)](https://discord.gg/tyy96TGbep)
 [![slack badge](https://img.shields.io/badge/Slack-join-blueviolet?logo=slack&amp)](https://join.slack.com/t/openrlhq/shared_invite/zt-1tqwpvthd-Eeh0IxQ~DIaGqYXoW2IUQg)
 
-OpenRL-v0.0.12 is updated on May 26, 2023
+OpenRL-v0.0.12 is updated on June 14, 2023
 
 The main branch is the latest version of OpenRL, which is under active development. If you just want to have a try with OpenRL, you can switch to the stable branch.
 
@@ -74,6 +74,7 @@ Algorithms currently supported by OpenRL (for more details, please refer to [Gal
 - [Dual-clip PPO](https://arxiv.org/abs/1912.09729)
 - [Multi-agent PPO (MAPPO)](https://arxiv.org/abs/2103.01955)
 - [Joint-ratio Policy Optimization (JRPO)](https://arxiv.org/abs/2302.07515)
+- [Deep Q-Network (DQN)](https://arxiv.org/abs/1312.5602)
 - [Multi-Agent Transformer (MAT)](https://arxiv.org/abs/2205.14953)
 
 Environments currently supported by OpenRL (for more details, please refer to [Gallery](./Gallery.md)):
@@ -81,6 +82,9 @@ Environments currently supported by OpenRL (for more details, please refer to [G
 - [MuJoCo](https://github.com/deepmind/mujoco)
 - [MPE](https://github.com/openai/multiagent-particle-envs)
 - [Chat Bot](https://openrl-docs.readthedocs.io/en/latest/quick_start/train_nlp.html)
+- [Atari](https://gymnasium.farama.org/environments/atari/)
+- [StarCraft II](https://github.com/oxwhirl/smac)
+- [GridWorld](./examples/gridworld/)
 - [Super Mario Bros](https://github.com/Kautenja/gym-super-mario-bros)
 - [Gym Retro](https://github.com/openai/retro)
 

@@ -46,6 +46,10 @@ class OffPolicyDriver(RLDriver):
         self.epsilon_start = config["cfg"].epsilon_start
         self.epsilon_finish = config["cfg"].epsilon_finish
         self.epsilon_anneal_time = config["cfg"].epsilon_anneal_time
+        self.algorithm_name = config["cfg"].algorithm_name
+        self.var = config["cfg"].var
+        self.obs_space = self.trainer.algo_module.obs_space
+        self.act_space = self.trainer.algo_module.act_space
 
     def _inner_loop(
         self,
@@ -64,8 +68,9 @@ class OffPolicyDriver(RLDriver):
 
         if self.episode % self.log_interval == 0:
             # rollout_infos can only be used when env is wrapped with VevMonitor
-            self.logger.log_info(rollout_infos, step=self.total_num_steps)
-            self.logger.log_info(train_infos, step=self.total_num_steps)
+            # self.logger.log_info(rollout_infos, step=self.total_num_steps)
+            # self.logger.log_info(train_infos, step=self.total_num_steps)
+            pass
 
     def add2buffer(self, data):
         (
@@ -78,10 +83,14 @@ class OffPolicyDriver(RLDriver):
             actions,
             rnn_states,
         ) = data
-        rnn_states[dones] = np.zeros(
-            (dones.sum(), self.recurrent_N, self.hidden_size),
-            dtype=np.float32,
-        )
+
+        if self.algorithm_name == "DQN" or self.algorithm_name == "VDN":
+            rnn_states[dones] = np.zeros(
+                (dones.sum(), self.recurrent_N, self.hidden_size),
+                dtype=np.float32,
+            )
+        else:
+            pass
 
         # todo add image obs
         if "Dict" in next_obs.__class__.__name__:
@@ -96,7 +105,7 @@ class OffPolicyDriver(RLDriver):
                 dtype=np.float32,
             )
 
-        rewards[dones] = np.zeros((dones.sum(), 1), dtype=np.float32)
+        # rewards[dones] = np.zeros((dones.sum(), 1), dtype=np.float32)
 
         masks = np.ones((self.n_rollout_threads, self.num_agents, 1), dtype=np.float32)
         masks[dones] = np.zeros((dones.sum(), 1), dtype=np.float32)
@@ -118,20 +127,48 @@ class OffPolicyDriver(RLDriver):
 
     def actor_rollout(self):
         self.trainer.prep_rollout()
-        import time
 
         obs = self.buffer.data.critic_obs[0]
-        for step in range(self.episode_length):
-            q_values, actions, rnn_states = self.act(step)
-            # print("q values: ", q_values, " actions: ", actions)
-            extra_data = {
-                "q_values": q_values,
-                "step": step,
-                "buffer": self.buffer,
-            }
 
-            next_obs, rewards, dones, infos = self.envs.step(actions, extra_data)
-            # print("dones: ", dones, "rewards: ", rewards)
+        counter = 0
+        ep_reward = 0
+        for step in range(self.episode_length):
+            if self.algorithm_name == "DQN" or self.algorithm_name == "VDN":
+                q_values, actions, rnn_states = self.act(step)
+                # print("step: ", step,
+                #       "state: ", self.buffer.data.get_batch_data("next_policy_obs" if step != 0 else "policy_obs", step),
+                #       "q_values: ", q_values,
+                #       "actions: ", actions)
+                extra_data = {
+                    "q_values": q_values,
+                    "step": step,
+                    "buffer": self.buffer,
+                }
+
+                next_obs, rewards, dones, infos = self.envs.step(actions, extra_data)
+                # print("rewards: ", rewards)
+
+            elif self.algorithm_name == "DDPG":
+                actions = self.act(step)
+                extra_data = {
+                    "step": step,
+                    "buffer": self.buffer,
+                }
+                next_obs, rewards, dones, infos = self.envs.step(actions, extra_data)
+                self.var *= 0.9995
+
+                q_values = np.zeros_like(actions)
+                rnn_states = None
+
+                ep_reward += rewards
+
+            counter += 1
+            if any(dones):
+                next_obs = np.array([infos[i]['final_observation'] for i in range(len(infos))])
+
+                print("运行次数为：%d, 回报为：%.3f, 探索方差为：%.4f" % (counter, ep_reward, self.var))
+                counter = 0
+                ep_reward = 0
 
             data = (
                 obs,
@@ -163,36 +200,63 @@ class OffPolicyDriver(RLDriver):
     ):
         self.trainer.prep_rollout()
 
-        (
-            q_values,
-            rnn_states,
-        ) = self.trainer.algo_module.get_actions(
-            self.buffer.data.get_batch_data("policy_obs", step),
-            np.concatenate(self.buffer.data.rnn_states[step]),
-            np.concatenate(self.buffer.data.masks[step]),
-        )
+        if step != 0:
+            step = step - 1
 
-        q_values = np.array(np.split(_t2n(q_values), self.n_rollout_threads))
-        rnn_states = np.array(np.split(_t2n(rnn_states), self.n_rollout_threads))
-
-        epsilon = np.min((
-            self.epsilon_finish
-            + (self.epsilon_start - self.epsilon_finish)
-            / self.epsilon_anneal_time
-            * (self.episode * self.episode_length + step), self.epsilon_start))
-
-        actions = np.expand_dims(q_values.argmax(axis=-1), axis=-1)
-
-        if random.random() >= epsilon:
-            actions = np.random.randint(
-                low=0, high=self.envs.action_space.n, size=actions.shape
+        if self.algorithm_name == "DQN" or self.algorithm_name == "VDN":
+            (
+                q_values,
+                rnn_states,
+            ) = self.trainer.algo_module.get_actions(
+                self.buffer.data.get_batch_data(
+                    "next_policy_obs" if step != 0 else "policy_obs", step
+                ),
+                np.concatenate(self.buffer.data.rnn_states[step]),
+                np.concatenate(self.buffer.data.masks[step]),
             )
 
-        return (
-            q_values,
-            actions,
-            rnn_states,
-        )
+            q_values = np.array(np.split(_t2n(q_values), self.n_rollout_threads))
+            rnn_states = np.array(np.split(_t2n(rnn_states), self.n_rollout_threads))
+
+            epsilon = np.min(
+                (
+                    self.epsilon_finish
+                    + (self.epsilon_start - self.epsilon_finish)
+                    / self.epsilon_anneal_time
+                    * (self.episode * self.episode_length + step),
+                    self.epsilon_start,
+                )
+            )
+
+            actions = np.expand_dims(q_values.argmax(axis=-1), axis=-1)
+
+            if random.random() >= epsilon:
+                actions = np.random.randint(
+                    low=0, high=self.envs.action_space.n, size=actions.shape
+                )
+
+            return (
+                q_values,
+                actions,
+                rnn_states,
+            )
+
+        elif self.algorithm_name == "DDPG":
+            actions = self.trainer.algo_module.get_actions(
+                self.buffer.data.get_batch_data(
+                    "next_policy_obs" if step != 0 else "policy_obs", step
+                )
+            ).item()
+
+            actions = np.clip(
+                np.random.normal(actions, self.var), -self.act_space.high, self.act_space.high
+            )
+
+            actions = np.expand_dims(actions, -1)
+            actions = np.expand_dims(actions, -1)
+
+            return actions
+
 
     def compute_returns(self):
         pass
