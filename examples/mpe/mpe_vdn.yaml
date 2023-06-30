@@ -1,10 +1,29 @@
 seed: 0
 lr: 7e-4
 episode_length: 200
-num_mini_batch: 128
+num_mini_batch: 20
 run_dir: ./run_results/
 experiment_name: train_mpe_vdn
 log_interval: 10
 use_valuenorm: true
 use_adv_normalize: true
 wandb_entity: openrl-lab
+callbacks:
+  - id: "CheckpointCallback"
+    args: {
+        "save_freq": 500, # how often to save the model
+        "save_path": "./results/checkpoints/",  # where to save the model
+        "name_prefix": "vdn", # the prefix of the saved model
+        "save_replay_buffer": True # not work yet
+    }
+  - id: "EvalCallback"
+    args: {
+      "eval_env": {"id": "simple_spread","env_num":1}, # how many envs to set up for evaluation
+      "n_eval_episodes": 4, # how many episodes to run for each evaluation
+      "eval_freq": 500, # how often to run evaluation
+      "log_path": "./results/eval_log_path", # where to save the evaluation results
+      "best_model_save_path": "./results/best_model/", # where to save the best model
+      "deterministic": True, # whether to use deterministic action
+      "render": False, # whether to render the env
+      "asynchronous": True, # whether to run evaluation asynchronously
+    }
