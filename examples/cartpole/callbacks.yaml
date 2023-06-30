@@ -1,0 +1,61 @@
+callbacks:
+  - id: "ProgressBarCallback"
+  - id: "StopTrainingOnMaxEpisodes"
+    args: {
+      "max_episodes": 25, # the max number of episodes to run
+      "verbose": 1,
+    }
+  - id: "CheckpointCallback"
+    args: {
+        "save_freq": 500, # how often to save the model
+        "save_path": "./results/checkpoints/",  # where to save the model
+        "name_prefix": "ppo", # the prefix of the saved model
+        "save_replay_buffer": True, # not work yet
+         "verbose": 2,
+    }
+  - id: "EvalCallback"
+    args: {
+      "eval_env": { "id": "CartPole-v1","env_num": 5 }, # how many envs to set up for evaluation
+      "n_eval_episodes": 5, # how many episodes to run for each evaluation
+      "eval_freq": 500, # how often to run evaluation
+      "log_path": "./results/eval_log_path", # where to save the evaluation results
+      "best_model_save_path": "./results/best_model/", # where to save the best model
+      "deterministic": True, # whether to use deterministic action
+      "render": False, # whether to render the env
+      "asynchronous": True, # whether to run evaluation asynchronously
+      "stop_logic": "OR", # the logic to stop training, OR means training stops when any one of the conditions is met, AND means training stops when all conditions are met
+      "callbacks_on_new_best": [
+        {
+          id: "StopTrainingOnRewardThreshold",
+          args: {
+            "reward_threshold": 500, # the reward threshold to stop training
+            "verbose": 1,
+          }
+        } ],
+      "callbacks_after_eval": [
+        {
+          id: "StopTrainingOnNoModelImprovement",
+          args: {
+            "max_no_improvement_evals": 10, # Maximum number of consecutive evaluations without a new best model.
+            "min_evals": 2, # Number of evaluations before start to count evaluations without improvements.
+          }
+        },
+      ],
+    }
+  - id: "EveryNTimesteps" # This is same to "CheckpointCallback"
+    args: {
+      "n_steps": 5000,
+      "callbacks":[
+        {
+          "id": "CheckpointCallback",
+          args: {
+            "save_freq": 1,
+            "save_path": "./results/checkpoints_with_EveryNTimesteps/",  # where to save the model
+            "name_prefix": "ppo", # the prefix of the saved model
+            "save_replay_buffer": True, # not work yet
+            "verbose": 2,
+          }
+        }
+      ]
+    }
+

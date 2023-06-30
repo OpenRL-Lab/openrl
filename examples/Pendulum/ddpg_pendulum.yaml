@@ -2,7 +2,7 @@ seed: 0
 hidden_size: 30
 actor_lr: 0.00003
 critic_lr: 0.00003
-gamma: 0.99
+gamma: 0.9
 tau: 0.005
 var: 5
 episode_length: 200

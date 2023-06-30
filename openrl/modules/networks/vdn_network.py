@@ -38,6 +38,7 @@ class VDNNetwork(BaseValuePolicyNetwork):
         action_space,
         device=torch.device("cpu"),
         use_half=False,
+        extra_args=None,
     ) -> None:
         super(VDNNetwork, self).__init__(cfg, device)
         self.hidden_size = cfg.hidden_size
@@ -105,7 +106,8 @@ class VDNNetwork(BaseValuePolicyNetwork):
             return self.eval_actions_target(*args, **kwargs)
         elif forward_type == "get_values":
             return self.get_values(*args, **kwargs)
-
+        elif forward_type == "eval_values":
+            return self.eval_values(*args, **kwargs)
         else:
             raise NotImplementedError
 
@@ -186,3 +188,25 @@ class VDNNetwork(BaseValuePolicyNetwork):
         q_tot_value = self.q_tot(q_values_).view(-1, 1)
 
         return q_tot_value
+
+    def eval_values(self, obs, rnn_states, masks, available_actions=None):
+        if self._mixed_obs:
+            for key in obs.keys():
+                obs[key] = check(obs[key]).to(**self.tpdv)
+        else:
+            obs = obs["policy"]
+            obs = check(obs).to(**self.tpdv)
+        rnn_states = check(rnn_states).to(**self.tpdv)
+        masks = check(masks).to(**self.tpdv)
+
+        features = self.base(obs)
+
+        if self._use_naive_recurrent_policy or self._use_recurrent_policy:
+            features, rnn_states = self.rnn(features, rnn_states, masks)
+
+        q_values = self.q_out(features)
+
+        if available_actions is not None:
+            q_values[available_actions == 0] = -1e10
+
+        return q_values, rnn_states

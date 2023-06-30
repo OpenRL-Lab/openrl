@@ -6,7 +6,7 @@ from copy import deepcopy
 from enum import Enum
 from multiprocessing import Queue
 from multiprocessing.connection import Connection
-from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, Union
+from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, Type, Union
 
 import gymnasium as gym
 import numpy as np
@@ -21,7 +21,7 @@ from gymnasium.error import (
 from gymnasium.vector.utils import CloudpickleWrapper, clear_mpi_env_vars
 from numpy.typing import NDArray
 
-from openrl.envs.vec_env.base_venv import BaseVecEnv
+from openrl.envs.vec_env.base_venv import BaseVecEnv, VecEnvIndices
 from openrl.envs.vec_env.utils.numpy_utils import (
     concatenate,
     create_empty_array,
@@ -32,6 +32,8 @@ from openrl.envs.vec_env.utils.share_memory import (
     read_from_shared_memory,
     write_to_shared_memory,
 )
+from openrl.envs.wrappers.base_wrapper import BaseWrapper
+from openrl.envs.wrappers.util import is_wrapped
 
 
 class AsyncState(Enum):
@@ -608,19 +610,65 @@ class AsyncVectorEnv(BaseVecEnv):
 
         return results
 
-    def call(self, name: str, *args, **kwargs) -> List[Any]:
-        """Call a method, or get a property, from each parallel environment.
+    def exec_func_send(self, func: Callable, indices, *args, **kwargs):
+        """Calls the method with name asynchronously and apply args and kwargs to the method.
 
         Args:
-            name (str): Name of the method or property to call.
+            func: a function.
+            indices: Indices of the environments to call the method on.
             *args: Arguments to apply to the method call.
             **kwargs: Keyword arguments to apply to the method call.
 
+        Raises:
+            ClosedEnvironmentError: If the environment was closed (if :meth:`close` was previously called).
+            AlreadyPendingCallError: Calling `call_send` while waiting for a pending call to complete
+        """
+        self._assert_is_running()
+        if self._state != AsyncState.DEFAULT:
+            raise AlreadyPendingCallError(
+                (
+                    "Calling `exec_func_send` while waiting "
+                    f"for a pending call to `{self._state.value}` to complete."
+                ),
+                str(self._state.value),
+            )
+
+        for pipe in self.parent_pipes:
+            pipe.send(("_func_exec", (func, indices, args, kwargs)))
+        self._state = AsyncState.WAITING_CALL
+
+    def exec_func_fetch(self, timeout: Union[int, float, None] = None) -> list:
+        """Calls all parent pipes and waits for the results.
+
+        Args:
+            timeout: Number of seconds before the call to `step_fetch` times out.
+                If `None` (default), the call to `step_fetch` never times out.
+
         Returns:
             List of the results of the individual calls to the method or property for each environment.
+
+        Raises:
+            NoAsyncCallError: Calling `call_fetch` without any prior call to `call_send`.
+            TimeoutError: The call to `call_fetch` has timed out after timeout second(s).
         """
-        self.call_send(name, *args, **kwargs)
-        return self.call_fetch()
+        self._assert_is_running()
+        if self._state != AsyncState.WAITING_CALL:
+            raise NoAsyncCallError(
+                "Calling `exec_func_fetch` without any prior call to `exec_func_send`.",
+                AsyncState.WAITING_CALL.value,
+            )
+
+        if not self._poll(timeout):
+            self._state = AsyncState.DEFAULT
+            raise mp.TimeoutError(
+                f"The call to `call_fetch` has timed out after {timeout} second(s)."
+            )
+
+        results, successes = zip(*[pipe.recv() for pipe in self.parent_pipes])
+        self._raise_if_errors(successes)
+        self._state = AsyncState.DEFAULT
+
+        return results
 
     def get_attr(self, name: str):
         """Get a property from each parallel environment.
@@ -669,6 +717,16 @@ class AsyncVectorEnv(BaseVecEnv):
             pipe.send(("_setattr", (name, value)))
         _, successes = zip(*[pipe.recv() for pipe in self.parent_pipes])
         self._raise_if_errors(successes)
+
+    # def env_is_wrapped(
+    #     self, wrapper_class: Type[BaseWrapper], indices: VecEnvIndices = None
+    # ) -> List[bool]:
+    #     """Check if worker environments are wrapped with a given wrapper"""
+    #     indices = self._get_indices(indices)
+    #     results = self.exec_func(
+    #         is_wrapped, indices=indices, wrapper_class=wrapper_class
+    #     )
+    #     return [results[i] for i in indices]
 
 
 def _worker(
@@ -771,6 +829,15 @@ def _worker(
                         True,
                     )
                 )
+            elif command == "_func_exec":
+                function, indices, args, kwargs = data
+                if index in indices:
+                    if callable(function):
+                        pipe.send((function(env, *args, **kwargs), True))
+                    else:
+                        pipe.send((function, True))
+                else:
+                    pipe.send((None, True))
             elif command == "_call":
                 name, args, kwargs = data
                 if name in ["reset", "step", "seed", "close"]:
@@ -783,6 +850,7 @@ def _worker(
                     pipe.send((function(*args, **kwargs), True))
                 else:
                     pipe.send((function, True))
+
             elif command == "_setattr":
                 name, value = data
                 setattr(env, name, value)

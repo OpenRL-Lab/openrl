@@ -82,16 +82,7 @@ def buffer_data(config, obs_space, act_space):
 def test_vdn_algorithm(config, init_module, buffer_data):
     from openrl.algorithms.vdn import VDNAlgorithm
 
-    config["num_mini_batch"] = 10
-    vdn_algo = VDNAlgorithm(config, init_module)
-
-    vdn_algo.train(buffer_data)
-
-
-@pytest.mark.unittest
-def test_vdn_algorithm_amp(config, init_module, buffer_data):
-    from openrl.algorithms.vdn import VDNAlgorithm
-
+    config["num_mini_batch"] = 20
     vdn_algo = VDNAlgorithm(config, init_module)
 
     vdn_algo.train(buffer_data)

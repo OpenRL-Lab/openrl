@@ -1,6 +1,7 @@
 """"""
 import numpy as np
 
+# from openrl.envs.toy_envs import make
 from openrl.envs.common import make
 from openrl.modules.common import DDPGNet as Net
 from openrl.runners.common import DDPGAgent as Agent
@@ -15,6 +16,7 @@ def train():
     # 创建 环境
     # env = make("CartPole-v1")
     env = make("Pendulum-v1")
+    # env = make("IdentityEnvcontinuous")
     # 创建 神经网络
     net = Net(env, cfg=cfg)
     # 初始化训练器

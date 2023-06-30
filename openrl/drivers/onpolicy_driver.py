@@ -15,7 +15,7 @@
 # limitations under the License.
 
 """"""
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Tuple
 
 import numpy as np
 import torch
@@ -24,6 +24,7 @@ from torch.nn.parallel import DistributedDataParallel
 from openrl.drivers.rl_driver import RLDriver
 from openrl.envs.vec_env.utils.util import prepare_available_actions
 from openrl.utils.logger import Logger
+from openrl.utils.type_aliases import MaybeCallback
 from openrl.utils.util import _t2n
 
 
@@ -33,19 +34,35 @@ class OnPolicyDriver(RLDriver):
         config: Dict[str, Any],
         trainer,
         buffer,
+        agent,
         rank: int = 0,
         world_size: int = 1,
         client=None,
         logger: Optional[Logger] = None,
+        callback: MaybeCallback = None,
     ) -> None:
         super(OnPolicyDriver, self).__init__(
-            config, trainer, buffer, rank, world_size, client, logger
+            config,
+            trainer,
+            buffer,
+            agent,
+            rank,
+            world_size,
+            client,
+            logger,
+            callback=callback,
         )
 
     def _inner_loop(
         self,
-    ) -> None:
-        rollout_infos = self.actor_rollout()
+    ) -> bool:
+        """
+        :return: True if training should continue, False if training should stop
+        """
+        rollout_infos, continue_training = self.actor_rollout()
+        if not continue_training:
+            return False
+
         train_infos = self.learner_update()
         self.buffer.after_update()
 
@@ -57,6 +74,7 @@ class OnPolicyDriver(RLDriver):
             # rollout_infos can only be used when env is wrapped with VevMonitor
             self.logger.log_info(rollout_infos, step=self.total_num_steps)
             self.logger.log_info(train_infos, step=self.total_num_steps)
+        return True
 
     def add2buffer(self, data):
         (
@@ -134,9 +152,10 @@ class OnPolicyDriver(RLDriver):
             available_actions=available_actions,
         )
 
-    def actor_rollout(self):
+    def actor_rollout(self) -> Tuple[Dict[str, Any], bool]:
+        self.callback.on_rollout_start()
+
         self.trainer.prep_rollout()
-        import time
 
         for step in range(self.episode_length):
             values, actions, action_log_probs, rnn_states, rnn_states_critic = self.act(
@@ -144,6 +163,7 @@ class OnPolicyDriver(RLDriver):
             )
 
             extra_data = {
+                "actions": actions,
                 "values": values,
                 "action_log_probs": action_log_probs,
                 "step": step,
@@ -151,6 +171,12 @@ class OnPolicyDriver(RLDriver):
             }
 
             obs, rewards, dones, infos = self.envs.step(actions, extra_data)
+
+            self.agent.num_time_steps += self.envs.parallel_env_num
+            # Give access to local variables
+            self.callback.update_locals(locals())
+            if self.callback.on_step() is False:
+                return {}, False
 
             data = (
                 obs,
@@ -168,12 +194,14 @@ class OnPolicyDriver(RLDriver):
 
         batch_rew_infos = self.envs.batch_rewards(self.buffer)
 
+        self.callback.on_rollout_end()
+
         if self.envs.use_monitor:
             statistics_info = self.envs.statistics(self.buffer)
             statistics_info.update(batch_rew_infos)
-            return statistics_info
+            return statistics_info, True
         else:
-            return batch_rew_infos
+            return batch_rew_infos, True
 
     @torch.no_grad()
     def compute_returns(self):
@@ -218,9 +246,6 @@ class OnPolicyDriver(RLDriver):
         ) = self.trainer.algo_module.get_actions(
             self.buffer.data.get_batch_data("critic_obs", step),
             self.buffer.data.get_batch_data("policy_obs", step),
-            # np.concatenate(self.buffer.data.rnn_states[step]),
-            # np.concatenate(self.buffer.data.rnn_states_critic[step]),
-            # np.concatenate(self.buffer.data.masks[step]),
             self.buffer.data.get_batch_data("rnn_states", step),
             self.buffer.data.get_batch_data("rnn_states_critic", step),
             self.buffer.data.get_batch_data("masks", step),

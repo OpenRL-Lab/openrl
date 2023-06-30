@@ -1,16 +1,37 @@
 seed: 0
 lr: 7e-4
 gamma: 0.9
-episode_length: 1000
-mini_batch_size: 64
-train_interval: 10
+episode_length: 2000
+epsilon_anneal_time: 20000
+mini_batch_size: 128
+train_interval: 50
 num_mini_batch: 50
 run_dir: ./run_results/
 experiment_name: train_dqn
-log_interval: 10
+log_interval: 50
 
 use_recurrent_policy: false
 use_joint_action_loss: false
 use_valuenorm: false
 use_adv_normalize: false
 wandb_entity: openrl-lab
+
+callbacks:
+  - id: "CheckpointCallback"
+    args: {
+        "save_freq": 500, # how often to save the model
+        "save_path": "./results/checkpoints/",  # where to save the model
+        "name_prefix": "ppo", # the prefix of the saved model
+        "save_replay_buffer": True # not work yet
+    }
+  - id: "EvalCallback"
+    args: {
+      "eval_env": {"id": "CartPole-v1","env_num":1}, # how many envs to set up for evaluation
+      "n_eval_episodes": 4, # how many episodes to run for each evaluation
+      "eval_freq": 500, # how often to run evaluation
+      "log_path": "./results/eval_log_path", # where to save the evaluation results
+      "best_model_save_path": "./results/best_model/", # where to save the best model
+      "deterministic": True, # whether to use deterministic action
+      "render": False, # whether to render the env
+      "asynchronous": True, # whether to run evaluation asynchronously
+    }

@@ -29,8 +29,8 @@ class RewardWrapper(VecEnvWrapper):
     def __init__(self, env: BaseVecEnv, reward_class: BaseReward):
         super().__init__(env)
         self.reward_class = reward_class
-        if len(self.reward_class.inner_reward_fn) > 0:
-            env.call("set_reward", **{"reward_fn": self.reward_class.inner_reward_fn})
+        if len(self.reward_class.inner_rew_funcs) > 0:
+            env.call("set_reward", **{"reward_fn": self.reward_class.inner_rew_funcs})
 
     def step(
         self, action: ActType, extra_data: Optional[Dict[str, Any]]
@@ -51,7 +51,8 @@ class RewardWrapper(VecEnvWrapper):
                     for j in range(len(infos[i])):
                         infos[i][j].update(new_infos[i])
                 else:
-                    infos[i].update(new_infos[i])
+                    if len(new_infos) > 0:
+                        infos[i].update(new_infos[i])
 
         return obs, rewards, dones, infos
 

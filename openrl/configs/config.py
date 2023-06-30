@@ -14,6 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """"""
+from typing import List
+
 from jsonargparse import ActionConfigFile, ArgumentParser
 
 
@@ -32,6 +34,9 @@ def create_config_parser():
     parser.add_argument("--n_head", type=int, default=1)
     parser.add_argument("--dec_actor", action="store_true", default=False)
     parser.add_argument("--share_actor", action="store_true", default=False)
+
+    parser.add_argument("--callbacks", type=List[dict])
+
     # For Hierarchical RL
     parser.add_argument(
         "--step_difference",
@@ -47,8 +52,9 @@ def create_config_parser():
         help="do imitation learning with gail",
     )
     parser.add_argument(
-        "--gail-experts-dir",
-        default="./gail_experts",
+        "--expert_data",
+        type=str,
+        default=None,
         help="directory that contains expert demonstrations for gail",
     )
     parser.add_argument(
@@ -70,10 +76,10 @@ def create_config_parser():
         "--gail_epoch", type=int, default=5, help="gail epochs (default: 5)"
     )
     parser.add_argument(
-        "--disable_action",
-        action="store_true",
-        default=False,
-        help="whether to use action as the input of the discriminator",
+        "--gail_use_action",
+        type=bool,
+        default=True,
+        help="whether to use action as the input of the gail discriminator",
     )
     parser.add_argument(
         "--gail_hidden_size",

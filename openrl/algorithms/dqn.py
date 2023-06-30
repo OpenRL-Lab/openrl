@@ -40,8 +40,8 @@ class DQNAlgorithm(BaseAlgorithm):
         super(DQNAlgorithm, self).__init__(cfg, init_module, agent_num, device)
 
         self.gamma = cfg.gamma
-        self.target_update = cfg.target_update
-        self.counter = 0
+        self.update_count = 0
+        self.target_update_frequency = cfg.train_interval
 
     def dqn_update(self, sample, turn_on=True):
         for optimizer in self.algo_module.optimizers.values():
@@ -121,10 +121,13 @@ class DQNAlgorithm(BaseAlgorithm):
         if self.world_size > 1:
             torch.cuda.synchronize()
 
-        if self.counter % self.target_update == 0:
-            self.algo_module.models["target_q_net"].load_state_dict(self.algo_module.models["q_net"].state_dict())
-        self.counter += 1
-
+        if self.update_count % self.target_update_frequency == 0:
+            self.update_count = 0
+            self.algo_module.models["target_q_net"].load_state_dict(
+                self.algo_module.models["q_net"].state_dict()
+            )
+        else:
+            self.update_count += 1
         return loss
 
     def cal_value_loss(

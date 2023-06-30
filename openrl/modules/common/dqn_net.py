@@ -91,7 +91,7 @@ class DQNNet(BaseNet):
             available_actions=None,
         )
         q_values = np.array(np.split(_t2n(q_values), self.n_rollout_threads))
-        actions = np.expand_dims(q_values.argmax(axis=-1), axis=-1)
+        actions = q_values.argmax(axis=-1)
 
         return actions, self.rnn_states_actor
 

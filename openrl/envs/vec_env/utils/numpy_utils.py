@@ -174,13 +174,20 @@ def create_empty_array(
 
 # It is possible for the some of the Box low to be greater than 0, then array is not in space
 @create_empty_array.register(Box)
-# If the Discrete start > 0 or start + length < 0 then array is not in space
-@create_empty_array.register(Discrete)
 @create_empty_array.register(MultiDiscrete)
 @create_empty_array.register(MultiBinary)
 def _create_empty_array_base(space, n=1, agent_num=1, fn=np.zeros):
     # shape = space.shape if (agent_num is None) else (agent_num,) + space.shape
     shape = (agent_num,) + space.shape
+    shape = shape if (n is None) else (n,) + shape
+    return fn(shape, dtype=space.dtype)
+
+
+# If the Discrete start > 0 or start + length < 0 then array is not in space
+@create_empty_array.register(Discrete)
+def _create_empty_array_discrete(space, n=1, agent_num=1, fn=np.zeros):
+    # shape = space.shape if (agent_num is None) else (agent_num,) + space.shape
+    shape = (agent_num, space.n)
     shape = shape if (n is None) else (n,) + shape
     return fn(shape, dtype=space.dtype)
 

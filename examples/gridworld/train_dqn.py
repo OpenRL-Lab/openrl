@@ -19,7 +19,7 @@ def train():
     # 初始化训练器
     agent = Agent(net)
     # 开始训练
-    agent.train(total_time_steps=20000)
+    agent.train(total_time_steps=10000)
     env.close()
     return agent
 

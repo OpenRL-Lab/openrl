@@ -153,3 +153,4 @@ run_results/
 # model
 *.pt
 .vscode
+*.pkl

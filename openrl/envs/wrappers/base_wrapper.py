@@ -15,7 +15,12 @@
 # limitations under the License.
 
 """"""
+from typing import Any, SupportsFloat, TypeVar, Dict, Tuple
+
 import gymnasium as gym
+from gymnasium.core import ActType, ObsType
+
+ArrayType = TypeVar("ArrayType")
 
 
 class BaseWrapper(gym.Wrapper):
@@ -56,6 +61,24 @@ class BaseObservationWrapper(BaseWrapper, gym.ObservationWrapper):
         super().__init__(env)
 
 
-class BaseRewardWrapper(BaseWrapper, gym.RewardWrapper):
+class BaseRewardWrapper(BaseWrapper):
     def __init__(self, env):
         super().__init__(env)
+
+    def step(
+        self, action: ActType
+    ) -> Tuple[ObsType, SupportsFloat, bool, bool, Dict[str, Any]]:
+        """Modifies the :attr:`env` :meth:`step` reward using :meth:`self.reward`."""
+        returns = self.env.step(action)
+        return returns[0], self.reward(returns[1]), *returns[2:]
+
+    def reward(self, reward: ArrayType) -> ArrayType:
+        """Returns a modified environment ``reward``.
+
+        Args:
+            reward: The :attr:`env` :meth:`step` reward
+
+        Returns:
+            The modified `reward`
+        """
+        raise NotImplementedError

@@ -1,0 +1,5 @@
+seed: 0
+expert_data: "./data.pkl"
+gail_use_action: false
+reward_class:
+  id: "GAILReward"
