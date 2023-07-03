@@ -82,7 +82,7 @@ class DDPGNet(BaseNet):
     def act(
             self, observation: Union[np.ndarray, Dict[str, np.ndarray]]
     ) -> Tuple[np.ndarray, Optional[Tuple[np.ndarray, ...]]]:
-        action = self.module.act(observation)
+        action = self.module.act(observation).detach().numpy()
 
         return action
 

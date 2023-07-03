@@ -62,6 +62,7 @@ class OffPolicyDriver(RLDriver):
         self.var = config["cfg"].var
         self.obs_space = self.trainer.algo_module.obs_space
         self.act_space = self.trainer.algo_module.act_space
+        self.var_step = self.var / self.num_env_steps
 
         if self.envs.parallel_env_num > 1:
             self.episode_steps = np.zeros((self.envs.parallel_env_num,))
@@ -179,19 +180,19 @@ class OffPolicyDriver(RLDriver):
                     "buffer": self.buffer,
                 }
                 next_obs, rewards, dones, infos = self.envs.step(actions, extra_data)
-                self.var *= 0.9995
+                self.var -= self.var_step
+
+                ep_reward += rewards
 
                 q_values = np.zeros_like(actions)
                 rnn_states = None
 
-                ep_reward += rewards
-
-            counter += 1
-            if any(dones):
-                # next_obs = np.array([infos[i]['final_observation'] for i in range(len(infos))])
-                print("运行次数为：%d, 回报为：%.3f, 探索方差为：%.4f" % (counter, ep_reward, self.var))
-                counter = 0
-                ep_reward = 0
+                # counter += 1
+                if any(dones):
+                    next_obs = np.array([infos[i]['final_observation'] for i in range(len(infos))])
+                    # print("运行次数为：%d, 回报为：%.3f, 探索方差为：%.4f" % (counter, ep_reward, self.var))
+                    # counter = 0
+                    # ep_reward = 0
 
             all_dones = np.all(dones)
             if type(self.episode_steps) == int:
@@ -213,13 +214,6 @@ class OffPolicyDriver(RLDriver):
             self.callback.update_locals(locals())
             if self.callback.on_step() is False:
                 return {}, False
-
-            # if self.verbose_flag:
-            #     print("step: ", step,
-            #           "state: ", self.buffer.data.get_batch_data("next_policy_obs" if step != 0 else "policy_obs", step),
-            #           "q_values: ", q_values,
-            #           "actions: ", actions)
-            # print("rewards: ", rewards)
 
             data = (
                 obs,
@@ -300,13 +294,12 @@ class OffPolicyDriver(RLDriver):
                 self.buffer.data.get_batch_data(
                     "next_policy_obs" if step != 0 else "policy_obs", step
                 )
-            ).item()
+            ).numpy()
 
             actions = np.clip(
-                np.random.normal(actions, self.var), -self.act_space.high, self.act_space.high
+                np.random.normal(actions, self.var), self.act_space.low, self.act_space.high
             )
 
-            actions = np.expand_dims(actions, -1)
             actions = np.expand_dims(actions, -1)
 
             return actions

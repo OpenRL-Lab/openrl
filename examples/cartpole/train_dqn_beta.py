@@ -13,7 +13,7 @@ def train():
     cfg = cfg_parser.parse_args(["--config", "dqn_cartpole.yaml"])
 
     # 创建 环境
-    env = make("CartPole-v1")
+    env = make("CartPole-v1", env_num=4)
 
     # 创建 神经网络
     net = Net(env, cfg=cfg)
@@ -29,16 +29,14 @@ def train():
 
 def evaluation(agent):
     # 开始测试环境
-    env = make("CartPole-v1")
+    env = make("CartPole-v1", render_mode="group_human")
     agent.set_env(env)
     obs, info = env.reset()
     done = False
     step = 0
     while not np.any(done):
         # 智能体根据 observation 预测下一个动作
-
         action, _ = agent.act(obs["policy"])
-
         obs, r, done, info = env.step(action)
         step += 1
         print(f"{step}: reward:{np.mean(r)}")
@@ -47,4 +45,4 @@ def evaluation(agent):
 
 if __name__ == "__main__":
     agent = train()
-    # evaluation(agent)
+    evaluation(agent)
