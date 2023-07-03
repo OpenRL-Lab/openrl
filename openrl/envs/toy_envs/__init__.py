@@ -21,8 +21,8 @@ from openrl.envs.toy_envs.bit_flipping_env import BitFlippingEnv
 from openrl.envs.toy_envs.identity_env import (
     FakeImageEnv,
     IdentityEnv,
-    IdentityEnvcontinuous,
     IdentityEnvBox,
+    IdentityEnvcontinuous,
     IdentityEnvMultiBinary,
     IdentityEnvMultiDiscrete,
 )

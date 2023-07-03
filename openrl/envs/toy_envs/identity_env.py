@@ -74,6 +74,7 @@ class IdentityEnv(gym.Env, Generic[T]):
     def render(self, mode: str = "human") -> None:
         pass
 
+
 class IdentityEnvcontinuous(gym.Env, Generic[T]):
     spec = EnvSpec("IdentityEnvcontinuous")
 
@@ -103,7 +104,7 @@ class IdentityEnvcontinuous(gym.Env, Generic[T]):
             ), "arguments for both 'dim' and 'space' provided: at most one allowed"
 
         self.observation_space = space
-        self.action_space = (spaces.Box(low=-dim, high=dim, shape=(1,)))
+        self.action_space = spaces.Box(low=-dim, high=dim, shape=(1,))
 
         self.ep_length = ep_length
         self.current_step = 0

@@ -189,7 +189,9 @@ class OffPolicyDriver(RLDriver):
 
                 # counter += 1
                 if any(dones):
-                    next_obs = np.array([infos[i]['final_observation'] for i in range(len(infos))])
+                    next_obs = np.array(
+                        [infos[i]["final_observation"] for i in range(len(infos))]
+                    )
                     # print("运行次数为：%d, 回报为：%.3f, 探索方差为：%.4f" % (counter, ep_reward, self.var))
                     # counter = 0
                     # ep_reward = 0
@@ -274,14 +276,14 @@ class OffPolicyDriver(RLDriver):
                     * (self.episode * self.episode_length + step),
                     self.epsilon_start,
                 )
-
             )
 
             actions = np.expand_dims(q_values.argmax(axis=-1), axis=-1)
 
             if random.random() >= epsilon or self.first_insert_buffer:
                 actions = np.random.randint(
-                    low=0, high=self.envs.action_space.n, size=actions.shape)
+                    low=0, high=self.envs.action_space.n, size=actions.shape
+                )
 
             return (
                 q_values,
@@ -297,13 +299,14 @@ class OffPolicyDriver(RLDriver):
             ).numpy()
 
             actions = np.clip(
-                np.random.normal(actions, self.var), self.act_space.low, self.act_space.high
+                np.random.normal(actions, self.var),
+                self.act_space.low,
+                self.act_space.high,
             )
 
             actions = np.expand_dims(actions, -1)
 
             return actions
-
 
     def compute_returns(self):
         pass

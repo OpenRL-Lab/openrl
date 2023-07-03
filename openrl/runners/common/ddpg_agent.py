@@ -15,7 +15,7 @@
 # limitations under the License.
 
 """"""
-from typing import Dict, Optional, Tuple, Union, Type
+from typing import Dict, Optional, Tuple, Type, Union
 
 import gym
 import numpy as np
@@ -52,7 +52,7 @@ class DDPGAgent(RLAgent):
     def train(
         self: SelfAgent,
         total_time_steps: int,
-        callback:MaybeCallback = None,
+        callback: MaybeCallback = None,
         train_algo_class: Type[BaseAlgorithm] = TrainAlgo,
         logger: Optional[Logger] = None,
     ) -> None:

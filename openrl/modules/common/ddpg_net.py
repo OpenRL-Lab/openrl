@@ -27,14 +27,15 @@ from openrl.modules.common.base_net import BaseNet
 from openrl.modules.ddpg_module import DDPGModule
 from openrl.utils.util import set_seed
 
+
 class DDPGNet(BaseNet):
     def __init__(
-            self,
-            env: Union[gym.Env, str],
-            cfg=None,
-            device: Union[torch.device, str] = "cpu",
-            n_rollout_threads: int = 1,
-            model_dict: Optional[Dict[str, Any]] = None,
+        self,
+        env: Union[gym.Env, str],
+        cfg=None,
+        device: Union[torch.device, str] = "cpu",
+        n_rollout_threads: int = 1,
+        model_dict: Optional[Dict[str, Any]] = None,
     ) -> None:
         super().__init__()
 
@@ -80,7 +81,7 @@ class DDPGNet(BaseNet):
         self.masks = None
 
     def act(
-            self, observation: Union[np.ndarray, Dict[str, np.ndarray]]
+        self, observation: Union[np.ndarray, Dict[str, np.ndarray]]
     ) -> Tuple[np.ndarray, Optional[Tuple[np.ndarray, ...]]]:
         action = self.module.act(observation).detach().numpy()
 

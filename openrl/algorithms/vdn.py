@@ -208,7 +208,9 @@ class VDNAlgorithm(BaseAlgorithm):
         rewards_batch = rewards_batch.reshape(-1, self.n_agent, 1)
         rewards_batch = torch.sum(rewards_batch, dim=1, keepdim=True).view(-1, 1)
         q_targets = rewards_batch + self.gamma * max_next_q_values
-        q_loss = torch.mean(F.mse_loss(q_values, q_targets.detach()))  # 均方误差损失函数
+        q_loss = torch.mean(
+            F.mse_loss(q_values, q_targets.detach())
+        )  # 均方误差损失函数
 
         loss_list.append(q_loss)
         return loss_list

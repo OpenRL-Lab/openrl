@@ -43,17 +43,17 @@ class DDPGAlgorithm(BaseAlgorithm):
         self.tau = cfg.tau
 
     def prepare_critic_loss(
-            self,
-            obs_batch,
-            next_obs_batch,
-            rnn_states_batch,
-            actions_batch,
-            masks_batch,
-            available_actions_batch,
-            value_preds_batch,
-            rewards_batch,
-            active_masks_batch,
-            turn_on,
+        self,
+        obs_batch,
+        next_obs_batch,
+        rnn_states_batch,
+        actions_batch,
+        masks_batch,
+        available_actions_batch,
+        value_preds_batch,
+        rewards_batch,
+        active_masks_batch,
+        turn_on,
     ):
         target_q_values, current_q_values = self.algo_module.evaluate_critic_loss(
             obs_batch,
@@ -71,17 +71,17 @@ class DDPGAlgorithm(BaseAlgorithm):
         return critic_loss
 
     def prepare_actor_loss(
-            self,
-            obs_batch,
-            next_obs_batch,
-            rnn_states_batch,
-            actions_batch,
-            masks_batch,
-            available_actions_batch,
-            value_preds_batch,
-            rewards_batch,
-            active_masks_batch,
-            turn_on,
+        self,
+        obs_batch,
+        next_obs_batch,
+        rnn_states_batch,
+        actions_batch,
+        masks_batch,
+        available_actions_batch,
+        value_preds_batch,
+        rewards_batch,
+        active_masks_batch,
+        turn_on,
     ):
         actor_loss = self.algo_module.evaluate_actor_loss(
             obs_batch,
@@ -95,7 +95,6 @@ class DDPGAlgorithm(BaseAlgorithm):
         )
 
         return actor_loss
-
 
     def ddpg_update(self, sample, turn_on=True):
         (
@@ -239,15 +238,17 @@ class DDPGAlgorithm(BaseAlgorithm):
         return loss_list
 
     def cal_value_loss(
-            self,
-            value_normalizer,
-            values,
-            value_preds_batch,
-            return_batch,
-            active_masks_batch,
+        self,
+        value_normalizer,
+        values,
+        value_preds_batch,
+        return_batch,
+        active_masks_batch,
     ):
         # TODO：to be finished
-        raise NotImplementedError("The calc_value_loss function in ddpg.py has not implemented yet")
+        raise NotImplementedError(
+            "The calc_value_loss function in ddpg.py has not implemented yet"
+        )
 
     def to_single_np(self, input):
         reshape_input = input.reshape(-1, self.agent_num, *input.shape[1:])
@@ -275,14 +276,18 @@ class DDPGAlgorithm(BaseAlgorithm):
                 data_generator = buffer.feed_forward_generator(
                     None,
                     num_mini_batch=self.num_mini_batch,
-                    mini_batch_size=self.mini_batch_size
+                    mini_batch_size=self.mini_batch_size,
                 )
 
             for sample in data_generator:
                 loss_list = self.ddpg_update(sample, turn_on)
                 if self.world_size > 1:
-                    train_info["reduced_critic_loss"] += reduce_tensor(loss_list[0].data, self.world_size)
-                    train_info["reduced_actor_loss"] += reduce_tensor(loss_list[1].data, self.world_size)
+                    train_info["reduced_critic_loss"] += reduce_tensor(
+                        loss_list[0].data, self.world_size
+                    )
+                    train_info["reduced_actor_loss"] += reduce_tensor(
+                        loss_list[1].data, self.world_size
+                    )
 
                 train_info["critic_loss"] += loss_list[0].item()
                 train_info["actor_loss"] += loss_list[1].item()
@@ -297,5 +302,3 @@ class DDPGAlgorithm(BaseAlgorithm):
                 optimizer.sync_lookahead()
 
         return train_info
-
-

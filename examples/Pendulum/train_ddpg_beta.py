@@ -1,11 +1,12 @@
 """"""
 import numpy as np
 
+from openrl.configs.config import create_config_parser
+
 # from openrl.envs.toy_envs import make
 from openrl.envs.common import make
 from openrl.modules.common import DDPGNet as Net
 from openrl.runners.common import DDPGAgent as Agent
-from openrl.configs.config import create_config_parser
 
 
 def train():
