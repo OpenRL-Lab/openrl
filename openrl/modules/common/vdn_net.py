@@ -50,6 +50,8 @@ class VDNNet(BaseNet):
         cfg.n_rollout_threads = n_rollout_threads
         cfg.learner_n_rollout_threads = cfg.n_rollout_threads
 
+        cfg.algorithm_name = "VDN"
+
         if cfg.rnn_type == "gru":
             rnn_hidden_size = cfg.hidden_size
         elif cfg.rnn_type == "lstm":

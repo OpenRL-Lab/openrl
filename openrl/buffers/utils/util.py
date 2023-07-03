@@ -56,7 +56,6 @@ def get_critic_obs_space(obs_space):
 def get_shape_from_obs_space_v2(obs_space, model_name=None):
     if model_name is not None:
         obs_space = obs_space[model_name]
-
     if obs_space.__class__.__name__ == "Box":
         obs_shape = obs_space.shape
     elif obs_space.__class__.__name__ == "list":
@@ -64,7 +63,7 @@ def get_shape_from_obs_space_v2(obs_space, model_name=None):
     elif obs_space.__class__.__name__ == "Dict":
         obs_shape = obs_space.spaces
     elif obs_space.__class__.__name__ == "Discrete":
-        obs_shape = [obs_space.n]
+        obs_shape = (obs_space.n,)
     else:
         raise NotImplementedError(
             "obs_space type {} not supported".format(obs_space.__class__.__name__)
