@@ -1,10 +1,10 @@
 """"""
 import numpy as np
 
+from openrl.configs.config import create_config_parser
 from openrl.envs.common import make
 from openrl.modules.common import DQNNet as Net
 from openrl.runners.common import DQNAgent as Agent
-from openrl.configs.config import create_config_parser
 
 
 def train():
@@ -36,7 +36,7 @@ def evaluation(agent):
     step = 0
     while not np.any(done):
         # 智能体根据 observation 预测下一个动作
-        action, _ = agent.act(obs["policy"])
+        action, _ = agent.act(obs)
         obs, r, done, info = env.step(action)
         step += 1
         print(f"{step}: reward:{np.mean(r)}")

@@ -65,7 +65,12 @@ class OffPolicyReplayData(ReplayData):
         )
 
         self.value_preds = np.zeros(
-            (self.episode_length + 1, self.n_rollout_threads, num_agents, self.act_space),
+            (
+                self.episode_length + 1,
+                self.n_rollout_threads,
+                num_agents,
+                self.act_space,
+            ),
             dtype=np.float32,
         )
 
@@ -249,7 +254,9 @@ class OffPolicyReplayData(ReplayData):
 
         assert (batch_size - n_rollout_threads) >= mini_batch_size
         sampler = BatchSampler(
-            SubsetRandomSampler(range(batch_size - n_rollout_threads - (num_agents - 1))),
+            SubsetRandomSampler(
+                range(batch_size - n_rollout_threads - (num_agents - 1))
+            ),
             mini_batch_size,
             drop_last=True,
         )

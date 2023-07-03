@@ -16,19 +16,18 @@
 
 """"""
 
+import gymnasium as gym
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import gymnasium as gym
-
 
 from openrl.buffers.utils.util import (
     get_critic_obs_space,
     get_policy_obs_space,
     get_shape_from_obs_space_v2,
 )
-from openrl.modules.networks.base_value_network import BaseValueNetwork
 from openrl.modules.networks.base_policy_network import BasePolicyNetwork
+from openrl.modules.networks.base_value_network import BaseValueNetwork
 from openrl.modules.networks.utils.cnn import CNNBase
 from openrl.modules.networks.utils.mix import MIXBase
 from openrl.modules.networks.utils.mlp import MLPBase

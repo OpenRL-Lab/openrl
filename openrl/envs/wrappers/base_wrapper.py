@@ -15,7 +15,7 @@
 # limitations under the License.
 
 """"""
-from typing import Any, SupportsFloat, TypeVar, Dict, Tuple
+from typing import Any, Dict, SupportsFloat, Tuple, TypeVar
 
 import gymnasium as gym
 from gymnasium.core import ActType, ObsType

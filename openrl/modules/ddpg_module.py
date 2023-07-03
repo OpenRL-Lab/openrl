@@ -27,6 +27,7 @@ from openrl.modules.networks.ddpg_network import ActorNetwork, CriticNetwork
 from openrl.modules.rl_module import RLModule
 from openrl.modules.utils.util import update_linear_schedule
 
+
 class DDPGModule(RLModule):
     def __init__(
         self,
@@ -89,88 +90,95 @@ class DDPGModule(RLModule):
         self.cfg = cfg
 
     def lr_decay(self, episode, episodes):
-        update_linear_schedule(self.optimizers["critic"], episode, episodes, self.cfg.critic_lr)
-        update_linear_schedule(self.optimizers["actor"], episode, episodes, self.cfg.actor_lr)
+        update_linear_schedule(
+            self.optimizers["critic"], episode, episodes, self.cfg.critic_lr
+        )
+        update_linear_schedule(
+            self.optimizers["actor"], episode, episodes, self.cfg.actor_lr
+        )
 
     def get_actions(
-            self,
-            obs,
-            # rnn_states,
-            # masks,
-            # available_actions=None,
+        self,
+        obs,
+        # rnn_states,
+        # masks,
+        # available_actions=None,
     ):
         action = self.models["actor"](obs)
 
         return action
 
-    def get_values(
-            self,
-            obs,
-            action,
-            rnn_states_critic,
-            masks
-    ):
+    def get_values(self, obs, action, rnn_states_critic, masks):
         critic_values, _ = self.models["critic"](obs, action, rnn_states_critic, masks)
 
         return critic_values
 
     def evaluate_actor_loss(
-            self,
-            obs_batch,
-            next_obs_batch,
-            rnn_states_batch,
-            rewards_batch,
-            actions_batch,
-            masks,
-            available_actions=None,
-            masks_batch=None,
+        self,
+        obs_batch,
+        next_obs_batch,
+        rnn_states_batch,
+        rewards_batch,
+        actions_batch,
+        masks,
+        available_actions=None,
+        masks_batch=None,
     ):
         if masks_batch is None:
             masks_batch = masks
 
-        actor_loss, _ = self.models['critic'](obs_batch, self.get_actions(obs_batch), rnn_states_batch, masks_batch)
-        actor_loss = - actor_loss.mean()
+        actor_loss, _ = self.models["critic"](
+            obs_batch, self.get_actions(obs_batch), rnn_states_batch, masks_batch
+        )
+        actor_loss = -actor_loss.mean()
 
         return actor_loss
 
     def evaluate_critic_loss(
-            self,
-            obs_batch,
-            next_obs_batch,
-            rnn_states_batch,
-            rewards_batch,
-            actions_batch,
-            masks,
-            available_actions=None,
-            masks_batch=None,
+        self,
+        obs_batch,
+        next_obs_batch,
+        rnn_states_batch,
+        rewards_batch,
+        actions_batch,
+        masks,
+        available_actions=None,
+        masks_batch=None,
     ):
         if masks_batch is None:
             masks_batch = masks
 
-        target_q_values, _ = self.models['critic_target'](next_obs_batch, self.models['actor_target'](next_obs_batch), rnn_states_batch, masks_batch)
-        current_q_values, _ = self.models['critic'](obs_batch, actions_batch, rnn_states_batch, masks_batch)
+        target_q_values, _ = self.models["critic_target"](
+            next_obs_batch,
+            self.models["actor_target"](next_obs_batch),
+            rnn_states_batch,
+            masks_batch,
+        )
+        current_q_values, _ = self.models["critic"](
+            obs_batch, actions_batch, rnn_states_batch, masks_batch
+        )
 
         return target_q_values, current_q_values
 
     def evaluate_actions(
-            self,
-            obs_batch,
-            next_obs_batch,
-            rnn_states_batch,
-            rewards_batch,
-            actions_batch,
-            masks,
-            available_actions=None,
-            masks_batch=None,
+        self,
+        obs_batch,
+        next_obs_batch,
+        rnn_states_batch,
+        rewards_batch,
+        actions_batch,
+        masks,
+        available_actions=None,
+        masks_batch=None,
     ):
         print("在ddpg_module中调用了evaluate_actions函数，该函数未实现")
 
     def act(
-            self,
-            obs,
-            # rnn_states_actor,
-            # masks,
-            # available_actions=None
+        self,
+        obs,
+        # rnn_states_actor,
+        # masks,
+        # available_actions=None
     ):
         action = self.models["actor"](obs)
 
@@ -181,7 +189,7 @@ class DDPGModule(RLModule):
 
     @staticmethod
     def init_rnn_states(
-            rollout_num: int, agent_num: int, rnn_layers: int, hidden_size: int
+        rollout_num: int, agent_num: int, rnn_layers: int, hidden_size: int
     ):
         masks = np.ones((rollout_num * agent_num, 1), dtype=np.float32)
         rnn_state = np.zeros((rollout_num * agent_num, rnn_layers, hidden_size))

@@ -25,8 +25,7 @@ import torch
 from openrl.configs.config import create_config_parser
 from openrl.modules.common.base_net import BaseNet
 from openrl.modules.vdn_module import VDNModule
-from openrl.utils.util import set_seed
-from openrl.utils.util import _t2n
+from openrl.utils.util import _t2n, set_seed
 
 
 class VDNNet(BaseNet):
@@ -96,7 +95,6 @@ class VDNNet(BaseNet):
         actions = np.expand_dims(q_values.argmax(axis=-1), axis=-1)
 
         return actions, self.rnn_states_actor
-
 
     def reset(self, env: Optional[gym.Env] = None) -> None:
         if env is not None:
