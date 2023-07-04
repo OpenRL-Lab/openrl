@@ -62,6 +62,8 @@ OpenRL目前支持的算法（更多详情请参考 [Gallery](Gallery.md)）：
 - [Generative Adversarial Imitation Learning (GAIL)](https://arxiv.org/abs/1606.03476)
 - [Deep Q-Network (DQN)](https://arxiv.org/abs/1312.5602)
 - [Multi-Agent Transformer (MAT)](https://arxiv.org/abs/2205.14953)
+- [Value-Decomposition Network (VDN)](https://arxiv.org/abs/1706.05296)
+- [Deep Deterministic Policy Gradient (DDPG)](https://arxiv.org/abs/1509.02971)
 
 OpenRL目前支持的环境（更多详情请参考 [Gallery](Gallery.md)）：
 - [Gymnasium](https://gymnasium.farama.org/)

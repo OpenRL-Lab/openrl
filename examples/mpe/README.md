@@ -18,3 +18,10 @@ Train MPE with [MAT](https://arxiv.org/abs/2205.14953) algorithm:
 ```shell
 python train_mat.py --config mpe_mat.yaml
 ```
+
+
+Train MPE with [VDN](https://arxiv.org/abs/1706.05296) algorithm:
+
+```shell
+python train_vdn.py --config mpe_vdn.yaml
+```

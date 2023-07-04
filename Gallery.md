@@ -42,6 +42,8 @@ Users are also welcome to contribute their own training examples and demos to th
 |      [GAIL](https://arxiv.org/abs/1606.03476)      |                                ![offline](https://img.shields.io/badge/-offlineRL-darkblue)                                                                                         |   [code](./examples/gail/)    |
 |       [DQN](https://arxiv.org/abs/1312.5602)       | ![discrete](https://img.shields.io/badge/-discrete-brightgreen)   ![value](https://img.shields.io/badge/-value-orange)   ![offpolicy](https://img.shields.io/badge/-offpolicy-blue) | [code](./examples/gridworld/) |
 |      [MAT](https://arxiv.org/abs/2205.14953)       |                                 ![MARL](https://img.shields.io/badge/-MARL-yellow)  ![Transformer](https://img.shields.io/badge/-Transformer-blue)                                  |    [code](./examples/mpe/)    |
+|      [VDN](https://arxiv.org/abs/1706.05296)       |                                 ![MARL](https://img.shields.io/badge/-MARL-yellow)                                  |    [code](./examples/mpe/)    |
+|      [DDPG](https://arxiv.org/abs/1509.02971)      |                                 ![continuous](https://img.shields.io/badge/-continous-green)                                  |   [code](./examples/ddpg/)    |
 |                     Self-Play                      |                              ![selfplay](https://img.shields.io/badge/-selfplay-blue) ![discrete](https://img.shields.io/badge/-discrete-brightgreen)                               | [code](./examples/selfplay/)  |
 </div>
 
