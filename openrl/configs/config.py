@@ -985,12 +985,12 @@ def create_config_parser():
     parser.add_argument(
         "actor_lr", type=float, default=0.001, help="The learning rate of actor network"
     )
-    parser.add_argument(
-        "critic_lr",
-        type=float,
-        default=0.002,
-        help="The learning rate of critic network",
-    )
+    # parser.add_argument(
+    #     "critic_lr",
+    #     type=float,
+    #     default=0.002,
+    #     help="The learning rate of critic network",
+    # )
     # update parameters
     parser.add_argument(
         "--use_soft_update",
