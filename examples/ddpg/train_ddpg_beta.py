@@ -12,7 +12,7 @@ from openrl.runners.common import DDPGAgent as Agent
 def train():
     # 添加读取配置文件的代码
     cfg_parser = create_config_parser()
-    cfg = cfg_parser.parse_args(["--config", "ddpg_pendulum.yaml"])
+    cfg = cfg_parser.parse_args()
 
     # 创建 环境
     env = make("Pendulum-v1", env_num=5)
@@ -21,7 +21,8 @@ def train():
     # 初始化训练器
     agent = Agent(net)
     # 开始训练
-    agent.train(total_time_steps=100000)
+    # agent.train(total_time_steps=100000)
+    agent.train(total_time_steps=20000)
     env.close()
     return agent
 
