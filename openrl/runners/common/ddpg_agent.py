@@ -22,7 +22,7 @@ import numpy as np
 import torch
 
 from openrl.algorithms.base_algorithm import BaseAlgorithm
-from openrl.algorithms.vdn import VDNAlgorithm as TrainAlgo
+from openrl.algorithms.ddpg import DDPGAlgorithm as TrainAlgo
 from openrl.buffers import OffPolicyReplayBuffer as ReplayBuffer
 from openrl.buffers.utils.obs_data import ObsData
 from openrl.drivers.offpolicy_driver import OffPolicyDriver as Driver
@@ -33,7 +33,7 @@ from openrl.utils.type_aliases import MaybeCallback
 from openrl.utils.util import _t2n
 
 
-class VDNAgent(RLAgent):
+class DDPGAgent(RLAgent):
     def __init__(
         self,
         net: Optional[torch.nn.Module] = None,
@@ -45,7 +45,7 @@ class VDNAgent(RLAgent):
         use_wandb: bool = False,
         use_tensorboard: bool = False,
     ) -> None:
-        super(VDNAgent, self).__init__(
+        super(DDPGAgent, self).__init__(
             net, env, run_dir, env_num, rank, world_size, use_wandb, use_tensorboard
         )
 
@@ -84,7 +84,7 @@ class VDNAgent(RLAgent):
 
         logger = Logger(
             cfg=self._cfg,
-            project_name="VDNAgent",
+            project_name="DDPGAgent",
             scenario_name=self._env.env_name,
             wandb_entity=self._cfg.wandb_entity,
             exp_name=self.exp_name,
@@ -112,20 +112,17 @@ class VDNAgent(RLAgent):
             logger=logger,
             callback=callback,
         )
-
         callback.on_training_start(locals(), globals())
-
         driver.run()
-
         callback.on_training_end()
 
     def act(
-        self, observation: Union[np.ndarray, Dict[str, np.ndarray]], deterministic=None
+        self, observation: Union[np.ndarray, Dict[str, np.ndarray]]
     ) -> Tuple[np.ndarray, Optional[Tuple[np.ndarray, ...]]]:
         assert self.net is not None, "net is None"
         observation = ObsData.prepare_input(observation)
-        action, rnn_state = self.net.act(observation)
 
-        # action = np.array(np.split(_t2n(action), self.env_num))
+        action = self.net.act(observation)
+        action = np.array(np.split(action, self.env_num))
 
-        return action, rnn_state
+        return action

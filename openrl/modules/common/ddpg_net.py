@@ -24,11 +24,11 @@ import torch
 
 from openrl.configs.config import create_config_parser
 from openrl.modules.common.base_net import BaseNet
-from openrl.modules.vdn_module import VDNModule
-from openrl.utils.util import _t2n, set_seed
+from openrl.modules.ddpg_module import DDPGModule
+from openrl.utils.util import set_seed
 
 
-class VDNNet(BaseNet):
+class DDPGNet(BaseNet):
     def __init__(
         self,
         env: Union[gym.Env, str],
@@ -49,7 +49,7 @@ class VDNNet(BaseNet):
         cfg.n_rollout_threads = n_rollout_threads
         cfg.learner_n_rollout_threads = cfg.n_rollout_threads
 
-        cfg.algorithm_name = "VDN"
+        cfg.algorithm_name = "DDPG"
 
         if cfg.rnn_type == "gru":
             rnn_hidden_size = cfg.hidden_size
@@ -64,8 +64,7 @@ class VDNNet(BaseNet):
         if isinstance(device, str):
             device = torch.device(device)
 
-        cfg.num_agents = env.agent_num
-        self.module = VDNModule(
+        self.module = DDPGModule(
             cfg=cfg,
             input_space=env.observation_space,
             act_space=env.action_space,
@@ -75,7 +74,6 @@ class VDNNet(BaseNet):
             model_dict=model_dict,
         )
 
-        self.n_rollout_threads = cfg.n_rollout_threads
         self.cfg = cfg
         self.env = env
         self.device = device
@@ -85,16 +83,9 @@ class VDNNet(BaseNet):
     def act(
         self, observation: Union[np.ndarray, Dict[str, np.ndarray]]
     ) -> Tuple[np.ndarray, Optional[Tuple[np.ndarray, ...]]]:
-        q_values, self.rnn_states_actor = self.module.act(
-            obs=observation,
-            rnn_states_actor=self.rnn_states_actor,
-            masks=self.masks,
-            available_actions=None,
-        )
-        q_values = np.array(np.split(_t2n(q_values), self.n_rollout_threads))
-        actions = np.expand_dims(q_values.argmax(axis=-1), axis=-1)
+        action = self.module.act(observation).detach().numpy()
 
-        return actions, self.rnn_states_actor
+        return action
 
     def reset(self, env: Optional[gym.Env] = None) -> None:
         if env is not None:

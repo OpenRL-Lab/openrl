@@ -17,6 +17,7 @@ toy_all_envs = [
     "BitFlippingEnv",
     "FakeImageEnv",
     "IdentityEnv",
+    "IdentityEnvcontinuous",
     "IdentityEnvBox",
     "IdentityEnvMultiBinary",
     "IdentityEnvMultiDiscrete",
