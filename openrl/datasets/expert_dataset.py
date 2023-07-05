@@ -21,7 +21,6 @@ import pickle
 import numpy as np
 import torch.utils.data
 
-
 class ExpertDataset(torch.utils.data.Dataset):
     def __init__(
         self, file_name, num_trajectories=None, subsample_frequency=1, seed=None
@@ -34,6 +33,19 @@ class ExpertDataset(torch.utils.data.Dataset):
             num_trajectories = len(all_trajectories["episode_lengths"])
 
         perm = torch.randperm(len(all_trajectories["episode_lengths"]))
+
+        if "observation_space" in all_trajectories:
+            self.observation_space = all_trajectories["observation_space"]
+        else:
+            self.observation_space = None # get observation space from obs data
+        if "action_space" in all_trajectories:
+            self.action_space = all_trajectories["action_space"]
+        else:
+            self.action_space = None # get action space from action data
+        if "agent_num" in all_trajectories:
+            self.agent_num = all_trajectories["agent_num"]
+        else:
+            self.agent_num = None # get agent num from obs data
 
         idx = perm[:num_trajectories]
 
@@ -82,7 +94,6 @@ class ExpertDataset(torch.utils.data.Dataset):
 
     def __getitem__(self, i):
         traj_idx, step_i = self.get_idx[i]
-        # print(i,"traj_idx", traj_idx,step_i, self.trajectories["obs"][traj_idx][step_i])
         return (
             self.trajectories["obs"][traj_idx][step_i],
             self.trajectories["action"][traj_idx][step_i],
