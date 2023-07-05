@@ -23,7 +23,7 @@ import torch.utils.data
 
 class ExpertDataset(torch.utils.data.Dataset):
     def __init__(
-        self, file_name, num_trajectories=None, subsample_frequency=1, seed=None
+        self, file_name, num_trajectories=None, subsample_frequency=1, seed=None,env_id=0,total_env_num=1,
     ):
         # if num_trajectories=4, subsample_frequency=20, then use the data of 4 trajectories, and the size of the data of each trajectory is reduced by 20 times
         if seed is not None:

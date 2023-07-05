@@ -26,8 +26,8 @@ from openrl.datasets.expert_dataset import ExpertDataset
 class OfflineEnv(gym.Env):
     _np_random: Optional[np.random.Generator] = None
 
-    def __init__(self,dataset_path):
-        self.dataset = ExpertDataset(dataset_path)
+    def __init__(self,dataset_path,env_id,total_env_num):
+        self.dataset = ExpertDataset(dataset_path,env_id=env_id,total_env_num=total_env_num)
         self.observation_space = self.dataset.observation_space
         self.action_space = self.dataset.action_space
         self.agent_num = self.dataset.agent_num
