@@ -1,4 +1,5 @@
 from .base_net import BaseNet
+from .bc_net import BCNet
 from .ddpg_net import DDPGNet
 from .dqn_net import DQNNet
 from .gail_net import GAILNet
@@ -14,4 +15,5 @@ __all__ = [
     "DDPGNet",
     "VDNNet",
     "GAILNet",
+    "BCNet",
 ]

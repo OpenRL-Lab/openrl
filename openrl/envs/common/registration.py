@@ -111,6 +111,20 @@ def make(
             env_fns = make_gridworld_envs(
                 id=id, env_num=env_num, render_mode=convert_render_mode, **kwargs
             )
+        elif id in openrl.envs.offline_all_envs:
+            from openrl.envs.offline import make_offline_envs
+
+            assert cfg.expert_data is not None, (
+                "expert_data must be provided for offline envs, you can set it in a"
+                " YAML file or with `--expert_data dataset_path`"
+            )
+            kwargs["seed"] = cfg.seed
+            env_fns = make_offline_envs(
+                dataset=cfg.expert_data,
+                env_num=env_num,
+                render_mode=convert_render_mode,
+                **kwargs,
+            )
         else:
             raise NotImplementedError(f"env {id} is not supported.")
 

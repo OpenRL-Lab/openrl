@@ -15,24 +15,21 @@
 # limitations under the License.
 
 """"""
+
+from typing import Union
+
 import torch
 
-from openrl.datasets.expert_dataset import ExpertDataset
+from openrl.algorithms.ppo import PPOAlgorithm
 
 
-def test_dataset():
-    dataset = ExpertDataset(file_name="data.pkl", seed=0)
-    print("data length:", len(dataset))
-    print("data[0]:", dataset[0][0])
-    print("data[1]:", dataset[1][0])
-    print("data[len(data)-1]:", dataset[len(dataset) - 1][0])
-
-    data_loader = torch.utils.data.DataLoader(
-        dataset=dataset, batch_size=128, shuffle=False, drop_last=True
-    )
-    for batch_data in data_loader:
-        expert_obs, expert_action = batch_data
-
-
-if __name__ == "__main__":
-    test_dataset()
+class BCAlgorithm(PPOAlgorithm):
+    def __init__(
+        self,
+        cfg,
+        init_module,
+        agent_num: int = 1,
+        device: Union[str, torch.device] = "cpu",
+    ) -> None:
+        super(BCAlgorithm, self).__init__(cfg, init_module, agent_num, device)
+        assert cfg.expert_data is not None

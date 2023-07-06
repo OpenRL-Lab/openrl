@@ -25,3 +25,5 @@ toy_all_envs = [
     "SimpleMultiObsEnv",
 ]
 gridworld_all_envs = ["GridWorldEnv", "GridWorldEnvRandomGoal"]
+
+offline_all_envs = ["OfflineEnv"]

@@ -1,3 +1,4 @@
+from openrl.runners.common.bc_agent import BCAgent
 from openrl.runners.common.chat_agent import Chat6BAgent, ChatAgent
 from openrl.runners.common.ddpg_agent import DDPGAgent
 from openrl.runners.common.dqn_agent import DQNAgent
@@ -15,4 +16,5 @@ __all__ = [
     "MATAgent",
     "VDNAgent",
     "GAILAgent",
+    "BCAgent",
 ]

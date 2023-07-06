@@ -30,11 +30,16 @@ from openrl.envs.wrappers.monitor import Monitor
 
 
 class TrajectoryData:
-    def __init__(self, env_num, total_episode):
+    def __init__(
+        self, env_num, total_episode, observation_space, action_space, agent_num: int
+    ):
         self.env_num = env_num
         self.all_keys = ["obs", "action", "reward", "done", "info"]
         self.total_episode = total_episode
         self.all_trajectories = None
+        self.observation_space = observation_space
+        self.action_space = action_space
+        self.agent_num = agent_num
 
     def init_empty_dict(self, source_dict={}):
         for key in self.all_keys:
@@ -120,12 +125,18 @@ class TrajectoryData:
     def dump(self, save_path):
         self.all_trajectories["episode_lengths"] = self.episode_lengths
         self.all_trajectories["episode_rewards"] = self.episode_rewards
+
         trajectory_num = len(self.all_trajectories["obs"])
         for key in self.all_trajectories:
             assert len(self.all_trajectories[key]) == trajectory_num, (
                 f"key: {key}, len: {len(self.all_trajectories[key])}, trajectory_num:"
                 f" {trajectory_num}"
             )
+        self.all_trajectories["env_info"] = {
+            "agent_num": self.agent_num,
+            "observation_space": self.observation_space,
+            "action_space": self.action_space,
+        }
 
         with open(save_path, "wb") as f:
             pickle.dump(self.all_trajectories, f, protocol=pickle.HIGHEST_PROTOCOL)
@@ -146,7 +157,11 @@ class GenDataWrapper(VecEnvWrapper):
 
     def reset(self, **kwargs):
         self.trajectory_data = TrajectoryData(
-            self.env.parallel_env_num, self.total_episode
+            self.env.parallel_env_num,
+            self.total_episode,
+            self.env.observation_space,
+            self.env.action_space,
+            self.env.agent_num,
         )
 
         returns = self.env.reset(**kwargs)
