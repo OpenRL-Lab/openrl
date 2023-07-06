@@ -5,6 +5,7 @@ from openrl.runners.common.gail_agent import GAILAgent
 from openrl.runners.common.mat_agent import MATAgent
 from openrl.runners.common.ppo_agent import PPOAgent
 from openrl.runners.common.vdn_agent import VDNAgent
+from openrl.runners.common.bc_agent import BCAgent
 
 __all__ = [
     "PPOAgent",
@@ -15,4 +16,5 @@ __all__ = [
     "MATAgent",
     "VDNAgent",
     "GAILAgent",
+    "BCAgent",
 ]

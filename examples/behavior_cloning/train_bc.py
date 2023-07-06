@@ -12,9 +12,8 @@ def train():
     cfg_parser = create_config_parser()
     cfg = cfg_parser.parse_args()
 
-    # We use ZeroRewardWrapper to make sure that we don't get any reward from the environment.
     # create environment, set environment parallelism to 9
-    env = make("CartPole-v1", env_num=3, cfg=cfg)
+    env = make("OfflineEnv", env_num=3, cfg=cfg)
 
     net = Net(
         env,

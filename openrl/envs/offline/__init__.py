@@ -49,6 +49,7 @@ def make_offline_envs(
         env_num=env_num,
         render_mode=render_mode,
         wrappers=env_wrappers,
+        need_env_id=True,
         **kwargs,
     )
     return env_fns
