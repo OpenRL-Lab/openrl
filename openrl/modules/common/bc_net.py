@@ -22,10 +22,9 @@ import torch
 
 from openrl.envs.vec_env.wrappers.reward_wrapper import RewardWrapper
 from openrl.modules.base_module import BaseModule
-from openrl.modules.common.ppo_net import PPONet
 from openrl.modules.bc_module import BCModule
+from openrl.modules.common.ppo_net import PPONet
 from openrl.rewards.gail_reward import GAILReward
-
 
 # Network for Behavior Cloning
 

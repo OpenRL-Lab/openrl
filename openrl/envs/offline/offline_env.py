@@ -17,8 +17,8 @@
 """"""
 from typing import Optional
 
-import numpy as np
 import gymnasium as gym
+import numpy as np
 from gymnasium.utils import seeding
 
 from openrl.datasets.expert_dataset import ExpertDataset

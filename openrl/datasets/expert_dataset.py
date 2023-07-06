@@ -48,10 +48,9 @@ class ExpertDataset(torch.utils.data.Dataset):
 
         if num_trajectories is None:
             all_trajectory_num = len(all_trajectories["episode_lengths"])
-            assert (
-                env_num <= all_trajectory_num
-            ), "env_num must be less than all_trajectory_num, but got env_num={}, all_trajectory_num={}".format(
-                env_num, all_trajectory_num
+            assert env_num <= all_trajectory_num, (
+                "env_num must be less than all_trajectory_num, but got env_num={},"
+                " all_trajectory_num={}".format(env_num, all_trajectory_num)
             )
             start_traj_idx = all_trajectory_num // env_num * env_id
             end_traj_idx = all_trajectory_num // env_num * (env_id + 1)

@@ -18,9 +18,8 @@
 from typing import Any, Dict
 
 from openrl.modules.model_config import ModelTrainConfig
-from openrl.modules.ppo_module import PPOModule
-
 from openrl.modules.networks.policy_network import PolicyNetwork
+from openrl.modules.ppo_module import PPOModule
 
 
 class BCModule(PPOModule):
