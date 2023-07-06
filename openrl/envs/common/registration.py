@@ -32,14 +32,14 @@ from openrl.rewards import RewardFactory
 
 
 def make(
-        id: str,
-        cfg=None,
-        env_num: int = 1,
-        asynchronous: bool = False,
-        add_monitor: bool = True,
-        render_mode: Optional[str] = None,
-        make_custom_envs: Optional[Callable] = None,
-        **kwargs,
+    id: str,
+    cfg=None,
+    env_num: int = 1,
+    asynchronous: bool = False,
+    add_monitor: bool = True,
+    render_mode: Optional[str] = None,
+    make_custom_envs: Optional[Callable] = None,
+    **kwargs,
 ) -> BaseVecEnv:
     if render_mode in [None, "human", "rgb_array"]:
         convert_render_mode = render_mode
@@ -113,8 +113,16 @@ def make(
             )
         elif id in openrl.envs.offline_all_envs:
             from openrl.envs.offline import make_offline_envs
+
+            assert (
+                cfg.expert_data is not None
+            ), "expert_data must be provided for offline envs, you can set it in a YAML file or with `--expert_data dataset_path`"
+            kwargs["seed"] = cfg.seed
             env_fns = make_offline_envs(
-                dataset=cfg.expert_data, env_num=env_num, render_mode=convert_render_mode, **kwargs
+                dataset=cfg.expert_data,
+                env_num=env_num,
+                render_mode=convert_render_mode,
+                **kwargs,
             )
         else:
             raise NotImplementedError(f"env {id} is not supported.")

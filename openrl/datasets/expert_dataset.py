@@ -21,33 +21,66 @@ import pickle
 import numpy as np
 import torch.utils.data
 
+
 class ExpertDataset(torch.utils.data.Dataset):
     def __init__(
-        self, file_name, num_trajectories=None, subsample_frequency=1, seed=None,env_id=0,total_env_num=1,
+        self,
+        file_name,
+        num_trajectories=None,
+        subsample_frequency=1,
+        seed=None,
+        env_id=0,
+        env_num=1,
     ):
         # if num_trajectories=4, subsample_frequency=20, then use the data of 4 trajectories, and the size of the data of each trajectory is reduced by 20 times
         if seed is not None:
             torch.manual_seed(seed)
+        assert num_trajectories is None or env_num == 1
+        assert (
+            env_id < env_num
+        ), "env_id must be less than env_num, but got env_id={}, env_num={}".format(
+            env_id, env_num
+        )
+        self.env_id = env_id
+        self.env_num = env_num
+
         all_trajectories = pickle.load(open(file_name, "rb"))
+
         if num_trajectories is None:
-            num_trajectories = len(all_trajectories["episode_lengths"])
+            all_trajectory_num = len(all_trajectories["episode_lengths"])
+            assert (
+                env_num <= all_trajectory_num
+            ), "env_num must be less than all_trajectory_num, but got env_num={}, all_trajectory_num={}".format(
+                env_num, all_trajectory_num
+            )
+            start_traj_idx = all_trajectory_num // env_num * env_id
+            end_traj_idx = all_trajectory_num // env_num * (env_id + 1)
+        else:
+            start_traj_idx = 0
+            end_traj_idx = num_trajectories
+
+        num_trajectories = end_traj_idx - start_traj_idx
 
         perm = torch.randperm(len(all_trajectories["episode_lengths"]))
 
-        if "observation_space" in all_trajectories:
-            self.observation_space = all_trajectories["observation_space"]
-        else:
-            self.observation_space = None # get observation space from obs data
-        if "action_space" in all_trajectories:
-            self.action_space = all_trajectories["action_space"]
-        else:
-            self.action_space = None # get action space from action data
-        if "agent_num" in all_trajectories:
-            self.agent_num = all_trajectories["agent_num"]
-        else:
-            self.agent_num = None # get agent num from obs data
+        if "env_info" in all_trajectories:
+            if "observation_space" in all_trajectories["env_info"]:
+                self.observation_space = all_trajectories["env_info"][
+                    "observation_space"
+                ]
+            else:
+                self.observation_space = None  # get observation space from obs data
+            if "action_space" in all_trajectories["env_info"]:
+                self.action_space = all_trajectories["env_info"]["action_space"]
+            else:
+                self.action_space = None  # get action space from action data
+            if "agent_num" in all_trajectories["env_info"]:
+                self.agent_num = all_trajectories["env_info"]["agent_num"]
+            else:
+                self.agent_num = None  # get agent num from obs data
+            del all_trajectories["env_info"]
 
-        idx = perm[:num_trajectories]
+        idx = perm[start_traj_idx:end_traj_idx]
 
         self.trajectories = {}
 
@@ -73,7 +106,6 @@ class ExpertDataset(torch.utils.data.Dataset):
         self.i2i = {}
 
         self.length = np.sum(self.trajectories["episode_lengths"])
-        print("total data length:", self.length)
 
         traj_idx = 0
         i = 0

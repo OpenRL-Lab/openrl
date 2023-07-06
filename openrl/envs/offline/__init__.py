@@ -23,9 +23,16 @@ from gymnasium import Env
 from openrl.envs.common import build_envs
 from openrl.envs.offline.offline_env import OfflineEnv
 
+
 def offline_make(dataset, render_mode, disable_env_checker, **kwargs):
-    env = OfflineEnv(dataset)
+    env_id = kwargs["env_id"]
+    env_num = kwargs["env_num"]
+    seed = kwargs.pop("seed", None)
+    assert seed is not None, "seed must be set"
+
+    env = OfflineEnv(dataset, env_id, env_num, seed)
     return env
+
 
 def make_offline_envs(
     dataset: str,
@@ -33,11 +40,8 @@ def make_offline_envs(
     render_mode: Optional[Union[str, List[str]]] = None,
     **kwargs,
 ) -> List[Callable[[], Env]]:
-
     env_wrappers = copy.copy(kwargs.pop("env_wrappers", []))
-    env_wrappers += [
-
-    ]
+    env_wrappers += []
 
     env_fns = build_envs(
         make=offline_make,

@@ -23,14 +23,22 @@ from gymnasium.utils import seeding
 
 from openrl.datasets.expert_dataset import ExpertDataset
 
+
 class OfflineEnv(gym.Env):
     _np_random: Optional[np.random.Generator] = None
+    env_name = "OfflineEnv"
 
-    def __init__(self,dataset_path,env_id,total_env_num):
-        self.dataset = ExpertDataset(dataset_path,env_id=env_id,total_env_num=total_env_num)
+    def __init__(self, dataset_path, env_id: int, env_num: int, seed: int):
+        self.dataset = ExpertDataset(
+            dataset_path, env_id=env_id, env_num=env_num, seed=seed
+        )
         self.observation_space = self.dataset.observation_space
         self.action_space = self.dataset.action_space
         self.agent_num = self.dataset.agent_num
+        self.traj_num = len(self.dataset.trajectories["episode_lengths"])
+        self.traj_index = None
+        self.traj_length = None
+        self.step_index = None
 
     def seed(self, seed=None):
         if seed is not None:
@@ -40,11 +48,38 @@ class OfflineEnv(gym.Env):
         if seed is not None:
             self.seed(seed)
 
-        return None, {}
+        if self.traj_index is None:
+            self.traj_index = 0
+        else:
+            self.traj_index += 1
+            self.traj_index %= self.traj_num
+        self.traj_length = self.dataset.trajectories["episode_lengths"][self.traj_index]
+        assert (
+            self.traj_length
+            == len(self.dataset.trajectories["obs"][self.traj_index]) - 1
+        )
+        assert self.traj_length == len(
+            self.dataset.trajectories["action"][self.traj_index]
+        )
+        self.step_index = 0
+        return (
+            self.dataset.trajectories["obs"][self.traj_index][self.step_index],
+            self.dataset.trajectories["info"][self.traj_index][self.step_index],
+        )
 
     def step(self, action):
-        return None, 0.0, False, {}
+        obs = self.dataset.trajectories["obs"][self.traj_index][self.step_index + 1]
+        reward = self.dataset.trajectories["reward"][self.traj_index][self.step_index]
+        action = self.dataset.trajectories["action"][self.traj_index][self.step_index]
+        done = self.dataset.trajectories["done"][self.traj_index][self.step_index]
+        info = self.dataset.trajectories["info"][self.traj_index][self.step_index]
+        if isinstance(info, list):
+            info = {"info": info}
+        info.update({"data_action": action})
 
+        self.step_index += 1
+
+        return obs, reward, done, info
 
     def close(self):
         pass
