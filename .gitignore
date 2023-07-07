@@ -150,5 +150,6 @@ run_results/
 
 # model
 *.pt
+api_docs
 .vscode
 *.pkl
