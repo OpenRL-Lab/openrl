@@ -23,7 +23,6 @@ from torch.nn.parallel import DistributedDataParallel
 
 from openrl.drivers.rl_driver import RLDriver
 from openrl.envs.vec_env.utils.util import prepare_available_actions
-from openrl.runners.common.base_agent import BaseAgent
 from openrl.utils.logger import Logger
 from openrl.utils.type_aliases import MaybeCallback
 from openrl.utils.util import _t2n
@@ -78,17 +77,15 @@ class OnPolicyDriver(RLDriver):
         return True
 
     def add2buffer(self, data):
-        (
-            obs,
-            rewards,
-            dones,
-            infos,
-            values,
-            actions,
-            action_log_probs,
-            rnn_states,
-            rnn_states_critic,
-        ) = data
+        obs = data["obs"]
+        rewards = data["rewards"]
+        dones = data["dones"]
+        infos = data["infos"]
+        values = data["values"]
+        actions = data["actions"]
+        action_log_probs = data["action_log_probs"]
+        rnn_states = data["rnn_states"]
+        rnn_states_critic = data["rnn_states_critic"]
 
         dones_env = np.all(dones, axis=1)
 
@@ -157,7 +154,6 @@ class OnPolicyDriver(RLDriver):
         self.callback.on_rollout_start()
 
         self.trainer.prep_rollout()
-        import time
 
         for step in range(self.episode_length):
             values, actions, action_log_probs, rnn_states, rnn_states_critic = self.act(
@@ -165,6 +161,7 @@ class OnPolicyDriver(RLDriver):
             )
 
             extra_data = {
+                "actions": actions,
                 "values": values,
                 "action_log_probs": action_log_probs,
                 "step": step,
@@ -172,23 +169,24 @@ class OnPolicyDriver(RLDriver):
             }
 
             obs, rewards, dones, infos = self.envs.step(actions, extra_data)
+
             self.agent.num_time_steps += self.envs.parallel_env_num
             # Give access to local variables
             self.callback.update_locals(locals())
             if self.callback.on_step() is False:
                 return {}, False
 
-            data = (
-                obs,
-                rewards,
-                dones,
-                infos,
-                values,
-                actions,
-                action_log_probs,
-                rnn_states,
-                rnn_states_critic,
-            )
+            data = {
+                "obs": obs,
+                "rewards": rewards,
+                "dones": dones,
+                "infos": infos,
+                "values": values,
+                "actions": actions,
+                "action_log_probs": action_log_probs,
+                "rnn_states": rnn_states,
+                "rnn_states_critic": rnn_states_critic,
+            }
 
             self.add2buffer(data)
 
@@ -212,10 +210,13 @@ class OnPolicyDriver(RLDriver):
             np.concatenate(self.buffer.data.rnn_states_critic[-1]),
             np.concatenate(self.buffer.data.masks[-1]),
         )
+        if next_values is None:
+            next_values = np.zeros([self.learner_n_rollout_threads, self.num_agents, 1])
 
-        next_values = np.array(
-            np.split(_t2n(next_values), self.learner_n_rollout_threads)
-        )
+        else:
+            next_values = np.array(
+                np.split(_t2n(next_values), self.learner_n_rollout_threads)
+            )
         if "critic" in self.trainer.algo_module.models and isinstance(
             self.trainer.algo_module.models["critic"], DistributedDataParallel
         ):
@@ -246,9 +247,6 @@ class OnPolicyDriver(RLDriver):
         ) = self.trainer.algo_module.get_actions(
             self.buffer.data.get_batch_data("critic_obs", step),
             self.buffer.data.get_batch_data("policy_obs", step),
-            # np.concatenate(self.buffer.data.rnn_states[step]),
-            # np.concatenate(self.buffer.data.rnn_states_critic[step]),
-            # np.concatenate(self.buffer.data.masks[step]),
             self.buffer.data.get_batch_data("rnn_states", step),
             self.buffer.data.get_batch_data("rnn_states_critic", step),
             self.buffer.data.get_batch_data("masks", step),
@@ -257,7 +255,10 @@ class OnPolicyDriver(RLDriver):
             ),
         )
 
-        values = np.array(np.split(_t2n(value), self.n_rollout_threads))
+        if value is None:
+            values = np.zeros([self.n_rollout_threads, self.num_agents, 1])
+        else:
+            values = np.array(np.split(_t2n(value), self.n_rollout_threads))
         actions = np.array(np.split(_t2n(action), self.n_rollout_threads))
         action_log_probs = np.array(
             np.split(_t2n(action_log_prob), self.n_rollout_threads)

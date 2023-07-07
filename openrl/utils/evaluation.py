@@ -1,5 +1,5 @@
 # Modified from https://github.com/DLR-RM/stable-baselines3/blob/master/stable_baselines3/common/evaluation.py
-
+import copy
 import warnings
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
@@ -109,14 +109,15 @@ def evaluate_policy(
             if episode_counts[i] < episode_count_targets[i]:
                 # unpack values so that the callback can access the local variables
                 reward = rewards[i]
-                done = dones[i]
+                all_dones = np.all(dones[i])
+                done = all_dones
                 info = infos[i]
                 episode_starts[i] = done
 
                 if callback is not None:
                     callback(locals(), globals())
 
-                if dones[i]:
+                if all_dones:
                     if is_monitor_wrapped:
                         # Atari wrapper can send a "done" signal when
                         # the agent loses a life, but it does not correspond
@@ -138,8 +139,8 @@ def evaluate_policy(
                             # Only increment at the real end of an episode
                             episode_counts[i] += 1
                     else:
-                        episode_rewards.append(current_rewards[i])
-                        episode_lengths.append(current_lengths[i])
+                        episode_rewards.append(copy.copy(current_rewards[i]))
+                        episode_lengths.append(copy.copy(current_lengths[i]))
                         episode_counts[i] += 1
 
                     current_rewards[i] = 0

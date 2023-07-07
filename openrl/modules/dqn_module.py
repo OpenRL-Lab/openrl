@@ -68,6 +68,8 @@ class DQNModule(RLModule):
             device=device,
         )
         self.cfg = cfg
+        self.obs_space = input_space
+        self.act_space = act_space
 
     def lr_decay(self, episode, episodes):
         update_linear_schedule(self.optimizers["q_net"], episode, episodes, self.lr)

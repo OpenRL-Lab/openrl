@@ -7,6 +7,7 @@ from openrl.selfplay.base_strategy import BaseSelfplayStrategy
 
 class SelfplayStrategy(BaseSelfplayStrategy):
     def __init__(self, all_args, nenvs, exist_enemy_num):
+        # qlist和history_cnt的数据结构
         self.all_args = all_args
         self.qlist = []
         self.history_cnt = 0

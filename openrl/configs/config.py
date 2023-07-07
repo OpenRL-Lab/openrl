@@ -52,8 +52,9 @@ def create_config_parser():
         help="do imitation learning with gail",
     )
     parser.add_argument(
-        "--gail-experts-dir",
-        default="./gail_experts",
+        "--expert_data",
+        type=str,
+        default=None,
         help="directory that contains expert demonstrations for gail",
     )
     parser.add_argument(
@@ -75,10 +76,10 @@ def create_config_parser():
         "--gail_epoch", type=int, default=5, help="gail epochs (default: 5)"
     )
     parser.add_argument(
-        "--disable_action",
-        action="store_true",
-        default=False,
-        help="whether to use action as the input of the discriminator",
+        "--gail_use_action",
+        type=bool,
+        default=True,
+        help="whether to use action as the input of the gail discriminator",
     )
     parser.add_argument(
         "--gail_hidden_size",
@@ -617,6 +618,14 @@ def create_config_parser():
     parser.add_argument(
         "--weight_decay", type=float, default=0, help="weight decay (defaul: 0)"
     )
+    # behavior cloning parameters
+    parser.add_argument(
+        "--bc_epoch",
+        type=int,
+        default=2,
+        help="number of behavior cloning epochs (default: 15)",
+    )
+
     # ppo parameters
     parser.add_argument(
         "--ppo_epoch", type=int, default=10, help="number of ppo epochs (default: 15)"
@@ -966,6 +975,30 @@ def create_config_parser():
         default=False,
         help="Whether the actor input takes in previous actions as part of its input",
     )
+    parser.add_argument(
+        "--target_update",
+        type=int,
+        default=10,
+        help=(
+            "After how many evaluation network updates target network should be updated"
+        ),
+    )
+    ## for DDPG
+    parser.add_argument(
+        "--var",
+        type=int,
+        default=3,
+        help="Control the exploration variance of the generated actions",
+    )
+    parser.add_argument(
+        "actor_lr", type=float, default=0.001, help="The learning rate of actor network"
+    )
+    # parser.add_argument(
+    #     "critic_lr",
+    #     type=float,
+    #     default=0.002,
+    #     help="The learning rate of critic network",
+    # )
     # update parameters
     parser.add_argument(
         "--use_soft_update",

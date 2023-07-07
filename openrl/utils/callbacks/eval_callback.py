@@ -17,11 +17,13 @@
 """"""
 import os
 import warnings
-from typing import Any, Dict, Optional, Union
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Union
 
 import gymnasium as gym
 import numpy as np
 
+import openrl.utils.callbacks.callbacks_factory as callbacks_factory
 from openrl.envs.common import make
 from openrl.envs.vec_env import BaseVecEnv, SyncVectorEnv
 from openrl.envs.wrappers.monitor import Monitor
@@ -61,7 +63,7 @@ class EvalCallback(EventCallback):
     :param eval_env: The environment used for initialization
     :param callback_on_new_best: Callback to trigger
         when there is a new best model according to the ``mean_reward``
-    :param callback_after_eval: Callback to trigger after every evaluation
+    :param callbacks_after_eval: Callback to trigger after every evaluation
     :param n_eval_episodes: The number of episodes to test the agent
     :param eval_freq: Evaluate the agent every ``eval_freq`` call of the callback.
     :param log_path: Path to a folder where the evaluations (``evaluations.npz``)
@@ -79,24 +81,41 @@ class EvalCallback(EventCallback):
     def __init__(
         self,
         eval_env: Union[str, Dict[str, Any], gym.Env, BaseVecEnv],
-        callback_on_new_best: Optional[BaseCallback] = None,
-        callback_after_eval: Optional[BaseCallback] = None,
+        callbacks_on_new_best: Optional[
+            Union[List[Dict[str, Any]], Dict[str, Any], BaseCallback]
+        ] = None,
+        callbacks_after_eval: Optional[
+            Union[List[Dict[str, Any]], Dict[str, Any], BaseCallback]
+        ] = None,
         n_eval_episodes: int = 5,
         eval_freq: int = 10000,
-        log_path: Optional[str] = None,
-        best_model_save_path: Optional[str] = None,
+        log_path: Optional[Union[str, Path]] = None,
+        best_model_save_path: Optional[Union[str, Path]] = None,
         deterministic: bool = True,
         render: bool = False,
         asynchronous: bool = True,
         verbose: int = 1,
         warn: bool = True,
+        stop_logic: str = "OR",
+        close_env_at_end: bool = True,
     ):
-        super().__init__(callback_after_eval, verbose=verbose)
+        if isinstance(callbacks_after_eval, list):
+            callbacks_after_eval = callbacks_factory.CallbackFactory.get_callbacks(
+                callbacks_after_eval, stop_logic=stop_logic
+            )
 
-        self.callback_on_new_best = callback_on_new_best
-        if self.callback_on_new_best is not None:
+        super().__init__(callbacks_after_eval, verbose=verbose)
+        self.stop_logic = stop_logic
+        if isinstance(callbacks_on_new_best, list):
+            callbacks_on_new_best = callbacks_factory.CallbackFactory.get_callbacks(
+                callbacks_on_new_best, stop_logic=stop_logic
+            )
+
+        self.callbacks_on_new_best = callbacks_on_new_best
+
+        if self.callbacks_on_new_best is not None:
             # Give access to the parent
-            self.callback_on_new_best.parent = self
+            self.callbacks_on_new_best.set_parent(self)
 
         self.n_eval_episodes = n_eval_episodes
         self.eval_freq = eval_freq
@@ -105,7 +124,7 @@ class EvalCallback(EventCallback):
         self.deterministic = deterministic
         self.render = render
         self.warn = warn
-
+        self.close_env_at_end = close_env_at_end
         if isinstance(eval_env, str) or isinstance(eval_env, dict):
             eval_env = _make_env(eval_env, render, asynchronous)
         # Convert to BaseVecEnv for consistency
@@ -140,8 +159,8 @@ class EvalCallback(EventCallback):
             os.makedirs(os.path.dirname(self.log_path), exist_ok=True)
 
         # Init callback called on new best model
-        if self.callback_on_new_best is not None:
-            self.callback_on_new_best.init_callback(self.agent)
+        if self.callbacks_on_new_best is not None:
+            self.callbacks_on_new_best.init_callback(self.agent)
 
     def _log_success_callback(
         self, locals_: Dict[str, Any], globals_: Dict[str, Any]
@@ -157,9 +176,14 @@ class EvalCallback(EventCallback):
         info = locals_["info"]
 
         if locals_["done"]:
-            maybe_is_success = info.get("is_success")
-            if maybe_is_success is not None:
-                self._is_success_buffer.append(maybe_is_success)
+            maybe_final_info = info.get("final_info")
+            if maybe_final_info is not None:
+                if isinstance(maybe_final_info, dict):
+                    maybe_is_success = maybe_final_info.get("is_success")
+                else:
+                    maybe_is_success = maybe_final_info[0].get("is_success")
+                if maybe_is_success is not None:
+                    self._is_success_buffer.append(maybe_is_success)
 
     def _on_step(self) -> bool:
         continue_training = True
@@ -231,8 +255,8 @@ class EvalCallback(EventCallback):
                         f.write(f"best model reward: {mean_reward}\n")
                 self.best_mean_reward = mean_reward
                 # Trigger callback on new best model, if needed
-                if self.callback_on_new_best is not None:
-                    continue_training = self.callback_on_new_best.on_step()
+                if self.callbacks_on_new_best is not None:
+                    continue_training = self.callbacks_on_new_best.on_step()
 
             # Trigger callback after every evaluation, if needed
             if self.callback is not None:
@@ -250,4 +274,5 @@ class EvalCallback(EventCallback):
             self.callback.update_locals(locals_)
 
     def _on_training_end(self):
-        self.eval_env.close()
+        if self.close_env_at_end:
+            self.eval_env.close()

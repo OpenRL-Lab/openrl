@@ -17,7 +17,7 @@ class NLPReward(BaseReward):
         meteor_config = {
             "meteor_coeff": 0.5,
         }
-        self.inner_reward_fn = {
+        self.inner_rew_funcs = {
             "meteor": Meteor(**meteor_config),
         }
 

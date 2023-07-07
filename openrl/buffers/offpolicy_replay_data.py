@@ -52,7 +52,11 @@ class OffPolicyReplayData(ReplayData):
             episode_length,
         )
 
-        self.act_space = act_space.n
+        if act_space.__class__.__name__ == "Box":
+            self.act_space = act_space.shape[0]
+        elif act_space.__class__.__name__ == "Discrete":
+            self.act_space = act_space.n
+
         act_shape = get_shape_from_act_space(act_space)
 
         self.actions = np.zeros(
@@ -61,7 +65,12 @@ class OffPolicyReplayData(ReplayData):
         )
 
         self.value_preds = np.zeros(
-            (self.episode_length + 1, self.n_rollout_threads, num_agents, act_space.n),
+            (
+                self.episode_length + 1,
+                self.n_rollout_threads,
+                num_agents,
+                self.act_space,
+            ),
             dtype=np.float32,
         )
 
@@ -245,7 +254,9 @@ class OffPolicyReplayData(ReplayData):
 
         assert (batch_size - n_rollout_threads) >= mini_batch_size
         sampler = BatchSampler(
-            SubsetRandomSampler(range(batch_size - n_rollout_threads)),
+            SubsetRandomSampler(
+                range(batch_size - n_rollout_threads - (num_agents - 1))
+            ),
             mini_batch_size,
             drop_last=True,
         )

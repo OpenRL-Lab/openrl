@@ -15,7 +15,6 @@
 # limitations under the License.
 
 """"""
-
 from typing import Any, Dict, Optional, Union
 
 import gym
@@ -43,47 +42,51 @@ class PPOModule(RLModule):
         world_size: Optional[int] = None,
         model_dict: Optional[Dict[str, Any]] = None,
     ):
-        model_configs = {}
-        if share_model:
-            model_configs["model"] = ModelTrainConfig(
-                lr=cfg.lr,
-                model=(
-                    model_dict["model"]
-                    if model_dict and "model" in model_dict
-                    else PolicyValueNetwork
-                ),
-                input_space=policy_input_space,
-            )
-        else:
-            model_configs["policy"] = ModelTrainConfig(
-                lr=cfg.lr,
-                model=(
-                    model_dict["policy"]
-                    if model_dict and "policy" in model_dict
-                    else PolicyNetwork
-                ),
-                input_space=policy_input_space,
-            )
-            model_configs["critic"] = ModelTrainConfig(
-                lr=cfg.critic_lr,
-                model=(
-                    model_dict["critic"]
-                    if model_dict and "critic" in model_dict
-                    else ValueNetwork
-                ),
-                input_space=critic_input_space,
-            )
+        self.share_model = share_model
+        self.policy_input_space = policy_input_space
+        self.critic_input_space = critic_input_space
+        self.model_dict = model_dict
 
         super(PPOModule, self).__init__(
             cfg=cfg,
-            model_configs=model_configs,
             act_space=act_space,
             rank=rank,
             world_size=world_size,
             device=device,
         )
-        self.share_model = share_model
-        self.cfg = cfg
+
+    def get_model_configs(self, cfg) -> Dict[str, Any]:
+        model_configs = {}
+        if self.share_model:
+            model_configs["model"] = ModelTrainConfig(
+                lr=cfg.lr,
+                model=(
+                    self.model_dict["model"]
+                    if self.model_dict and "model" in self.model_dict
+                    else PolicyValueNetwork
+                ),
+                input_space=self.policy_input_space,
+            )
+        else:
+            model_configs["policy"] = ModelTrainConfig(
+                lr=cfg.lr,
+                model=(
+                    self.model_dict["policy"]
+                    if self.model_dict and "policy" in self.model_dict
+                    else PolicyNetwork
+                ),
+                input_space=self.policy_input_space,
+            )
+            model_configs["critic"] = ModelTrainConfig(
+                lr=cfg.critic_lr,
+                model=(
+                    self.model_dict["critic"]
+                    if self.model_dict and "critic" in self.model_dict
+                    else ValueNetwork
+                ),
+                input_space=self.critic_input_space,
+            )
+        return model_configs
 
     def lr_decay(self, episode, episodes):
         if self.share_model:

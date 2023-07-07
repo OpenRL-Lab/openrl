@@ -97,7 +97,6 @@ class DQNAlgorithm(BaseAlgorithm):
                 active_masks_batch,
                 turn_on,
             )
-
             for loss in loss_list:
                 loss.backward()
 
@@ -228,15 +227,16 @@ class DQNAlgorithm(BaseAlgorithm):
                 raise NotImplementedError
             elif self._use_naive_recurrent:
                 raise NotImplementedError
-
-            data_generator = buffer.feed_forward_generator(
-                None,
-                num_mini_batch=self.num_mini_batch,
-                mini_batch_size=self.mini_batch_size,
-            )
+            else:
+                data_generator = buffer.feed_forward_generator(
+                    None,
+                    num_mini_batch=self.num_mini_batch,
+                    mini_batch_size=self.mini_batch_size,
+                )
 
             for sample in data_generator:
                 (q_loss) = self.dqn_update(sample, turn_on)
+                # print(q_loss)
                 if self.world_size > 1:
                     train_info["reduced_q_loss"] += reduce_tensor(
                         q_loss.data, self.world_size

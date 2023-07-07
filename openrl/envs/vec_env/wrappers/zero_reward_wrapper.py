@@ -15,3 +15,12 @@
 # limitations under the License.
 
 """"""
+
+import numpy as np
+
+from openrl.envs.vec_env.wrappers.base_wrapper import ArrayType, VectorRewardWrapper
+
+
+class ZeroRewardWrapper(VectorRewardWrapper):
+    def reward(self, reward: ArrayType) -> ArrayType:
+        return np.zeros_like(reward)

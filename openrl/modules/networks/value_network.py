@@ -38,6 +38,7 @@ class ValueNetwork(BaseValueNetwork):
         action_space=None,
         use_half=False,
         device=torch.device("cpu"),
+        extra_args=None,
     ):
         super(ValueNetwork, self).__init__(cfg, device)
 

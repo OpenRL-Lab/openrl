@@ -17,7 +17,7 @@
 """"""
 from abc import abstractmethod
 from pathlib import Path
-from typing import Dict, Union
+from typing import Any, Dict, Optional, Union
 
 import torch
 from gym import spaces
@@ -30,17 +30,18 @@ class RLModule(BaseModule):
     def __init__(
         self,
         cfg,
-        model_configs: Dict[str, ModelTrainConfig],
         act_space: spaces.Box,
         rank: int = 0,
         world_size: int = 1,
         device: Union[str, torch.device] = "cpu",
+        model_configs: Optional[Dict[str, ModelTrainConfig]] = None,
     ) -> None:
         super(RLModule, self).__init__(cfg)
 
         if isinstance(device, str):
             device = torch.device(device)
 
+        self.cfg = cfg
         self.device = device
         self.lr = cfg.lr
         self.critic_lr = cfg.critic_lr
@@ -56,6 +57,9 @@ class RLModule(BaseModule):
 
         use_half_actor = self.program_type == "actor" and cfg.use_half_actor
 
+        if model_configs is None:
+            model_configs = self.get_model_configs(cfg)
+
         for model_key in model_configs:
             model_cg = model_configs[model_key]
             model = model_cg["model"](
@@ -64,6 +68,7 @@ class RLModule(BaseModule):
                 action_space=act_space,
                 device=device,
                 use_half=use_half_actor,
+                extra_args=model_cg["extra_args"] if "extra_args" in model_cg else None,
             )
             self.models.update({model_key: model})
 
@@ -82,6 +87,9 @@ class RLModule(BaseModule):
                 self.scaler = torch.cuda.amp.GradScaler()
             else:
                 self.scaler = None
+
+    def get_model_configs(self, cfg) -> Dict[str, Any]:
+        raise NotImplementedError
 
     @abstractmethod
     def get_actions(self):

@@ -23,6 +23,7 @@ def train():
     agent = Agent(net)
     # start training, set total number of training steps to 20000
     agent.train(total_time_steps=20000)
+
     env.close()
     return agent
 
@@ -30,7 +31,9 @@ def train():
 def evaluation(agent):
     # begin to test
     # Create an environment for testing and set the number of environments to interact with to 9. Set rendering mode to group_human.
-    env = make("CartPole-v1", render_mode="group_human", env_num=9, asynchronous=True)
+    render_mode = "group_human"
+    render_mode = None
+    env = make("CartPole-v1", render_mode=render_mode, env_num=9, asynchronous=True)
     # The trained agent sets up the interactive environment it needs.
     agent.set_env(env)
     # Initialize the environment and get initial observations and environmental information.

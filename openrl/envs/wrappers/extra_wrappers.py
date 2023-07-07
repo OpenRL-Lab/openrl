@@ -16,11 +16,14 @@
 
 """"""
 from copy import deepcopy
+from typing import TypeVar
 
 import gymnasium as gym
+import numpy as np
 from gymnasium.wrappers import AutoResetWrapper, StepAPICompatibility
 
-from openrl.envs.wrappers import BaseObservationWrapper, BaseWrapper
+from openrl.envs.wrappers import BaseObservationWrapper, BaseRewardWrapper, BaseWrapper
+from openrl.envs.wrappers.base_wrapper import ArrayType
 
 
 class RemoveTruncated(StepAPICompatibility, BaseWrapper):
@@ -89,3 +92,8 @@ class RecordReward(BaseWrapper):
     @property
     def has_auto_reset(self):
         return True
+
+
+class ZeroRewardWrapper(BaseRewardWrapper):
+    def reward(self, reward: ArrayType) -> ArrayType:
+        return np.zeros_like(reward)
