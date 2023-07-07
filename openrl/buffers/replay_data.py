@@ -380,7 +380,9 @@ class ReplayData(object):
                 self.value_preds[-1] = next_value
                 gae = 0
                 for step in reversed(range(self.rewards.shape[0])):
-                    if self._use_popart or self._use_valuenorm:
+                    if (
+                        self._use_popart or self._use_valuenorm
+                    ) and value_normalizer is not None:
                         delta = (
                             self.rewards[step]
                             + self.gamma

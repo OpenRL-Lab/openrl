@@ -36,6 +36,7 @@ class BaseAlgorithm(ABC):
         self.world_size = self.algo_module.world_size or 1
         self.clip_param = cfg.clip_param
         self.ppo_epoch = cfg.ppo_epoch
+        self.bc_epoch = cfg.bc_epoch
         self.num_mini_batch = cfg.num_mini_batch
         self.mini_batch_size = cfg.mini_batch_size
         self.data_chunk_length = cfg.data_chunk_length

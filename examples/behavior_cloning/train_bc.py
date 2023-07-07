@@ -13,7 +13,7 @@ def train():
     cfg = cfg_parser.parse_args()
 
     # create environment, set environment parallelism to 9
-    env = make("OfflineEnv", env_num=3, cfg=cfg)
+    env = make("OfflineEnv", env_num=10, cfg=cfg)
 
     net = Net(
         env,
@@ -21,8 +21,8 @@ def train():
     )
     # initialize the trainer
     agent = Agent(net)
-    # start training, set total number of training steps to 5000
-    agent.train(total_time_steps=7500)
+    # start training, set total number of training steps to 100000
+    agent.train(total_time_steps=100000)
 
     env.close()
     return agent

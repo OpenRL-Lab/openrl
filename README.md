@@ -38,12 +38,14 @@ The main branch is the latest version of OpenRL, which is under active developme
 [Documentation](https://openrl-docs.readthedocs.io/en/latest/) | [中文介绍](README_zh.md) |  [中文文档](https://openrl-docs.readthedocs.io/zh/latest/)
 
 OpenRL is an open-source general reinforcement learning research framework that supports training for various tasks 
-such as single-agent, multi-agent, and natural language. 
+such as single-agent, multi-agent, offline RL, and natural language. 
 Developed based on PyTorch, the goal of OpenRL is to provide a simple-to-use, flexible, efficient and sustainable platform for the reinforcement learning research community.
 
 Currently, the features supported by OpenRL include:
 
 - A simple-to-use universal interface that supports training for both single-agent and multi-agent
+
+- Support for offline RL training with expert dataset
 
 - Reinforcement learning training support for natural language tasks (such as dialogue)
 
@@ -75,6 +77,7 @@ Algorithms currently supported by OpenRL (for more details, please refer to [Gal
 - [Multi-agent PPO (MAPPO)](https://arxiv.org/abs/2103.01955)
 - [Joint-ratio Policy Optimization (JRPO)](https://arxiv.org/abs/2302.07515)
 - [Generative Adversarial Imitation Learning (GAIL)](https://arxiv.org/abs/1606.03476)
+- [Behavior Cloning (BC)](http://www.cse.unsw.edu.au/~claude/papers/MI15.pdf)
 - [Deep Q-Network (DQN)](https://arxiv.org/abs/1312.5602)
 - [Multi-Agent Transformer (MAT)](https://arxiv.org/abs/2205.14953)
 - [Value-Decomposition Network (VDN)](https://arxiv.org/abs/1706.05296)
