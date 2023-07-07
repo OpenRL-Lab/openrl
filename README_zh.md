@@ -37,10 +37,11 @@ The main branch is the latest version of OpenRL, which is under active developme
 
 [中文文档](https://openrl-docs.readthedocs.io/zh/latest/) | [English](./README.md)  | [Documentation](https://openrl-docs.readthedocs.io/en/latest/)
 
-OpenRL是一个开源的通用强化学习研究框架，支持单智能体、多智能体、自然语言等多种任务的训练。 OpenRL基于PyTorch进行开发，目标是为强化学习研究社区提供一个简单易用、灵活高效、可持续扩展的平台。
+OpenRL是一个开源的通用强化学习研究框架，支持单智能体、多智能体、离线强化学习、自然语言等多种任务的训练。 OpenRL基于PyTorch进行开发，目标是为强化学习研究社区提供一个简单易用、灵活高效、可持续扩展的平台。
 目前，OpenRL支持的特性包括：
 
 - 简单易用且支持单智能体、多智能体训练的通用接口
+- 支持通过专家数据进行离线强化学习训练
 - 支持自然语言任务（如对话任务）的强化学习训练
 - 支持从[Hugging Face](https://huggingface.co/)上导入模型和数据
 - 支持LSTM，GRU，Transformer等模型
@@ -60,6 +61,7 @@ OpenRL目前支持的算法（更多详情请参考 [Gallery](Gallery.md)）：
 - [Multi-agent PPO (MAPPO)](https://arxiv.org/abs/2103.01955)
 - [Joint-ratio Policy Optimization (JRPO)](https://arxiv.org/abs/2302.07515)
 - [Generative Adversarial Imitation Learning (GAIL)](https://arxiv.org/abs/1606.03476)
+- [Behavior Cloning (BC)](http://www.cse.unsw.edu.au/~claude/papers/MI15.pdf)
 - [Deep Q-Network (DQN)](https://arxiv.org/abs/1312.5602)
 - [Multi-Agent Transformer (MAT)](https://arxiv.org/abs/2205.14953)
 - [Value-Decomposition Network (VDN)](https://arxiv.org/abs/1706.05296)

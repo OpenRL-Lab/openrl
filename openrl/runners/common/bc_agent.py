@@ -22,6 +22,8 @@ import torch
 
 from openrl.algorithms.base_algorithm import BaseAlgorithm
 from openrl.algorithms.behavior_cloning import BCAlgorithm
+from openrl.drivers.base_driver import BaseDriver
+from openrl.drivers.offline_driver import OfflineDriver as Driver
 from openrl.modules.common import BaseNet
 from openrl.runners.common.base_agent import SelfAgent
 from openrl.runners.common.ppo_agent import PPOAgent
@@ -60,5 +62,12 @@ class BCAgent(PPOAgent):
         callback: MaybeCallback = None,
         train_algo_class: Type[BaseAlgorithm] = BCAlgorithm,
         logger: Optional[Logger] = None,
+        DriverClass: Type[BaseDriver] = Driver,
     ) -> None:
-        super().train(total_time_steps, callback, train_algo_class, logger)
+        super().train(
+            total_time_steps,
+            callback,
+            train_algo_class,
+            logger,
+            DriverClass=DriverClass,
+        )

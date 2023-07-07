@@ -618,6 +618,14 @@ def create_config_parser():
     parser.add_argument(
         "--weight_decay", type=float, default=0, help="weight decay (defaul: 0)"
     )
+    # behavior cloning parameters
+    parser.add_argument(
+        "--bc_epoch",
+        type=int,
+        default=2,
+        help="number of behavior cloning epochs (default: 15)",
+    )
+
     # ppo parameters
     parser.add_argument(
         "--ppo_epoch", type=int, default=10, help="number of ppo epochs (default: 15)"
