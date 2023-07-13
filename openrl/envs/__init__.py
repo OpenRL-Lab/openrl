@@ -9,8 +9,9 @@ super_mario_all_envs = [
     "SuperMarioBros",
 ]
 
-connect3_all_envs = [
+connect_all_envs = [
     "connect3",
+    "connect4",
 ]
 
 toy_all_envs = [

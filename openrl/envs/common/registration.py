@@ -99,10 +99,10 @@ def make(
             env_fns = make_super_mario_envs(
                 id=id, env_num=env_num, render_mode=convert_render_mode, **kwargs
             )
-        elif id in openrl.envs.connect3_all_envs:
-            from openrl.envs.connect3 import make_connect3_envs
+        elif id in openrl.envs.connect_all_envs:
+            from openrl.envs.connect_env import make_connect_envs
 
-            env_fns = make_connect3_envs(
+            env_fns = make_connect_envs(
                 id=id, env_num=env_num, render_mode=convert_render_mode, **kwargs
             )
         elif id in openrl.envs.gridworld_all_envs:

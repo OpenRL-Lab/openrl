@@ -49,6 +49,19 @@ def evaluation(agent):
     env.close()
 
 
+def test_env():
+    env_num = 1
+    render_model = None
+    env = make(
+        "connect3", render_mode=render_model, env_num=env_num, asynchronous=False
+    )
+    obs, info = env.reset(seed=1)
+
+    env.step([[[0]]])
+    env.step([[[1]]])
+
+
 if __name__ == "__main__":
-    agent = train()
-    evaluation(agent)
+    # agent = train()
+    # evaluation(agent)
+    test_env()
