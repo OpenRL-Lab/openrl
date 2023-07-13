@@ -15,7 +15,7 @@
 # limitations under the License.
 
 """"""
-
+from typing import Optional
 
 from openrl.selfplay.wrappers.base_multiplayer_wrapper import BaseMultiPlayerWrapper
 
