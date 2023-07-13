@@ -15,16 +15,33 @@
 # limitations under the License.
 
 """"""
-from typing import Callable, List, Optional, Union
+from typing import Any, Callable, List, Optional, Union
 
 import gymnasium as gym
 from gymnasium import Env
 
 from openrl.envs.common import build_envs
-from openrl.envs.connect3.connect3_env import make
+from openrl.envs.connect_env.connect3_env import Connect3Env
+from openrl.envs.connect_env.connect4_env import Connect4Env
 
 
-def make_connect3_envs(
+def make(
+    id: str,
+    render_mode: Optional[str] = None,
+    **kwargs: Any,
+) -> Env:
+    # create Connect3 environment from id
+    if id == "connect3":
+        env = Connect3Env(env_name=id)
+    elif id == "connect4":
+        env = Connect4Env(env_name=id)
+    else:
+        raise NotImplementedError(f"Unsupported environment: {id}")
+
+    return env
+
+
+def make_connect_envs(
     id: str,
     env_num: int = 1,
     render_mode: Optional[Union[str, List[str]]] = None,

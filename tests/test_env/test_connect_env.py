@@ -15,3 +15,31 @@
 # limitations under the License.
 
 """"""
+import os
+import sys
+
+import pytest
+
+
+@pytest.mark.unittest
+def test_connect3():
+    from openrl.envs.common import make
+
+    env = make("connect3", env_num=6)
+    obs, _ = env.reset()
+    obs, reward, done, info = env.step(env.random_action())
+    env.close()
+
+
+@pytest.mark.unittest
+def test_connect4():
+    from openrl.envs.common import make
+
+    env = make("connect4", env_num=6)
+    obs, _ = env.reset()
+    obs, reward, done, info = env.step(env.random_action())
+    env.close()
+
+
+if __name__ == "__main__":
+    sys.exit(pytest.main(["-sv", os.path.basename(__file__)]))
