@@ -15,6 +15,3 @@
 # limitations under the License.
 
 """"""
-
-
-class
