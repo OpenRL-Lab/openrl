@@ -39,7 +39,7 @@ The main branch is the latest version of OpenRL, which is under active developme
 [中文文档](https://openrl-docs.readthedocs.io/zh/latest/) | [English](./README.md)  | [Documentation](https://openrl-docs.readthedocs.io/en/latest/)
 
 <div align="center">
-    用心做好强化学习框架，欢迎提出宝贵意见
+    用心做好强化学习框架，欢迎提出宝贵意见   <br>
 </div>
 
 OpenRL是一个开源的通用强化学习研究框架，支持单智能体、多智能体、离线强化学习、自然语言等多种任务的训练。 OpenRL基于PyTorch进行开发，目标是为强化学习研究社区提供一个简单易用、灵活高效、可持续扩展的平台。
