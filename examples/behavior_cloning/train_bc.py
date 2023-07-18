@@ -8,17 +8,17 @@ from openrl.runners.common import BCAgent as Agent
 
 
 def train():
-    # create the neural network
     cfg_parser = create_config_parser()
     cfg = cfg_parser.parse_args()
-
     # create environment, set environment parallelism to 9
     env = make("OfflineEnv", env_num=10, cfg=cfg)
 
+    # create the neural network
     net = Net(
         env,
         cfg=cfg,
     )
+
     # initialize the trainer
     agent = Agent(net)
     # start training, set total number of training steps to 100000
