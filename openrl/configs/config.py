@@ -618,6 +618,14 @@ def create_config_parser():
     parser.add_argument(
         "--weight_decay", type=float, default=0, help="weight decay (defaul: 0)"
     )
+    # behavior cloning parameters
+    parser.add_argument(
+        "--bc_epoch",
+        type=int,
+        default=2,
+        help="number of behavior cloning epochs (default: 15)",
+    )
+
     # ppo parameters
     parser.add_argument(
         "--ppo_epoch", type=int, default=10, help="number of ppo epochs (default: 15)"
@@ -967,6 +975,30 @@ def create_config_parser():
         default=False,
         help="Whether the actor input takes in previous actions as part of its input",
     )
+    parser.add_argument(
+        "--target_update",
+        type=int,
+        default=10,
+        help=(
+            "After how many evaluation network updates target network should be updated"
+        ),
+    )
+    ## for DDPG
+    parser.add_argument(
+        "--var",
+        type=int,
+        default=3,
+        help="Control the exploration variance of the generated actions",
+    )
+    parser.add_argument(
+        "actor_lr", type=float, default=0.001, help="The learning rate of actor network"
+    )
+    # parser.add_argument(
+    #     "critic_lr",
+    #     type=float,
+    #     default=0.002,
+    #     help="The learning rate of critic network",
+    # )
     # update parameters
     parser.add_argument(
         "--use_soft_update",

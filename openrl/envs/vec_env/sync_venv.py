@@ -16,20 +16,19 @@
 
 """"""
 from copy import deepcopy
-from typing import Any, Callable, Iterable, List, Optional, Sequence, Type, Union
+from typing import Any, Callable, Iterable, List, Optional, Sequence, Union
 
 import numpy as np
 from gymnasium import Env
 from gymnasium.core import ActType
 from gymnasium.spaces import Space
 
-from openrl.envs.vec_env.base_venv import BaseVecEnv, VecEnvIndices
+from openrl.envs.vec_env.base_venv import BaseVecEnv
 from openrl.envs.vec_env.utils.numpy_utils import (
     concatenate,
     create_empty_array,
     iterate_action,
 )
-from openrl.envs.wrappers.base_wrapper import BaseWrapper
 
 
 class SyncVectorEnv(BaseVecEnv):
@@ -71,6 +70,7 @@ class SyncVectorEnv(BaseVecEnv):
         if (observation_space is None) or (action_space is None):
             observation_space = observation_space or self.envs[0].observation_space
             action_space = action_space or self.envs[0].action_space
+
         super().__init__(
             parallel_env_num=len(self.envs),
             observation_space=observation_space,

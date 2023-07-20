@@ -15,6 +15,7 @@ env_wrappers = [
 
 
 def train():
+    print("Begin to train....")
     # create the neural network
     cfg_parser = create_config_parser()
     cfg = cfg_parser.parse_args()
@@ -32,10 +33,12 @@ def train():
     agent.train(total_time_steps=20000)
     agent.save("ppo_agent")
     env.close()
+    print("Finish training!")
     return agent
 
 
 def gen_data(total_episode):
+    print("generate data....")
     # begin to test
     # Create an environment for testing and set the number of environments to interact with to 9. Set rendering mode to group_human.
     render_mode = None
@@ -58,6 +61,7 @@ def gen_data(total_episode):
         action, _ = agent.act(obs, deterministic=True)
         obs, r, done, info = env.step(action)
     env.close()
+    print("generate data done!")
 
 
 if __name__ == "__main__":

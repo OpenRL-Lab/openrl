@@ -150,9 +150,6 @@ class VecEnvWrapper(BaseVecEnv, ABC):
     def unwrapped(self):
         return self.env.unwrapped
 
-    def __del__(self):
-        self.env.__del__()
-
     def _get_images(self) -> Sequence[np.ndarray]:
         return self.env._get_images()
 

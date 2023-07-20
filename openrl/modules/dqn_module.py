@@ -68,6 +68,8 @@ class DQNModule(RLModule):
             device=device,
         )
         self.cfg = cfg
+        self.obs_space = input_space
+        self.act_space = act_space
 
     def lr_decay(self, episode, episodes):
         update_linear_schedule(self.optimizers["q_net"], episode, episodes, self.lr)
@@ -77,13 +79,13 @@ class DQNModule(RLModule):
         obs,
         rnn_states,
         masks,
-        available_actions=None,
+        action_masks=None,
     ):
         q_values, rnn_states = self.models["q_net"](
             obs,
             rnn_states,
             masks,
-            available_actions,
+            action_masks,
         )
 
         return q_values, rnn_states
@@ -100,7 +102,7 @@ class DQNModule(RLModule):
         rewards_batch,
         actions_batch,
         masks,
-        available_actions=None,
+        action_masks=None,
         masks_batch=None,
         critic_masks_batch=None,
     ):
@@ -108,25 +110,25 @@ class DQNModule(RLModule):
             masks_batch = masks
 
         q_values, _ = self.models["q_net"](
-            obs_batch, rnn_states_batch, masks_batch, available_actions
+            obs_batch, rnn_states_batch, masks_batch, action_masks
         )
         index = torch.from_numpy(actions_batch).long()
         q_values = q_values.gather(1, index)
 
         max_next_q_values, _ = self.models["target_q_net"](
-            next_obs_batch, rnn_states_batch, masks_batch, available_actions
+            next_obs_batch, rnn_states_batch, masks_batch, action_masks
         )
         max_next_q_values = max_next_q_values.max(1)[0].view(-1, 1)
         return q_values, max_next_q_values
 
-    def act(self, obs, rnn_states_actor, masks, available_actions=None):
+    def act(self, obs, rnn_states_actor, masks, action_masks=None):
         model = self.models["q_net"]
 
         q_values, rnn_states_actor = model(
             obs,
             rnn_states_actor,
             masks,
-            available_actions,
+            action_masks,
         )
 
         return q_values, rnn_states_actor

@@ -18,9 +18,7 @@
 
 from typing import Union
 
-import numpy as np
 import torch
-import torch.nn as nn
 import torch.nn.functional as F
 
 from openrl.algorithms.base_algorithm import BaseAlgorithm
@@ -61,7 +59,7 @@ class DQNAlgorithm(BaseAlgorithm):
             active_masks_batch,
             old_action_log_probs_batch,
             adv_targ,
-            available_actions_batch,
+            action_masks_batch,
         ) = sample
 
         value_preds_batch = check(value_preds_batch).to(**self.tpdv)
@@ -76,7 +74,7 @@ class DQNAlgorithm(BaseAlgorithm):
                     rnn_states_batch,
                     actions_batch,
                     masks_batch,
-                    available_actions_batch,
+                    action_masks_batch,
                     value_preds_batch,
                     rewards_batch,
                     active_masks_batch,
@@ -91,13 +89,12 @@ class DQNAlgorithm(BaseAlgorithm):
                 rnn_states_batch,
                 actions_batch,
                 masks_batch,
-                available_actions_batch,
+                action_masks_batch,
                 value_preds_batch,
                 rewards_batch,
                 active_masks_batch,
                 turn_on,
             )
-
             for loss in loss_list:
                 loss.backward()
 
@@ -185,7 +182,7 @@ class DQNAlgorithm(BaseAlgorithm):
         rnn_states_batch,
         actions_batch,
         masks_batch,
-        available_actions_batch,
+        action_masks_batch,
         value_preds_batch,
         rewards_batch,
         active_masks_batch,
@@ -201,7 +198,7 @@ class DQNAlgorithm(BaseAlgorithm):
             rewards_batch,
             actions_batch,
             masks_batch,
-            available_actions_batch,
+            action_masks_batch,
             active_masks_batch,
             critic_masks_batch=critic_masks_batch,
         )
@@ -228,15 +225,16 @@ class DQNAlgorithm(BaseAlgorithm):
                 raise NotImplementedError
             elif self._use_naive_recurrent:
                 raise NotImplementedError
-
-            data_generator = buffer.feed_forward_generator(
-                None,
-                num_mini_batch=self.num_mini_batch,
-                mini_batch_size=self.mini_batch_size,
-            )
+            else:
+                data_generator = buffer.feed_forward_generator(
+                    None,
+                    num_mini_batch=self.num_mini_batch,
+                    mini_batch_size=self.mini_batch_size,
+                )
 
             for sample in data_generator:
                 (q_loss) = self.dqn_update(sample, turn_on)
+                # print(q_loss)
                 if self.world_size > 1:
                     train_info["reduced_q_loss"] += reduce_tensor(
                         q_loss.data, self.world_size

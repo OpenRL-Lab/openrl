@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Tuple
 
 import numpy as np
 from torch import nn
@@ -43,11 +43,11 @@ class GAILReward(BaseReward):
 
     def step_reward(
         self, data: Dict[str, Any]
-    ) -> Union[np.ndarray, List[Dict[str, Any]]]:
+    ) -> Tuple[np.ndarray, List[Dict[str, Any]]]:
         # step reward
         infos = []
         # rewards = data["rewards"].copy()
-
+        rewards = None
         for rew_func in self.step_rew_funcs.values():
             new_rew, new_info = rew_func(data)
             if len(infos) == 0:

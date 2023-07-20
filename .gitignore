@@ -119,8 +119,6 @@ dmypy.json
 .gitee/
 results/
 
-
-.idea
 *.log
 tmp/
 
@@ -152,5 +150,6 @@ run_results/
 
 # model
 *.pt
+api_docs
 .vscode
 *.pkl

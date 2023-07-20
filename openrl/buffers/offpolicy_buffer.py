@@ -49,7 +49,7 @@ class OffPolicyReplayBuffer(NormalReplayBuffer):
         masks,
         bad_masks=None,
         active_masks=None,
-        available_actions=None,
+        action_masks=None,
     ):
         self.data.insert(
             raw_obs,
@@ -63,7 +63,7 @@ class OffPolicyReplayBuffer(NormalReplayBuffer):
             masks,
             bad_masks,
             active_masks,
-            available_actions,
+            action_masks,
         )
 
     def get_buffer_size(self):

@@ -75,6 +75,74 @@ class IdentityEnv(gym.Env, Generic[T]):
         pass
 
 
+class IdentityEnvcontinuous(gym.Env, Generic[T]):
+    spec = EnvSpec("IdentityEnvcontinuous")
+
+    def __init__(
+        self,
+        dim: Optional[int] = None,
+        space: Optional[spaces.Space] = None,
+        ep_length: int = 100,
+    ):
+        """
+        Identity environment for testing purposes
+
+        :param dim: the size of the action and observation dimension you want
+            to learn. Provide at most one of ``dim`` and ``space``. If both are
+            None, then initialization proceeds with ``dim=1`` and ``space=None``.
+        :param : the action and observation space. Prospacevide at most one of
+            ``dim`` and ``space``.
+        :param ep_length: the length of each episode in time_steps
+        """
+        if space is None:
+            if dim is None:
+                dim = 1
+            space = spaces.Discrete(dim)
+        else:
+            assert (
+                dim is None
+            ), "arguments for both 'dim' and 'space' provided: at most one allowed"
+
+        self.observation_space = space
+        self.action_space = spaces.Box(low=-dim, high=dim, shape=(1,))
+
+        self.ep_length = ep_length
+        self.current_step = 0
+        self.num_resets = -1  # Becomes 0 after __init__ exits.
+        self.seed = 0
+        self.reset()
+
+    def reset(
+        self,
+        *,
+        seed: Optional[int] = None,
+        options: Optional[Dict[str, Any]] = None,
+    ) -> T:
+        if seed is not None:
+            self.seed = seed
+        self.current_step = 0
+        self.num_resets += 1
+        self._choose_next_state()
+        return self.state, {}
+
+    def step(self, action: T) -> Tuple[T, float, bool, Dict[str, Any]]:
+        reward = self._get_reward(action)
+        self._choose_next_state()
+        self.current_step += 1
+        done = self.current_step >= self.ep_length
+        return self.state, reward, done, {}
+
+    def _choose_next_state(self) -> None:
+        self.state = [self.observation_space.sample()]
+
+    def _get_reward(self, action: T) -> float:
+        r = (self.state - action) ** 2
+        return r
+
+    def render(self, mode: str = "human") -> None:
+        pass
+
+
 # Not Work Yet
 class IdentityEnvBox(IdentityEnv[np.ndarray]):
     def __init__(

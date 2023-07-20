@@ -25,8 +25,9 @@ from openrl.algorithms.base_algorithm import BaseAlgorithm
 from openrl.algorithms.ppo import PPOAlgorithm
 from openrl.buffers import NormalReplayBuffer as ReplayBuffer
 from openrl.buffers.utils.obs_data import ObsData
+from openrl.drivers.base_driver import BaseDriver
 from openrl.drivers.onpolicy_driver import OnPolicyDriver as Driver
-from openrl.envs.vec_env.utils.util import prepare_available_actions
+from openrl.envs.vec_env.utils.util import prepare_action_masks
 from openrl.modules.common import BaseNet
 from openrl.runners.common.base_agent import SelfAgent
 from openrl.runners.common.rl_agent import RLAgent
@@ -66,6 +67,7 @@ class PPOAgent(RLAgent):
         callback: MaybeCallback = None,
         train_algo_class: Type[BaseAlgorithm] = PPOAlgorithm,
         logger: Optional[Logger] = None,
+        DriverClass: Type[BaseDriver] = Driver,
     ) -> None:
         self._cfg.num_env_steps = total_time_steps
 
@@ -111,7 +113,7 @@ class PPOAgent(RLAgent):
             progress_bar=False,
         )
 
-        driver = Driver(
+        driver = DriverClass(
             config=self.config,
             trainer=trainer,
             buffer=buffer,
@@ -138,14 +140,14 @@ class PPOAgent(RLAgent):
         assert self.net is not None, "net is None"
         observation = ObsData.prepare_input(observation)
         if info is not None:
-            available_actions = prepare_available_actions(
+            action_masks = prepare_action_masks(
                 info, agent_num=self.agent_num, as_batch=True
             )
         else:
-            available_actions = None
+            action_masks = None
         action, rnn_state = self.net.act(
             observation,
-            available_actions=available_actions,
+            action_masks=action_masks,
             deterministic=deterministic,
         )
 

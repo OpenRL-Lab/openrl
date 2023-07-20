@@ -15,33 +15,41 @@
 # limitations under the License.
 
 """"""
+import copy
 from typing import Callable, List, Optional, Union
 
-import gymnasium as gym
 from gymnasium import Env
 
 from openrl.envs.common import build_envs
-from openrl.envs.connect3.connect3_env import make
+from openrl.envs.offline.offline_env import OfflineEnv
 
 
-def make_connect3_envs(
-    id: str,
+def offline_make(dataset, render_mode, disable_env_checker, **kwargs):
+    env_id = kwargs["env_id"]
+    env_num = kwargs["env_num"]
+    seed = kwargs.pop("seed", None)
+    assert seed is not None, "seed must be set"
+
+    env = OfflineEnv(dataset, env_id, env_num, seed)
+    return env
+
+
+def make_offline_envs(
+    dataset: str,
     env_num: int = 1,
     render_mode: Optional[Union[str, List[str]]] = None,
     **kwargs,
 ) -> List[Callable[[], Env]]:
-    from openrl.envs.wrappers import RemoveTruncated, Single2MultiAgentWrapper
+    env_wrappers = copy.copy(kwargs.pop("env_wrappers", []))
+    env_wrappers += []
 
-    env_wrappers = [
-        Single2MultiAgentWrapper,
-        RemoveTruncated,
-    ]
     env_fns = build_envs(
-        make=make,
-        id=id,
+        make=offline_make,
+        id=dataset,
         env_num=env_num,
         render_mode=render_mode,
         wrappers=env_wrappers,
+        need_env_id=True,
         **kwargs,
     )
     return env_fns

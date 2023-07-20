@@ -21,7 +21,7 @@ from openrl.datasets.expert_dataset import ExpertDataset
 
 
 def test_dataset():
-    dataset = ExpertDataset(file_name="data_small.pkl", seed=0)
+    dataset = ExpertDataset(file_name="data.pkl", seed=0)
     print("data length:", len(dataset))
     print("data[0]:", dataset[0][0])
     print("data[1]:", dataset[1][0])

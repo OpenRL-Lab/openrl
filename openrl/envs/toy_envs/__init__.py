@@ -22,6 +22,7 @@ from openrl.envs.toy_envs.identity_env import (
     FakeImageEnv,
     IdentityEnv,
     IdentityEnvBox,
+    IdentityEnvcontinuous,
     IdentityEnvMultiBinary,
     IdentityEnvMultiDiscrete,
 )
@@ -31,6 +32,7 @@ __all__ = [
     "BitFlippingEnv",
     "FakeImageEnv",
     "IdentityEnv",
+    "IdentityEnvcontinuous",
     "IdentityEnvBox",
     "IdentityEnvMultiBinary",
     "IdentityEnvMultiDiscrete",
@@ -49,6 +51,7 @@ env_dict = {
     "BitFlippingEnv": BitFlippingEnv,
     "FakeImageEnv": FakeImageEnv,
     "IdentityEnv": IdentityEnv,
+    "IdentityEnvcontinuous": IdentityEnvcontinuous,
     "IdentityEnvBox": IdentityEnvBox,
     "IdentityEnvMultiBinary": IdentityEnvMultiBinary,
     "IdentityEnvMultiDiscrete": IdentityEnvMultiDiscrete,

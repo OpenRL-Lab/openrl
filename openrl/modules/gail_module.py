@@ -21,7 +21,6 @@ from openrl.buffers.utils.util import get_shape_from_act_space
 from openrl.modules.model_config import ModelTrainConfig
 from openrl.modules.networks.gail_discriminator import Discriminator
 from openrl.modules.ppo_module import PPOModule
-from openrl.modules.utils.util import update_linear_schedule
 
 
 class GAILModule(PPOModule):

@@ -25,8 +25,7 @@ import torch
 from openrl.configs.config import create_config_parser
 from openrl.modules.common.base_net import BaseNet
 from openrl.modules.vdn_module import VDNModule
-from openrl.utils.util import set_seed
-from openrl.utils.util import _t2n
+from openrl.utils.util import _t2n, set_seed
 
 
 class VDNNet(BaseNet):
@@ -49,6 +48,8 @@ class VDNNet(BaseNet):
 
         cfg.n_rollout_threads = n_rollout_threads
         cfg.learner_n_rollout_threads = cfg.n_rollout_threads
+
+        cfg.algorithm_name = "VDN"
 
         if cfg.rnn_type == "gru":
             rnn_hidden_size = cfg.hidden_size
@@ -88,13 +89,12 @@ class VDNNet(BaseNet):
             obs=observation,
             rnn_states_actor=self.rnn_states_actor,
             masks=self.masks,
-            available_actions=None,
+            action_masks=None,
         )
         q_values = np.array(np.split(_t2n(q_values), self.n_rollout_threads))
         actions = np.expand_dims(q_values.argmax(axis=-1), axis=-1)
 
         return actions, self.rnn_states_actor
-
 
     def reset(self, env: Optional[gym.Env] = None) -> None:
         if env is not None:

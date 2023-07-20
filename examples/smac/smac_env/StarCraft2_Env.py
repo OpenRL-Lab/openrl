@@ -3,7 +3,6 @@ from __future__ import absolute_import, division, print_function
 import atexit
 import enum
 import math
-import random
 from copy import deepcopy
 from operator import attrgetter
 
@@ -449,9 +448,9 @@ class StarCraft2Env(MultiAgentEnv):
         except (protocol.ProtocolError, protocol.ConnectionError):
             self.full_restart()
 
-        available_actions = []
+        action_masks = []
         for i in range(self.n_agents):
-            available_actions.append(self.get_avail_agent_actions(i))
+            action_masks.append(self.get_avail_agent_actions(i))
 
         if self.debug:
             logging.debug(
@@ -479,7 +478,7 @@ class StarCraft2Env(MultiAgentEnv):
             local_obs = self.stacked_local_obs.reshape(self.n_agents, -1)
             global_state = self.stacked_global_state.reshape(self.n_agents, -1)
 
-        return local_obs, global_state, available_actions
+        return local_obs, global_state, action_masks
 
     def _restart(self):
         """Restart the environment by killing all units on the map.
@@ -535,9 +534,9 @@ class StarCraft2Env(MultiAgentEnv):
         except (protocol.ProtocolError, protocol.ConnectionError):
             self.full_restart()
             terminated = True
-            available_actions = []
+            action_masks = []
             for i in range(self.n_agents):
-                available_actions.append(self.get_avail_agent_actions(i))
+                action_masks.append(self.get_avail_agent_actions(i))
 
                 infos_single_agent = {
                     "battles_won": self.battles_won,
@@ -591,7 +590,7 @@ class StarCraft2Env(MultiAgentEnv):
                 [[0]] * self.n_agents,
                 dones,
                 infos,
-                available_actions,
+                action_masks,
             )
 
         self._total_steps += 1
@@ -602,9 +601,9 @@ class StarCraft2Env(MultiAgentEnv):
 
         reward = self.reward_battle()
 
-        available_actions = []
+        action_masks = []
         for i in range(self.n_agents):
-            available_actions.append(self.get_avail_agent_actions(i))
+            action_masks.append(self.get_avail_agent_actions(i))
 
         if game_end_code is not None:
             # Battle is over
@@ -691,7 +690,7 @@ class StarCraft2Env(MultiAgentEnv):
             local_obs = self.stacked_local_obs.reshape(self.n_agents, -1)
             global_state = self.stacked_global_state.reshape(self.n_agents, -1)
 
-        return local_obs, global_state, rewards, dones, infos, available_actions
+        return local_obs, global_state, rewards, dones, infos, action_masks
 
     def get_agent_action(self, a_id, action):
         """Construct the action for agent a_id."""

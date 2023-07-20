@@ -16,7 +16,6 @@
 
 """"""
 
-import time
 from typing import Any, Dict, List, Optional, Union
 
 import gym_super_mario_bros
