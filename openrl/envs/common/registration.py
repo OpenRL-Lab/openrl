@@ -125,6 +125,12 @@ def make(
                 render_mode=convert_render_mode,
                 **kwargs,
             )
+        elif id in openrl.envs.pettingzoo_all_envs:
+            from openrl.envs.PettingZoo import make_PettingZoo_envs
+
+            env_fns = make_PettingZoo_envs(
+                id=id, env_num=env_num, render_mode=convert_render_mode, **kwargs
+            )
         else:
             raise NotImplementedError(f"env {id} is not supported.")
 

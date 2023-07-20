@@ -4,6 +4,7 @@ from openrl.configs.config import create_config_parser
 from openrl.envs.common import make
 from openrl.modules.common import PPONet as Net
 from openrl.runners.common import PPOAgent as Agent
+from openrl.selfplay.wrappers.random_opponent_wrapper import RandomOpponentWrapper
 
 
 def train():
@@ -53,12 +54,16 @@ def test_env():
     env_num = 1
     render_model = None
     env = make(
-        "connect3", render_mode=render_model, env_num=env_num, asynchronous=False
+        "tictactoe_v3", render_mode=render_model, env_num=env_num, asynchronous=False
     )
     obs, info = env.reset(seed=1)
-
-    env.step([[[0]]])
-    env.step([[[1]]])
+    done = False
+    step_num = 0
+    while not done:
+        obs, done, r, info = env.step(env.random_action())
+        done = np.any(done)
+        step_num += 1
+        print(f"step: {step_num}")
 
 
 if __name__ == "__main__":

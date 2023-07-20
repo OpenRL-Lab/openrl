@@ -18,10 +18,29 @@
 from typing import List, Optional, Union
 
 
+def PettingZoo_make(id, render_mode, disable_env_checker, **kwargs):
+    if id == "":
+        from pettingzoo.classic import tictactoe_v3
+
+        env = tictactoe_v3.env(render_mode=render_mode)
+    else:
+        raise NotImplementedError
+    return env
+
+
 def make_PettingZoo_envs(
     id: str,
     env_num: int = 1,
     render_mode: Optional[Union[str, List[str]]] = None,
     **kwargs,
 ):
-    pass
+    env_wrappers = copy.copy(kwargs.pop("env_wrappers", []))
+    env_fns = build_envs(
+        make=PettingZoo_make,
+        id=id,
+        env_num=env_num,
+        render_mode=render_mode,
+        wrappers=env_wrappers,
+        **kwargs,
+    )
+    return env_fns

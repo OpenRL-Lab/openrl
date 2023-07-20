@@ -150,9 +150,6 @@ class VecEnvWrapper(BaseVecEnv, ABC):
     def unwrapped(self):
         return self.env.unwrapped
 
-    def __del__(self):
-        self.env.__del__()
-
     def _get_images(self) -> Sequence[np.ndarray]:
         return self.env._get_images()
 
@@ -233,8 +230,9 @@ class VectorObservationWrapper(VecEnvWrapper):
             )
         else:
             raise ValueError(
-                "Invalid step return value, expected 4 or 5 values, got {} values"
-                .format(len(results))
+                "Invalid step return value, expected 4 or 5 values, got {} values".format(
+                    len(results)
+                )
             )
 
     def observation(self, observation: ObsType) -> ObsType:

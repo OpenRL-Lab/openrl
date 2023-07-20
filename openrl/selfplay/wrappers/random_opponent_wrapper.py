@@ -19,5 +19,8 @@
 from openrl.selfplay.wrappers.base_multiplayer_wrapper import BaseMultiPlayerWrapper
 
 
-class RandomPlayerWrapper(BaseMultiPlayerWrapper):
+class RandomOpponentWrapper(BaseMultiPlayerWrapper):
     pass
+
+
+x
