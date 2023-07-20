@@ -102,6 +102,8 @@ class AsyncVectorEnv(BaseVecEnv):
 
         if hasattr(dummy_env, "env_name"):
             self._env_name = dummy_env.env_name
+        elif "name" in self.metadata:
+            self._env_name = self.metadata["name"]
         else:
             self._env_name = dummy_env.unwrapped.spec.id
 

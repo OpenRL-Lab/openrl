@@ -1,7 +1,9 @@
 import numpy as np
+import torch
 
 from openrl.configs.config import create_config_parser
 from openrl.envs.common import make
+from openrl.envs.wrappers import FlattenObservation
 from openrl.modules.common import PPONet as Net
 from openrl.runners.common import PPOAgent as Agent
 from openrl.selfplay.wrappers.random_opponent_wrapper import RandomOpponentWrapper
@@ -10,17 +12,21 @@ from openrl.selfplay.wrappers.random_opponent_wrapper import RandomOpponentWrapp
 def train():
     # 创建 环境
     env_num = 10
+    render_model = None
     env = make(
-        "connect3",
+        "tictactoe_v3",
+        render_mode=render_model,
         env_num=env_num,
         asynchronous=True,
+        opponent_wrappers=[RandomOpponentWrapper],
+        env_wrappers=[FlattenObservation],
     )
     # 创建 神经网络
     cfg_parser = create_config_parser()
     cfg = cfg_parser.parse_args()
-    net = Net(env, cfg=cfg, device="cuda")
+    net = Net(env, cfg=cfg, device="cuda" if torch.cuda.is_available() else "cpu")
     # 初始化训练器
-    agent = Agent(net, use_wandb=True)
+    agent = Agent(net)
     # 开始训练
     agent.train(total_time_steps=5000000)
     env.close()
@@ -30,9 +36,15 @@ def train():
 
 def evaluation(agent):
     render_model = "group_human"
+    render_model = None
     env_num = 9
     env = make(
-        "connect3", render_mode=render_model, env_num=env_num, asynchronous=False
+        "tictactoe_v3",
+        render_mode=render_model,
+        env_num=env_num,
+        asynchronous=True,
+        opponent_wrappers=[RandomOpponentWrapper],
+        env_wrappers=[FlattenObservation],
     )
     agent.load("./ppo_agent/")
     agent.set_env(env)
@@ -53,24 +65,36 @@ def evaluation(agent):
 def test_env():
     env_num = 1
     render_model = None
+    render_model = "human"
     env = make(
         "tictactoe_v3",
         render_mode=render_model,
         env_num=env_num,
         asynchronous=False,
-        env_wrappers=[RandomOpponentWrapper],
+        opponent_wrappers=[RandomOpponentWrapper],
+        env_wrappers=[FlattenObservation],
     )
+
     obs, info = env.reset(seed=1)
     done = False
     step_num = 0
     while not done:
-        obs, done, r, info = env.step(env.random_action())
+        action = env.random_action(info)
+
+        obs, done, r, info = env.step(action)
+
         done = np.any(done)
         step_num += 1
-        print(f"step: {step_num}")
+        if done:
+            print(
+                "step:"
+                f" {step_num},{[env_info['final_observation'] for env_info in info]}"
+            )
+        else:
+            print(f"step: {step_num},{obs}")
 
 
 if __name__ == "__main__":
-    # agent = train()
-    # evaluation(agent)
-    test_env()
+    agent = train()
+    evaluation(agent)
+    # test_env()

@@ -102,7 +102,7 @@ class DDPGModule(RLModule):
         obs,
         # rnn_states,
         # masks,
-        # available_actions=None,
+        # action_masks=None,
     ):
         action = self.models["actor"](obs)
 
@@ -121,7 +121,7 @@ class DDPGModule(RLModule):
         rewards_batch,
         actions_batch,
         masks,
-        available_actions=None,
+        action_masks=None,
         masks_batch=None,
     ):
         if masks_batch is None:
@@ -142,7 +142,7 @@ class DDPGModule(RLModule):
         rewards_batch,
         actions_batch,
         masks,
-        available_actions=None,
+        action_masks=None,
         masks_batch=None,
     ):
         if masks_batch is None:
@@ -168,7 +168,7 @@ class DDPGModule(RLModule):
         rewards_batch,
         actions_batch,
         masks,
-        available_actions=None,
+        action_masks=None,
         masks_batch=None,
     ):
         print("在ddpg_module中调用了evaluate_actions函数，该函数未实现")
@@ -178,7 +178,7 @@ class DDPGModule(RLModule):
         obs,
         # rnn_states_actor,
         # masks,
-        # available_actions=None
+        # action_masks=None
     ):
         action = self.models["actor"](obs)
 

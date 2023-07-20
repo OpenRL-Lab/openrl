@@ -70,6 +70,7 @@ class SyncVectorEnv(BaseVecEnv):
         if (observation_space is None) or (action_space is None):
             observation_space = observation_space or self.envs[0].observation_space
             action_space = action_space or self.envs[0].action_space
+
         super().__init__(
             parallel_env_num=len(self.envs),
             observation_space=observation_space,

@@ -60,7 +60,7 @@ class VDNAlgorithm(BaseAlgorithm):
             active_masks_batch,
             old_action_log_probs_batch,
             adv_targ,
-            available_actions_batch,
+            action_masks_batch,
         ) = sample
 
         value_preds_batch = check(value_preds_batch).to(**self.tpdv)
@@ -75,7 +75,7 @@ class VDNAlgorithm(BaseAlgorithm):
                     rnn_states_batch,
                     actions_batch,
                     masks_batch,
-                    available_actions_batch,
+                    action_masks_batch,
                     value_preds_batch,
                     rewards_batch,
                     active_masks_batch,
@@ -90,7 +90,7 @@ class VDNAlgorithm(BaseAlgorithm):
                 rnn_states_batch,
                 actions_batch,
                 masks_batch,
-                available_actions_batch,
+                action_masks_batch,
                 value_preds_batch,
                 rewards_batch,
                 active_masks_batch,
@@ -182,7 +182,7 @@ class VDNAlgorithm(BaseAlgorithm):
         rnn_states_batch,
         actions_batch,
         masks_batch,
-        available_actions_batch,
+        action_masks_batch,
         value_preds_batch,
         rewards_batch,
         active_masks_batch,
@@ -198,7 +198,7 @@ class VDNAlgorithm(BaseAlgorithm):
             rewards_batch,
             actions_batch,
             masks_batch,
-            available_actions_batch,
+            action_masks_batch,
             active_masks_batch,
             critic_masks_batch=critic_masks_batch,
         )

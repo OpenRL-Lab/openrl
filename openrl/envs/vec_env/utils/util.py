@@ -51,7 +51,7 @@ def tile_images(img_nhwc: Sequence[np.ndarray]) -> np.ndarray:  # pragma: no cov
     return out_image
 
 
-def prepare_available_actions(
+def prepare_action_masks(
     info: Optional[List[Dict[str, Any]]] = None,
     agent_num: int = 1,
     as_batch: bool = True,
@@ -59,22 +59,23 @@ def prepare_available_actions(
     if info is None:
         return None
 
-    available_actions = []
+    action_masks = []
     for env_index in range(len(info)):
         env_info = info[env_index]
-        available_actions_env = []
+
+        action_masks_env = []
         for agent_index in range(agent_num):
             if env_info is None:
-                available_action = None
+                action_mask = None
             else:
-                if "available_actions" in env_info:
-                    available_action = env_info["available_actions"][agent_index]
+                if "action_masks" in env_info:
+                    action_mask = env_info["action_masks"][agent_index]
                 else:
-                    # if there is no available_actions in env_info, then we assume all actions are available
+                    # if there is no action_masks in env_info, then we assume all actions are available
                     return None
-            available_actions_env.append(available_action)
-        available_actions.append(available_actions_env)
-    available_actions = np.array(available_actions, dtype=np.int8)
+            action_masks_env.append(action_mask)
+        action_masks.append(action_masks_env)
+    action_masks = np.array(action_masks, dtype=np.int8)
     if as_batch:
-        available_actions = available_actions.reshape(-1, available_actions.shape[-1])
-    return available_actions
+        action_masks = action_masks.reshape(-1, action_masks.shape[-1])
+    return action_masks

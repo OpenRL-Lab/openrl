@@ -24,7 +24,7 @@ import gymnasium as gym
 import numpy as np
 
 from openrl.envs.vec_env.utils.numpy_utils import single_random_action
-from openrl.envs.vec_env.utils.util import prepare_available_actions, tile_images
+from openrl.envs.vec_env.utils.util import prepare_action_masks, tile_images
 from openrl.envs.wrappers.base_wrapper import BaseWrapper
 from openrl.envs.wrappers.util import is_wrapped
 
@@ -310,18 +310,18 @@ class BaseVecEnv(
         """
         Get a random action from the action space
         """
-        available_actions = prepare_available_actions(
+        action_masks = prepare_action_masks(
             infos, agent_num=self.agent_num, as_batch=False
         )
-
+        print(action_masks)
         return np.array(
             [
                 [
                     single_random_action(
                         self.action_space,
                         (
-                            available_actions[env_index][agent_index]
-                            if available_actions is not None
+                            action_masks[env_index][agent_index]
+                            if action_masks is not None
                             else None
                         ),
                     )

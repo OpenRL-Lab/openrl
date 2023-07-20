@@ -350,21 +350,19 @@ class MultiAgentTransformer(BaseValuePolicyNetwork):
             self.decoder.zero_std(self.device)
 
     def eval_actions(
-        self, obs, rnn_states, action, masks, available_actions=None, active_masks=None
+        self, obs, rnn_states, action, masks, action_masks=None, active_masks=None
     ):
         obs = obs.reshape(-1, self.n_agent, self.obs_dim)
 
         action = action.reshape(-1, self.n_agent, self.action_num)
 
-        if available_actions is not None:
-            available_actions = available_actions.reshape(
-                -1, self.n_agent, self.action_dim
-            )
+        if action_masks is not None:
+            action_masks = action_masks.reshape(-1, self.n_agent, self.action_dim)
 
         # state: (batch, n_agent, state_dim)
         # obs: (batch, n_agent, obs_dim)
         # action: (batch, n_agent, 1)
-        # available_actions: (batch, n_agent, act_dim)
+        # action_masks: (batch, n_agent, act_dim)
 
         # state unused
         ori_shape = np.shape(obs)
@@ -374,8 +372,8 @@ class MultiAgentTransformer(BaseValuePolicyNetwork):
         obs = check(obs).to(**self.tpdv)
         action = check(action).to(**self.tpdv)
 
-        if available_actions is not None:
-            available_actions = check(available_actions).to(**self.tpdv)
+        if action_masks is not None:
+            action_masks = check(action_masks).to(**self.tpdv)
 
         batch_size = np.shape(state)[0]
         v_loc, obs_rep = self.encoder(state, obs)
@@ -390,7 +388,7 @@ class MultiAgentTransformer(BaseValuePolicyNetwork):
                 self.n_agent,
                 self.action_dim,
                 self.tpdv,
-                available_actions,
+                action_masks,
             )
         else:
             action_log, entropy = continuous_parallel_act(
@@ -417,14 +415,12 @@ class MultiAgentTransformer(BaseValuePolicyNetwork):
         obs,
         rnn_states_actor=None,
         masks=None,
-        available_actions=None,
+        action_masks=None,
         deterministic=False,
     ):
         obs = obs.reshape(-1, self.n_agent, self.obs_dim)
-        if available_actions is not None:
-            available_actions = available_actions.reshape(
-                -1, self.num_agents, self.action_dim
-            )
+        if action_masks is not None:
+            action_masks = action_masks.reshape(-1, self.num_agents, self.action_dim)
 
         # state unused
         ori_shape = np.shape(obs)
@@ -432,8 +428,8 @@ class MultiAgentTransformer(BaseValuePolicyNetwork):
 
         state = check(state).to(**self.tpdv)
         obs = check(obs).to(**self.tpdv)
-        if available_actions is not None:
-            available_actions = check(available_actions).to(**self.tpdv)
+        if action_masks is not None:
+            action_masks = check(action_masks).to(**self.tpdv)
 
         batch_size = np.shape(obs)[0]
         v_loc, obs_rep = self.encoder(state, obs)
@@ -446,7 +442,7 @@ class MultiAgentTransformer(BaseValuePolicyNetwork):
                 self.n_agent,
                 self.action_dim,
                 self.tpdv,
-                available_actions,
+                action_masks,
                 deterministic,
             )
         else:

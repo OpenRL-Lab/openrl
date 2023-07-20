@@ -87,14 +87,14 @@ class PPONet(BaseNet):
     def act(
         self,
         observation: Union[np.ndarray, Dict[str, np.ndarray]],
-        available_actions: Optional[np.ndarray] = None,
+        action_masks: Optional[np.ndarray] = None,
         deterministic: bool = False,
     ) -> Tuple[np.ndarray, Optional[Tuple[np.ndarray, ...]]]:
         actions, self.rnn_states_actor = self.module.act(
             obs=observation,
             rnn_states_actor=self.rnn_states_actor,
             masks=self.masks,
-            available_actions=available_actions,
+            action_masks=action_masks,
             deterministic=deterministic,
         )
 

@@ -78,7 +78,7 @@ class BCModule(RLModule):
         rnn_states_actor,
         rnn_states_critic,
         masks,
-        available_actions=None,
+        action_masks=None,
         deterministic=False,
     ):
         actions, action_log_probs, rnn_states_actor = self.models["policy"](
@@ -86,7 +86,7 @@ class BCModule(RLModule):
             obs,
             rnn_states_actor,
             masks,
-            available_actions,
+            action_masks,
             deterministic,
         )
 
@@ -104,7 +104,7 @@ class BCModule(RLModule):
         rnn_states_critic,
         action,
         masks,
-        available_actions=None,
+        action_masks=None,
         active_masks=None,
         critic_masks_batch=None,
     ):
@@ -116,15 +116,13 @@ class BCModule(RLModule):
             rnn_states_actor,
             action,
             masks,
-            available_actions,
+            action_masks,
             active_masks,
         )
 
         return values, action_log_probs, dist_entropy, policy_values
 
-    def act(
-        self, obs, rnn_states_actor, masks, available_actions=None, deterministic=False
-    ):
+    def act(self, obs, rnn_states_actor, masks, action_masks=None, deterministic=False):
         model = self.models["policy"]
 
         actions, _, rnn_states_actor = model(
@@ -132,7 +130,7 @@ class BCModule(RLModule):
             obs,
             rnn_states_actor,
             masks,
-            available_actions,
+            action_masks,
             deterministic,
         )
 

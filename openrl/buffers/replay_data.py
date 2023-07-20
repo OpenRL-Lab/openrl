@@ -146,7 +146,7 @@ class ReplayData(object):
         self.returns = np.zeros_like(self.value_preds)
 
         if act_space.__class__.__name__ == "Discrete":
-            self.available_actions = np.ones(
+            self.action_masks = np.ones(
                 (
                     self.episode_length + 1,
                     self.n_rollout_threads,
@@ -156,7 +156,7 @@ class ReplayData(object):
                 dtype=np.float32,
             )
         else:
-            self.available_actions = None
+            self.action_masks = None
 
         act_shape = get_shape_from_act_space(act_space)
 
@@ -237,8 +237,8 @@ class ReplayData(object):
             self.bad_masks[self.step + 1] = data["bad_masks"].copy()
         if "active_masks" in data:
             self.active_masks[self.step + 1] = data["active_masks"].copy()
-        if "available_actions" in data:
-            self.available_actions[self.step + 1] = data["available_actions"].copy()
+        if "action_masks" in data:
+            self.action_masks[self.step + 1] = data["action_masks"].copy()
 
         self.step = (self.step + 1) % self.episode_length
 
@@ -254,7 +254,7 @@ class ReplayData(object):
         masks,
         bad_masks=None,
         active_masks=None,
-        available_actions=None,
+        action_masks=None,
     ):
         critic_obs = get_critic_obs(raw_obs)
         policy_obs = get_policy_obs(raw_obs)
@@ -279,11 +279,11 @@ class ReplayData(object):
             self.bad_masks[self.step + 1] = bad_masks.copy()
         if active_masks is not None:
             self.active_masks[self.step + 1] = active_masks.copy()
-        if available_actions is not None:
-            self.available_actions[self.step + 1] = available_actions.copy()
+        if action_masks is not None:
+            self.action_masks[self.step + 1] = action_masks.copy()
         self.step = (self.step + 1) % self.episode_length
 
-    def init_buffer(self, raw_obs, available_actions=None):
+    def init_buffer(self, raw_obs, action_masks=None):
         critic_obs = get_critic_obs(raw_obs)
         policy_obs = get_policy_obs(raw_obs)
         if self._mixed_obs:
@@ -294,8 +294,8 @@ class ReplayData(object):
         else:
             self.critic_obs[0] = critic_obs.copy()
             self.policy_obs[0] = policy_obs.copy()
-        if available_actions is not None and self.available_actions is not None:
-            self.available_actions[0] = available_actions
+        if action_masks is not None and self.action_masks is not None:
+            self.action_masks[0] = action_masks
 
     def after_update(self):
         assert self.step == 0, "step:{} episode:{}".format(
@@ -314,8 +314,8 @@ class ReplayData(object):
         self.masks[0] = self.masks[-1].copy()
         self.bad_masks[0] = self.bad_masks[-1].copy()
         self.active_masks[0] = self.active_masks[-1].copy()
-        if self.available_actions is not None:
-            self.available_actions[0] = self.available_actions[-1].copy()
+        if self.action_masks is not None:
+            self.action_masks[0] = self.action_masks[-1].copy()
 
     def compute_returns(self, next_value, value_normalizer=None):
         if self._use_proper_time_limits:
@@ -460,8 +460,8 @@ class ReplayData(object):
             .reshape(-1, *self.rnn_states_critic.shape[2:])
         )
 
-        if self.available_actions is not None:
-            available_actions = _cast_v3(self.available_actions[:-1])
+        if self.action_masks is not None:
+            action_masks = _cast_v3(self.action_masks[:-1])
 
         for indices in sampler:
             critic_obs_batch = []
@@ -470,7 +470,7 @@ class ReplayData(object):
             rnn_states_batch = []
             rnn_states_critic_batch = []
             actions_batch = []
-            available_actions_batch = []
+            action_masks_batch = []
             value_preds_batch = []
             return_batch = []
             masks_batch = []
@@ -486,9 +486,9 @@ class ReplayData(object):
                 policy_obs_batch.append(policy_obs[ind : ind + data_chunk_length])
 
                 actions_batch.append(actions[ind : ind + data_chunk_length])
-                if self.available_actions is not None:
-                    available_actions_batch.append(
-                        available_actions[ind : ind + data_chunk_length]
+                if self.action_masks is not None:
+                    action_masks_batch.append(
+                        action_masks[ind : ind + data_chunk_length]
                     )
                 value_preds_batch.append(value_preds[ind : ind + data_chunk_length])
                 return_batch.append(returns[ind : ind + data_chunk_length])
@@ -511,8 +511,8 @@ class ReplayData(object):
             policy_obs_batch = np.stack(policy_obs_batch, axis=1)
 
             actions_batch = np.stack(actions_batch, axis=1)
-            if self.available_actions is not None:
-                available_actions_batch = np.stack(available_actions_batch, axis=1)
+            if self.action_masks is not None:
+                action_masks_batch = np.stack(action_masks_batch, axis=1)
             value_preds_batch = np.stack(value_preds_batch, axis=1)
             return_batch = np.stack(return_batch, axis=1)
             masks_batch = np.stack(masks_batch, axis=1)
@@ -532,12 +532,10 @@ class ReplayData(object):
             critic_obs_batch = _flatten_v3(L, N, num_agents, critic_obs_batch)
             policy_obs_batch = _flatten_v3(L, N, num_agents, policy_obs_batch)
             actions_batch = _flatten_v3(L, N, num_agents, actions_batch)
-            if self.available_actions is not None:
-                available_actions_batch = _flatten_v3(
-                    L, N, num_agents, available_actions_batch
-                )
+            if self.action_masks is not None:
+                action_masks_batch = _flatten_v3(L, N, num_agents, action_masks_batch)
             else:
-                available_actions_batch = None
+                action_masks_batch = None
             value_preds_batch = _flatten_v3(L, N, num_agents, value_preds_batch)
             return_batch = _flatten_v3(L, N, num_agents, return_batch)
             masks_batch = _flatten_v3(L, N, num_agents, masks_batch)
@@ -546,7 +544,7 @@ class ReplayData(object):
                 L, N, num_agents, old_action_log_probs_batch
             )
             adv_targ = _flatten_v3(L, N, num_agents, adv_targ)
-            yield critic_obs_batch, policy_obs_batch, rnn_states_batch, rnn_states_critic_batch, actions_batch, value_preds_batch, return_batch, masks_batch, active_masks_batch, old_action_log_probs_batch, adv_targ, available_actions_batch
+            yield critic_obs_batch, policy_obs_batch, rnn_states_batch, rnn_states_critic_batch, actions_batch, value_preds_batch, return_batch, masks_batch, active_masks_batch, old_action_log_probs_batch, adv_targ, action_masks_batch
 
     def feed_forward_generator(
         self,
@@ -598,9 +596,9 @@ class ReplayData(object):
             -1, *self.rnn_states_critic.shape[3:]
         )
         actions = self.actions.reshape(-1, self.actions.shape[-1])
-        if self.available_actions is not None:
-            available_actions = self.available_actions[:-1].reshape(
-                -1, self.available_actions.shape[-1]
+        if self.action_masks is not None:
+            action_masks = self.action_masks[:-1].reshape(
+                -1, self.action_masks.shape[-1]
             )
         value_preds = self.value_preds[:-1].reshape(-1, 1)
         returns = self.returns[:-1].reshape(-1, 1)
@@ -627,10 +625,10 @@ class ReplayData(object):
             rnn_states_batch = rnn_states[indices]
             rnn_states_critic_batch = rnn_states_critic[indices]
             actions_batch = actions[indices]
-            if self.available_actions is not None:
-                available_actions_batch = available_actions[indices]
+            if self.action_masks is not None:
+                action_masks_batch = action_masks[indices]
             else:
-                available_actions_batch = None
+                action_masks_batch = None
             value_preds_batch = value_preds[indices]
             return_batch = returns[indices]
             masks_batch = masks[indices]
@@ -643,7 +641,7 @@ class ReplayData(object):
             if critic_obs_process_func is not None:
                 critic_obs_batch = critic_obs_process_func(critic_obs_batch)
 
-            yield critic_obs_batch, policy_obs_batch, rnn_states_batch, rnn_states_critic_batch, actions_batch, value_preds_batch, return_batch, masks_batch, active_masks_batch, old_action_log_probs_batch, adv_targ, available_actions_batch
+            yield critic_obs_batch, policy_obs_batch, rnn_states_batch, rnn_states_critic_batch, actions_batch, value_preds_batch, return_batch, masks_batch, active_masks_batch, old_action_log_probs_batch, adv_targ, action_masks_batch
 
     def feed_forward_critic_obs_generator(
         self,
@@ -756,11 +754,11 @@ class ReplayData(object):
 
         actions = actions[rows, cols]
 
-        if self.available_actions is not None:
-            available_actions = self.available_actions[:-1].reshape(
-                -1, *self.available_actions.shape[2:]
+        if self.action_masks is not None:
+            action_masks = self.action_masks[:-1].reshape(
+                -1, *self.action_masks.shape[2:]
             )
-            available_actions = available_actions[rows, cols]
+            action_masks = action_masks[rows, cols]
         value_preds = self.value_preds[:-1].reshape(-1, *self.value_preds.shape[2:])
         value_preds = value_preds[rows, cols]
         returns = self.returns[:-1].reshape(-1, *self.returns.shape[2:])
@@ -785,12 +783,12 @@ class ReplayData(object):
                 -1, *rnn_states_critic.shape[2:]
             )
             actions_batch = actions[indices].reshape(-1, *actions.shape[2:])
-            if self.available_actions is not None:
-                available_actions_batch = available_actions[indices].reshape(
-                    -1, *available_actions.shape[2:]
+            if self.action_masks is not None:
+                action_masks_batch = action_masks[indices].reshape(
+                    -1, *action_masks.shape[2:]
                 )
             else:
-                available_actions_batch = None
+                action_masks_batch = None
             value_preds_batch = value_preds[indices].reshape(-1, *value_preds.shape[2:])
             return_batch = returns[indices].reshape(-1, *returns.shape[2:])
             masks_batch = masks[indices].reshape(-1, *masks.shape[2:])
@@ -805,7 +803,7 @@ class ReplayData(object):
             else:
                 adv_targ = advantages[indices].reshape(-1, *advantages.shape[2:])
 
-            yield critic_obs_batch, policy_obs_batch, rnn_states_batch, rnn_states_critic_batch, actions_batch, value_preds_batch, return_batch, masks_batch, active_masks_batch, old_action_log_probs_batch, adv_targ, available_actions_batch
+            yield critic_obs_batch, policy_obs_batch, rnn_states_batch, rnn_states_critic_batch, actions_batch, value_preds_batch, return_batch, masks_batch, active_masks_batch, old_action_log_probs_batch, adv_targ, action_masks_batch
 
     def naive_recurrent_generator(self, advantages, num_mini_batch):
         episode_length, n_rollout_threads, num_agents = self.rewards.shape[0:3]
@@ -843,9 +841,9 @@ class ReplayData(object):
             -1, batch_size, *self.rnn_states_critic.shape[3:]
         )
         actions = self.actions.reshape(-1, batch_size, self.actions.shape[-1])
-        if self.available_actions is not None:
-            available_actions = self.available_actions.reshape(
-                -1, batch_size, self.available_actions.shape[-1]
+        if self.action_masks is not None:
+            action_masks = self.action_masks.reshape(
+                -1, batch_size, self.action_masks.shape[-1]
             )
         value_preds = self.value_preds.reshape(-1, batch_size, 1)
         returns = self.returns.reshape(-1, batch_size, 1)
@@ -867,7 +865,7 @@ class ReplayData(object):
             rnn_states_batch = []
             rnn_states_critic_batch = []
             actions_batch = []
-            available_actions_batch = []
+            action_masks_batch = []
             value_preds_batch = []
             return_batch = []
             masks_batch = []
@@ -888,8 +886,8 @@ class ReplayData(object):
                 rnn_states_batch.append(rnn_states[0:1, ind])
                 rnn_states_critic_batch.append(rnn_states_critic[0:1, ind])
                 actions_batch.append(actions[:, ind])
-                if self.available_actions is not None:
-                    available_actions_batch.append(available_actions[:-1, ind])
+                if self.action_masks is not None:
+                    action_masks_batch.append(action_masks[:-1, ind])
                 value_preds_batch.append(value_preds[:-1, ind])
                 return_batch.append(returns[:-1, ind])
                 masks_batch.append(masks[:-1, ind])
@@ -909,8 +907,8 @@ class ReplayData(object):
                 critic_obs_batch = np.stack(critic_obs_batch, 1)
                 policy_obs_batch = np.stack(policy_obs_batch, 1)
             actions_batch = np.stack(actions_batch, 1)
-            if self.available_actions is not None:
-                available_actions_batch = np.stack(available_actions_batch, 1)
+            if self.action_masks is not None:
+                action_masks_batch = np.stack(action_masks_batch, 1)
             value_preds_batch = np.stack(value_preds_batch, 1)
             return_batch = np.stack(return_batch, 1)
             masks_batch = np.stack(masks_batch, 1)
@@ -936,10 +934,10 @@ class ReplayData(object):
                 critic_obs_batch = _flatten(T, N, critic_obs_batch)
                 policy_obs_batch = _flatten(T, N, policy_obs_batch)
             actions_batch = _flatten(T, N, actions_batch)
-            if self.available_actions is not None:
-                available_actions_batch = _flatten(T, N, available_actions_batch)
+            if self.action_masks is not None:
+                action_masks_batch = _flatten(T, N, action_masks_batch)
             else:
-                available_actions_batch = None
+                action_masks_batch = None
             value_preds_batch = _flatten(T, N, value_preds_batch)
             return_batch = _flatten(T, N, return_batch)
             masks_batch = _flatten(T, N, masks_batch)
@@ -947,7 +945,7 @@ class ReplayData(object):
             old_action_log_probs_batch = _flatten(T, N, old_action_log_probs_batch)
             adv_targ = _flatten(T, N, adv_targ)
 
-            yield critic_obs_batch, policy_obs_batch, rnn_states_batch, rnn_states_critic_batch, actions_batch, value_preds_batch, return_batch, masks_batch, active_masks_batch, old_action_log_probs_batch, adv_targ, available_actions_batch
+            yield critic_obs_batch, policy_obs_batch, rnn_states_batch, rnn_states_critic_batch, actions_batch, value_preds_batch, return_batch, masks_batch, active_masks_batch, old_action_log_probs_batch, adv_targ, action_masks_batch
 
     def recurrent_generator_v2(
         self, advantages, num_mini_batch=None, mini_batch_size=None
@@ -996,9 +994,9 @@ class ReplayData(object):
 
         actions = self.actions.reshape(-1, *self.actions.shape[2:])
 
-        if self.available_actions is not None:
-            available_actions = self.available_actions[:-1].reshape(
-                -1, *self.available_actions.shape[2:]
+        if self.action_masks is not None:
+            action_masks = self.action_masks[:-1].reshape(
+                -1, *self.action_masks.shape[2:]
             )
 
         value_preds = self.value_preds[:-1].reshape(-1, *self.value_preds.shape[2:])
@@ -1019,8 +1017,8 @@ class ReplayData(object):
         if shuffle:
             rows, cols = _shuffle_agent_grid(batch_size, num_agents)
 
-            if self.available_actions is not None:
-                available_actions = available_actions[rows, cols]
+            if self.action_masks is not None:
+                action_masks = action_masks[rows, cols]
             critic_obs = critic_obs[rows, cols]
             policy_obs = policy_obs[rows, cols]
             rnn_states = rnn_states[rows, cols]
@@ -1042,12 +1040,12 @@ class ReplayData(object):
                 -1, *rnn_states_critic.shape[2:]
             )
             actions_batch = actions[indices].reshape(-1, *actions.shape[2:])
-            if self.available_actions is not None:
-                available_actions_batch = available_actions[indices].reshape(
-                    -1, *available_actions.shape[2:]
+            if self.action_masks is not None:
+                action_masks_batch = action_masks[indices].reshape(
+                    -1, *action_masks.shape[2:]
                 )
             else:
-                available_actions_batch = None
+                action_masks_batch = None
             value_preds_batch = value_preds[indices].reshape(-1, *value_preds.shape[2:])
             return_batch = returns[indices].reshape(-1, *returns.shape[2:])
             masks_batch = masks[indices].reshape(-1, *masks.shape[2:])
@@ -1061,7 +1059,7 @@ class ReplayData(object):
                 adv_targ = None
             else:
                 adv_targ = advantages[indices].reshape(-1, *advantages.shape[2:])
-            yield critic_obs_batch, policy_obs_batch, rnn_states_batch, rnn_states_critic_batch, actions_batch, value_preds_batch, return_batch, masks_batch, active_masks_batch, old_action_log_probs_batch, adv_targ, available_actions_batch
+            yield critic_obs_batch, policy_obs_batch, rnn_states_batch, rnn_states_critic_batch, actions_batch, value_preds_batch, return_batch, masks_batch, active_masks_batch, old_action_log_probs_batch, adv_targ, action_masks_batch
 
     def recurrent_generator(self, advantages, num_mini_batch, data_chunk_length):
         episode_length, n_rollout_threads, num_agents = self.rewards.shape[0:3]
@@ -1153,8 +1151,8 @@ class ReplayData(object):
             .reshape(-1, *self.rnn_states_critic.shape[3:])
         )
 
-        if self.available_actions is not None:
-            available_actions = _cast(self.available_actions[:-1])
+        if self.action_masks is not None:
+            action_masks = _cast(self.action_masks[:-1])
 
         for indices in sampler:
             if self._mixed_obs:
@@ -1167,7 +1165,7 @@ class ReplayData(object):
             rnn_states_batch = []
             rnn_states_critic_batch = []
             actions_batch = []
-            available_actions_batch = []
+            action_masks_batch = []
             value_preds_batch = []
             return_batch = []
             masks_batch = []
@@ -1192,9 +1190,9 @@ class ReplayData(object):
                     policy_obs_batch.append(policy_obs[ind : ind + data_chunk_length])
 
                 actions_batch.append(actions[ind : ind + data_chunk_length])
-                if self.available_actions is not None:
-                    available_actions_batch.append(
-                        available_actions[ind : ind + data_chunk_length]
+                if self.action_masks is not None:
+                    action_masks_batch.append(
+                        action_masks[ind : ind + data_chunk_length]
                     )
                 value_preds_batch.append(value_preds[ind : ind + data_chunk_length])
                 return_batch.append(returns[ind : ind + data_chunk_length])
@@ -1221,8 +1219,8 @@ class ReplayData(object):
                 policy_obs_batch = np.stack(policy_obs_batch, axis=1)
 
             actions_batch = np.stack(actions_batch, axis=1)
-            if self.available_actions is not None:
-                available_actions_batch = np.stack(available_actions_batch, axis=1)
+            if self.action_masks is not None:
+                action_masks_batch = np.stack(action_masks_batch, axis=1)
             value_preds_batch = np.stack(value_preds_batch, axis=1)
             return_batch = np.stack(return_batch, axis=1)
             masks_batch = np.stack(masks_batch, axis=1)
@@ -1248,10 +1246,10 @@ class ReplayData(object):
                 critic_obs_batch = _flatten(L, N, critic_obs_batch)
                 policy_obs_batch = _flatten(L, N, policy_obs_batch)
             actions_batch = _flatten(L, N, actions_batch)
-            if self.available_actions is not None:
-                available_actions_batch = _flatten(L, N, available_actions_batch)
+            if self.action_masks is not None:
+                action_masks_batch = _flatten(L, N, action_masks_batch)
             else:
-                available_actions_batch = None
+                action_masks_batch = None
             value_preds_batch = _flatten(L, N, value_preds_batch)
             return_batch = _flatten(L, N, return_batch)
             masks_batch = _flatten(L, N, masks_batch)
@@ -1259,4 +1257,4 @@ class ReplayData(object):
             old_action_log_probs_batch = _flatten(L, N, old_action_log_probs_batch)
             adv_targ = _flatten(L, N, adv_targ)
 
-            yield critic_obs_batch, policy_obs_batch, rnn_states_batch, rnn_states_critic_batch, actions_batch, value_preds_batch, return_batch, masks_batch, active_masks_batch, old_action_log_probs_batch, adv_targ, available_actions_batch
+            yield critic_obs_batch, policy_obs_batch, rnn_states_batch, rnn_states_critic_batch, actions_batch, value_preds_batch, return_batch, masks_batch, active_masks_batch, old_action_log_probs_batch, adv_targ, action_masks_batch

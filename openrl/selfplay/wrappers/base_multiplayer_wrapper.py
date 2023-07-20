@@ -19,6 +19,9 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
+import numpy as np
+from gymnasium.utils import seeding
+
 from openrl.envs.wrappers.base_wrapper import BaseWrapper
 
 
@@ -26,6 +29,8 @@ class BaseMultiPlayerWrapper(BaseWrapper, ABC):
     """
     Base class for multi-player wrappers.
     """
+
+    _np_random: Optional[np.random.Generator] = None
 
     @abstractmethod
     def step(self, action):
@@ -46,3 +51,14 @@ class BaseMultiPlayerWrapper(BaseWrapper, ABC):
 
     def close(self):
         self.env.close()
+
+    @property
+    def np_random(self) -> np.random.Generator:
+        """Returns the environment's internal :attr:`_np_random` that if not set will initialise with a random seed.
+
+        Returns:
+            Instances of `np.random.Generator`
+        """
+        if self._np_random is None:
+            self._np_random, _ = seeding.np_random()
+        return self._np_random
