@@ -18,7 +18,7 @@
 import torch
 import torch.nn as nn
 
-from openrl.buffers.utils.util import get_critic_obs_space, get_shape_from_obs_space_v2
+from openrl.buffers.utils.util import get_critic_obs_space
 from openrl.modules.networks.base_value_network import BaseValueNetwork
 from openrl.modules.networks.utils.cnn import CNNBase
 from openrl.modules.networks.utils.mix import MIXBase
@@ -92,7 +92,7 @@ class QNetwork(BaseValueNetwork):
             self.half()
         self.to(device)
 
-    def forward(self, obs, rnn_states, masks, available_actions=None):
+    def forward(self, obs, rnn_states, masks, action_masks=None):
         if self._mixed_obs:
             for key in obs.keys():
                 obs[key] = check(obs[key]).to(**self.tpdv)
@@ -108,7 +108,7 @@ class QNetwork(BaseValueNetwork):
 
         q_values = self.q_out(features)
         # todo
-        # if available_actions is not None:
-        #     q_values[available_actions == 0] = -1e10
+        # if action_masks is not None:
+        #     q_values[action_masks == 0] = -1e10
 
         return q_values, rnn_states

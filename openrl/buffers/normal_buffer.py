@@ -34,8 +34,8 @@ class NormalReplayBuffer(object):
             episode_length,
         )
 
-    def init_buffer(self, raw_obs, available_actions=None):
-        self.data.init_buffer(raw_obs, available_actions)
+    def init_buffer(self, raw_obs, action_masks=None):
+        self.data.init_buffer(raw_obs, action_masks)
 
     def insert(
         self,
@@ -49,7 +49,7 @@ class NormalReplayBuffer(object):
         masks,
         bad_masks=None,
         active_masks=None,
-        available_actions=None,
+        action_masks=None,
     ):
         self.data.insert(
             raw_obs,
@@ -62,7 +62,7 @@ class NormalReplayBuffer(object):
             masks,
             bad_masks,
             active_masks,
-            available_actions,
+            action_masks,
         )
 
     def after_update(self):

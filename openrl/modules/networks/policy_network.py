@@ -125,7 +125,7 @@ class PolicyNetwork(BasePolicyNetwork):
             raise NotImplementedError
 
     def forward_original(
-        self, raw_obs, rnn_states, masks, available_actions=None, deterministic=False
+        self, raw_obs, rnn_states, masks, action_masks=None, deterministic=False
     ):
         policy_obs = get_policy_obs(raw_obs)
         if self._mixed_obs:
@@ -140,8 +140,8 @@ class PolicyNetwork(BasePolicyNetwork):
         rnn_states = check(rnn_states, self.use_half, self.tpdv)
         masks = check(masks, self.use_half, self.tpdv)
 
-        if available_actions is not None:
-            available_actions = check(available_actions, self.use_half, self.tpdv)
+        if action_masks is not None:
+            action_masks = check(action_masks, self.use_half, self.tpdv)
 
         actor_features = self.base(policy_obs)
 
@@ -153,12 +153,12 @@ class PolicyNetwork(BasePolicyNetwork):
             actor_features = torch.cat([actor_features, mlp_obs], dim=1)
 
         actions, action_log_probs = self.act(
-            actor_features, available_actions, deterministic
+            actor_features, action_masks, deterministic
         )
         return actions, action_log_probs, rnn_states
 
     def eval_actions(
-        self, obs, rnn_states, action, masks, available_actions=None, active_masks=None
+        self, obs, rnn_states, action, masks, action_masks=None, active_masks=None
     ):
         if self._mixed_obs:
             for key in obs.keys():
@@ -170,8 +170,8 @@ class PolicyNetwork(BasePolicyNetwork):
         action = check(action, self.use_half, self.tpdv)
         masks = check(masks, self.use_half, self.tpdv)
 
-        if available_actions is not None:
-            available_actions = check(available_actions, self.use_half, self.tpdv)
+        if action_masks is not None:
+            action_masks = check(action_masks, self.use_half, self.tpdv)
 
         if active_masks is not None:
             active_masks = check(active_masks, self.use_half, self.tpdv)
@@ -188,7 +188,7 @@ class PolicyNetwork(BasePolicyNetwork):
         action_log_probs, dist_entropy = self.act.evaluate_actions(
             actor_features,
             action,
-            available_actions,
+            action_masks,
             active_masks=active_masks if self._use_policy_active_masks else None,
         )
 

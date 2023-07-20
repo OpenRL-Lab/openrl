@@ -30,7 +30,6 @@ from openrl.runners.common.base_agent import SelfAgent
 from openrl.runners.common.rl_agent import RLAgent
 from openrl.utils.logger import Logger
 from openrl.utils.type_aliases import MaybeCallback
-from openrl.utils.util import _t2n
 
 
 class DQNAgent(RLAgent):

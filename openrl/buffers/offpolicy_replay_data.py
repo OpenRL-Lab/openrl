@@ -16,14 +16,10 @@
 
 """"""
 
-from collections import defaultdict
-
 import numpy as np
-import torch
 from torch.utils.data.sampler import BatchSampler, SubsetRandomSampler
 
 from openrl.buffers.replay_data import ReplayData
-from openrl.buffers.utils.obs_data import ObsData
 from openrl.buffers.utils.util import (
     get_critic_obs,
     get_critic_obs_space,
@@ -141,8 +137,8 @@ class OffPolicyReplayData(ReplayData):
             self.bad_masks[self.step + 1] = data["bad_masks"].copy()
         if "active_masks" in data:
             self.active_masks[self.step + 1] = data["active_masks"].copy()
-        if "available_actions" in data:
-            self.available_actions[self.step + 1] = data["available_actions"].copy()
+        if "action_masks" in data:
+            self.action_masks[self.step + 1] = data["action_masks"].copy()
 
         if (self.step + 1) % self.episode_length != 0:
             self.first_insert_flag = False
@@ -161,7 +157,7 @@ class OffPolicyReplayData(ReplayData):
         masks,
         bad_masks=None,
         active_masks=None,
-        available_actions=None,
+        action_masks=None,
     ):
         critic_obs = get_critic_obs(raw_obs)
         policy_obs = get_policy_obs(raw_obs)
@@ -194,8 +190,8 @@ class OffPolicyReplayData(ReplayData):
             self.bad_masks[self.step + 1] = bad_masks.copy()
         if active_masks is not None:
             self.active_masks[self.step + 1] = active_masks.copy()
-        if available_actions is not None:
-            self.available_actions[self.step + 1] = available_actions.copy()
+        if action_masks is not None:
+            self.action_masks[self.step + 1] = action_masks.copy()
 
         # if (self.step + 1) % self.episode_length != 0:
         #     self.first_insert_flag = False
@@ -222,8 +218,8 @@ class OffPolicyReplayData(ReplayData):
         self.masks[0] = self.masks[-1].copy()
         self.bad_masks[0] = self.bad_masks[-1].copy()
         self.active_masks[0] = self.active_masks[-1].copy()
-        if self.available_actions is not None:
-            self.available_actions[0] = self.available_actions[-1].copy()
+        if self.action_masks is not None:
+            self.action_masks[0] = self.action_masks[-1].copy()
 
     def feed_forward_generator(
         self,
@@ -297,9 +293,9 @@ class OffPolicyReplayData(ReplayData):
             -1, *self.rnn_states_critic.shape[3:]
         )
         actions = self.actions.reshape(-1, self.actions.shape[-1])
-        if self.available_actions is not None:
-            available_actions = self.available_actions[:-1].reshape(
-                -1, self.available_actions.shape[-1]
+        if self.action_masks is not None:
+            action_masks = self.action_masks[:-1].reshape(
+                -1, self.action_masks.shape[-1]
             )
         value_preds = self.value_preds[:-1].reshape(-1, self.act_space)
         rewards = self.rewards.reshape(-1, 1)
@@ -335,10 +331,10 @@ class OffPolicyReplayData(ReplayData):
             rnn_states_batch = rnn_states[indices]
             rnn_states_critic_batch = rnn_states_critic[indices]
             actions_batch = actions[indices]
-            if self.available_actions is not None:
-                available_actions_batch = available_actions[indices]
+            if self.action_masks is not None:
+                action_masks_batch = action_masks[indices]
             else:
-                available_actions_batch = None
+                action_masks_batch = None
             value_preds_batch = value_preds[indices]
             rewards_batch = rewards[indices]
             masks_batch = masks[indices]
@@ -351,7 +347,7 @@ class OffPolicyReplayData(ReplayData):
             if critic_obs_process_func is not None:
                 critic_obs_batch = critic_obs_process_func(critic_obs_batch)
 
-            yield critic_obs_batch, policy_obs_batch, next_critic_obs_batch, next_policy_obs_batch, rnn_states_batch, rnn_states_critic_batch, actions_batch, value_preds_batch, rewards_batch, masks_batch, active_masks_batch, old_action_log_probs_batch, adv_targ, available_actions_batch
+            yield critic_obs_batch, policy_obs_batch, next_critic_obs_batch, next_policy_obs_batch, rnn_states_batch, rnn_states_critic_batch, actions_batch, value_preds_batch, rewards_batch, masks_batch, active_masks_batch, old_action_log_probs_batch, adv_targ, action_masks_batch
 
     def feed_forward_generator_old(
         self,
@@ -420,9 +416,9 @@ class OffPolicyReplayData(ReplayData):
             -1, *self.rnn_states_critic.shape[3:]
         )
         actions = self.actions.reshape(-1, self.actions.shape[-1])
-        if self.available_actions is not None:
-            available_actions = self.available_actions[:-1].reshape(
-                -1, self.available_actions.shape[-1]
+        if self.action_masks is not None:
+            action_masks = self.action_masks[:-1].reshape(
+                -1, self.action_masks.shape[-1]
             )
         value_preds = self.value_preds[:-1].reshape(-1, self.act_space)
         rewards = self.rewards.reshape(-1, 1)
@@ -458,10 +454,10 @@ class OffPolicyReplayData(ReplayData):
             rnn_states_batch = rnn_states[indices]
             rnn_states_critic_batch = rnn_states_critic[indices]
             actions_batch = actions[indices]
-            if self.available_actions is not None:
-                available_actions_batch = available_actions[indices]
+            if self.action_masks is not None:
+                action_masks_batch = action_masks[indices]
             else:
-                available_actions_batch = None
+                action_masks_batch = None
             value_preds_batch = value_preds[indices]
             rewards_batch = rewards[indices]
             masks_batch = masks[indices]
@@ -474,4 +470,4 @@ class OffPolicyReplayData(ReplayData):
             if critic_obs_process_func is not None:
                 critic_obs_batch = critic_obs_process_func(critic_obs_batch)
 
-            yield critic_obs_batch, policy_obs_batch, next_critic_obs_batch, next_policy_obs_batch, rnn_states_batch, rnn_states_critic_batch, actions_batch, value_preds_batch, rewards_batch, masks_batch, active_masks_batch, old_action_log_probs_batch, adv_targ, available_actions_batch
+            yield critic_obs_batch, policy_obs_batch, next_critic_obs_batch, next_policy_obs_batch, rnn_states_batch, rnn_states_critic_batch, actions_batch, value_preds_batch, rewards_batch, masks_batch, active_masks_batch, old_action_log_probs_batch, adv_targ, action_masks_batch

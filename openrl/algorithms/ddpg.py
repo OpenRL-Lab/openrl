@@ -18,14 +18,12 @@
 
 from typing import Union
 
-import numpy as np
 import torch
-import torch.nn as nn
 import torch.nn.functional as F
 
 from openrl.algorithms.base_algorithm import BaseAlgorithm
 from openrl.modules.networks.utils.distributed_utils import reduce_tensor
-from openrl.modules.utils.util import get_gard_norm, huber_loss, mse_loss
+from openrl.modules.utils.util import get_gard_norm
 from openrl.utils.util import check
 
 
@@ -49,7 +47,7 @@ class DDPGAlgorithm(BaseAlgorithm):
         rnn_states_batch,
         actions_batch,
         masks_batch,
-        available_actions_batch,
+        action_masks_batch,
         value_preds_batch,
         rewards_batch,
         active_masks_batch,
@@ -62,7 +60,7 @@ class DDPGAlgorithm(BaseAlgorithm):
             rewards_batch,
             actions_batch,
             masks_batch,
-            available_actions_batch,
+            action_masks_batch,
             active_masks_batch,
         )
         target_q_values = (rewards_batch + self.gamma * target_q_values).detach()
@@ -77,7 +75,7 @@ class DDPGAlgorithm(BaseAlgorithm):
         rnn_states_batch,
         actions_batch,
         masks_batch,
-        available_actions_batch,
+        action_masks_batch,
         value_preds_batch,
         rewards_batch,
         active_masks_batch,
@@ -90,7 +88,7 @@ class DDPGAlgorithm(BaseAlgorithm):
             rewards_batch,
             actions_batch,
             masks_batch,
-            available_actions_batch,
+            action_masks_batch,
             active_masks_batch,
         )
 
@@ -111,7 +109,7 @@ class DDPGAlgorithm(BaseAlgorithm):
             active_masks_batch,
             old_action_log_probs_batch,
             adv_targ,
-            available_actions_batch,
+            action_masks_batch,
         ) = sample
 
         value_preds_batch = check(value_preds_batch).to(**self.tpdv)
@@ -129,7 +127,7 @@ class DDPGAlgorithm(BaseAlgorithm):
                     rnn_states_batch,
                     actions_batch,
                     masks_batch,
-                    available_actions_batch,
+                    action_masks_batch,
                     value_preds_batch,
                     rewards_batch,
                     active_masks_batch,
@@ -143,7 +141,7 @@ class DDPGAlgorithm(BaseAlgorithm):
                 rnn_states_batch,
                 actions_batch,
                 masks_batch,
-                available_actions_batch,
+                action_masks_batch,
                 value_preds_batch,
                 rewards_batch,
                 active_masks_batch,
@@ -175,7 +173,7 @@ class DDPGAlgorithm(BaseAlgorithm):
                     rnn_states_batch,
                     actions_batch,
                     masks_batch,
-                    available_actions_batch,
+                    action_masks_batch,
                     value_preds_batch,
                     rewards_batch,
                     active_masks_batch,
@@ -189,7 +187,7 @@ class DDPGAlgorithm(BaseAlgorithm):
                 rnn_states_batch,
                 actions_batch,
                 masks_batch,
-                available_actions_batch,
+                action_masks_batch,
                 value_preds_batch,
                 rewards_batch,
                 active_masks_batch,

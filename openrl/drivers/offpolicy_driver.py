@@ -20,7 +20,6 @@ from typing import Any, Dict, Optional
 
 import numpy as np
 import torch
-from torch.nn.parallel import DistributedDataParallel
 
 from openrl.drivers.rl_driver import RLDriver
 from openrl.utils.logger import Logger
@@ -204,7 +203,7 @@ class OffPolicyDriver(RLDriver):
                     # print("steps: ", self.episode_steps)
                     self.episode_steps = 0
             else:
-                done_index = list(np.where(dones == True)[0])
+                done_index = list(np.where(dones)[0])
                 self.episode_steps += 1
                 for i in range(len(done_index)):
                     if self.episode_steps[done_index[i]] > 200:

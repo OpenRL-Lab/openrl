@@ -58,7 +58,7 @@ class PPOAlgorithm(BaseAlgorithm):
             active_masks_batch,
             old_action_log_probs_batch,
             adv_targ,
-            available_actions_batch,
+            action_masks_batch,
         ) = sample
 
         old_action_log_probs_batch = check(old_action_log_probs_batch).to(**self.tpdv)
@@ -82,7 +82,7 @@ class PPOAlgorithm(BaseAlgorithm):
                     rnn_states_critic_batch,
                     actions_batch,
                     masks_batch,
-                    available_actions_batch,
+                    action_masks_batch,
                     old_action_log_probs_batch,
                     adv_targ,
                     value_preds_batch,
@@ -100,7 +100,7 @@ class PPOAlgorithm(BaseAlgorithm):
                 rnn_states_critic_batch,
                 actions_batch,
                 masks_batch,
-                available_actions_batch,
+                action_masks_batch,
                 old_action_log_probs_batch,
                 adv_targ,
                 value_preds_batch,
@@ -221,7 +221,7 @@ class PPOAlgorithm(BaseAlgorithm):
         rnn_states_critic_batch,
         actions_batch,
         masks_batch,
-        available_actions_batch,
+        action_masks_batch,
         old_action_log_probs_batch,
         adv_targ,
         value_preds_batch,
@@ -253,7 +253,7 @@ class PPOAlgorithm(BaseAlgorithm):
             rnn_states_critic_batch,
             actions_batch,
             masks_batch,
-            available_actions_batch,
+            action_masks_batch,
             active_masks_batch,
             critic_masks_batch=critic_masks_batch,
         )

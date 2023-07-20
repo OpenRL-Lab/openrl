@@ -77,14 +77,14 @@ class VDNModule(RLModule):
         obs,
         rnn_states,
         masks,
-        available_actions=None,
+        action_masks=None,
     ):
         q_values, rnn_states = self.models["vdn_net"](
             "get_values",
             obs,
             rnn_states,
             masks,
-            available_actions,
+            action_masks,
         )
 
         return q_values, rnn_states
@@ -101,7 +101,7 @@ class VDNModule(RLModule):
         rewards_batch,
         actions_batch,
         masks,
-        available_actions=None,
+        action_masks=None,
         masks_batch=None,
         critic_masks_batch=None,
     ):
@@ -114,7 +114,7 @@ class VDNModule(RLModule):
             rnn_states_batch,
             actions_batch,
             masks_batch,
-            available_actions,
+            action_masks,
         )
 
         max_next_q_tot = self.models["target_vdn_net"](
@@ -123,12 +123,12 @@ class VDNModule(RLModule):
             rnn_states_batch,
             actions_batch,
             masks_batch,
-            available_actions,
+            action_masks,
         )
 
         return q_tot, max_next_q_tot
 
-    def act(self, obs, rnn_states_actor, masks, available_actions=None):
+    def act(self, obs, rnn_states_actor, masks, action_masks=None):
         model = self.models["vdn_net"]
 
         q_values, rnn_states_actor = model(
@@ -136,7 +136,7 @@ class VDNModule(RLModule):
             obs,
             rnn_states_actor,
             masks,
-            available_actions,
+            action_masks,
         )
 
         return q_values, rnn_states_actor

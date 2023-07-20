@@ -217,7 +217,7 @@ def _create_empty_array_custom(space, n=1, agent_num=1, fn=np.zeros):
 
 @singledispatch
 def single_random_action(
-    space: Space, available_action: Optional[Union[List[int], np.ndarray]] = None
+    space: Space, action_mask: Optional[Union[List[int], np.ndarray]] = None
 ) -> Union[tuple, dict, np.ndarray]:
     raise ValueError(
         f"Space of type `{type(space)}` is not a valid `gymnasium.Space` instance."
@@ -226,16 +226,18 @@ def single_random_action(
 
 @single_random_action.register(Discrete)
 def _single_random_action_discrete(
-    space, available_action: Optional[Union[List[int], np.ndarray]] = None
+    space, action_mask: Optional[Union[List[int], np.ndarray]] = None
 ):
-    if available_action is not None:
-        if isinstance(available_action, list):
-            available_action = np.array(available_action, dtype=np.int8)
-    return [space.sample(mask=available_action)]
+    if action_mask is not None:
+        print(action_mask)
+
+        if isinstance(action_mask, list):
+            action_mask = np.array(action_mask, dtype=np.int8)
+    return [space.sample(mask=action_mask)]
 
 
 @single_random_action.register(Box)
 def _single_random_action_box(
-    space, available_action: Optional[Union[List[int], np.ndarray]] = None
+    space, action_mask: Optional[Union[List[int], np.ndarray]] = None
 ):
     return space.sample()

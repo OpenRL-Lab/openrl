@@ -28,3 +28,5 @@ toy_all_envs = [
 gridworld_all_envs = ["GridWorldEnv", "GridWorldEnvRandomGoal"]
 
 offline_all_envs = ["OfflineEnv"]
+
+pettingzoo_all_envs = ["tictactoe_v3"]

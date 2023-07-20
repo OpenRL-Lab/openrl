@@ -110,13 +110,13 @@ class PolicyValueNetwork(BaseValuePolicyNetwork):
         self.to(self.device)
 
     def get_actions(
-        self, obs, rnn_states, masks, available_actions=None, deterministic=False
+        self, obs, rnn_states, masks, action_masks=None, deterministic=False
     ):
         obs = check(obs, self.use_half, self.tpdv)
         rnn_states = check(rnn_states, self.use_half, self.tpdv)
         masks = check(masks, self.use_half, self.tpdv)
-        if available_actions is not None:
-            available_actions = check(available_actions, self.use_half, self.tpdv)
+        if action_masks is not None:
+            action_masks = check(action_masks, self.use_half, self.tpdv)
 
         x = obs
         x = self.obs_prep(x)
@@ -127,20 +127,20 @@ class PolicyValueNetwork(BaseValuePolicyNetwork):
             actor_features, rnn_states = self.rnn(actor_features, rnn_states, masks)
 
         actions, action_log_probs = self.act(
-            actor_features, available_actions, deterministic
+            actor_features, action_masks, deterministic
         )
 
         return actions, action_log_probs, rnn_states
 
     def eval_actions(
-        self, obs, rnn_states, action, masks, available_actions, active_masks=None
+        self, obs, rnn_states, action, masks, action_masks, active_masks=None
     ):
         obs = check(obs, self.use_half, self.tpdv)
         rnn_states = check(rnn_states, self.use_half, self.tpdv)
         action = check(action, self.use_half, self.tpdv)
         masks = check(masks, self.use_half, self.tpdv)
-        if available_actions is not None:
-            available_actions = check(available_actions, self.use_half, self.tpdv)
+        if action_masks is not None:
+            action_masks = check(action_masks, self.use_half, self.tpdv)
         if active_masks is not None:
             active_masks = check(active_masks, self.use_half, self.tpdv)
 
@@ -152,7 +152,7 @@ class PolicyValueNetwork(BaseValuePolicyNetwork):
             actor_features, rnn_states = self.rnn(actor_features, rnn_states, masks)
 
         action_log_probs, dist_entropy = self.act.evaluate_actions(
-            actor_features, action, available_actions, active_masks
+            actor_features, action, action_masks, active_masks
         )
 
         return action_log_probs, dist_entropy, None

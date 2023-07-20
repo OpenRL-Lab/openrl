@@ -15,7 +15,7 @@
 # limitations under the License.
 
 """"""
-import copy
+
 import pickle
 
 import numpy as np
