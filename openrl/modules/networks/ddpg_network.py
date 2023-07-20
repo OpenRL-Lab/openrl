@@ -21,11 +21,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from openrl.buffers.utils.util import (
-    get_critic_obs_space,
-    get_policy_obs_space,
-    get_shape_from_obs_space_v2,
-)
+from openrl.buffers.utils.util import get_critic_obs_space, get_policy_obs_space
 from openrl.modules.networks.base_policy_network import BasePolicyNetwork
 from openrl.modules.networks.base_value_network import BaseValueNetwork
 from openrl.modules.networks.utils.cnn import CNNBase
@@ -86,7 +82,7 @@ class ActorNetwork(BasePolicyNetwork):
         elif isinstance(self.action_space, gym.spaces.box.Box):
             self.actor_out = init_(nn.Linear(input_size, action_space.shape[0]))
         else:
-            raise NotImplementedError(f"This type of game has not been implemented.")
+            raise NotImplementedError("This type of game has not been implemented.")
 
         if use_half:
             self.half()
@@ -108,7 +104,7 @@ class ActorNetwork(BasePolicyNetwork):
             features = F.tanh(features)
             action = self.actor_out(features) * self.action_space.high[0]
         else:
-            raise NotImplementedError(f"This type of game has not been implemented.")
+            raise NotImplementedError("This type of game has not been implemented.")
 
         return action
 

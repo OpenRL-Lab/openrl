@@ -321,8 +321,8 @@ def make_polyline(v):
 
 
 def make_capsule(length, width):
-    l, r, t, b = 0, length, width / 2, -width / 2
-    box = make_polygon([(l, b), (l, t), (r, t), (r, b)])
+    left, r, t, b = 0, length, width / 2, -width / 2
+    box = make_polygon([(left, b), (left, t), (r, t), (r, b)])
     circ0 = make_circle(width / 2)
     circ1 = make_circle(width / 2)
     circ1.add_attr(Transform(translation=(length, 0)))

@@ -20,7 +20,8 @@ from openrl.selfplay.wrappers.base_multiplayer_wrapper import BaseMultiPlayerWra
 
 
 class RandomOpponentWrapper(BaseMultiPlayerWrapper):
-    pass
+    def reset(self, seed):
+        self.env.reset()
 
-
-x
+    def step(self, action):
+        return self.env.step(action)

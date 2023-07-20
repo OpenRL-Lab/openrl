@@ -17,7 +17,6 @@
 """"""
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 
 from openrl.buffers.utils.util import get_critic_obs_space
 from openrl.modules.networks.base_value_policy_network import BaseValuePolicyNetwork

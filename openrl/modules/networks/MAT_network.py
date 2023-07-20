@@ -296,7 +296,7 @@ class MultiAgentTransformer(BaseValuePolicyNetwork):
         use_half=False,
         extra_args=None,
     ):
-        assert use_half == False, "half precision not supported for MAT algorithm"
+        assert not use_half, "half precision not supported for MAT algorithm"
         super(MultiAgentTransformer, self).__init__(cfg, device)
 
         obs_dim = get_policy_obs_space(input_space)[0]

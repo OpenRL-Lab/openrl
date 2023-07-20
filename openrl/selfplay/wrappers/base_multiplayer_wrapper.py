@@ -28,6 +28,10 @@ class BaseMultiPlayerWrapper(BaseWrapper, ABC):
     """
 
     @abstractmethod
+    def step(self, action):
+        raise NotImplementedError
+
+    @abstractmethod
     def reset(self, *, seed: Optional[int] = None, **kwargs):
         """
         Reset the environment.
@@ -38,3 +42,7 @@ class BaseMultiPlayerWrapper(BaseWrapper, ABC):
         Returns:
             The initial observation.
         """
+        raise NotImplementedError
+
+    def close(self):
+        self.env.close()

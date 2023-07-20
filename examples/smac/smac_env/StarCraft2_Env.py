@@ -3,7 +3,6 @@ from __future__ import absolute_import, division, print_function
 import atexit
 import enum
 import math
-import random
 from copy import deepcopy
 from operator import attrgetter
 

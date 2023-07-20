@@ -15,7 +15,10 @@
 # limitations under the License.
 
 """"""
+import copy
 from typing import List, Optional, Union
+
+from openrl.envs.common import build_envs
 
 
 def PettingZoo_make(id, render_mode, disable_env_checker, **kwargs):

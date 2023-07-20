@@ -20,7 +20,6 @@ import copy
 import pickle
 
 import numpy as np
-import torch
 from gymnasium.core import ActType
 from tqdm.rich import tqdm
 

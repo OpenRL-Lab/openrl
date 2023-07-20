@@ -18,7 +18,7 @@
 import torch
 import torch.nn as nn
 
-from openrl.buffers.utils.util import get_critic_obs_space, get_shape_from_obs_space_v2
+from openrl.buffers.utils.util import get_critic_obs_space
 from openrl.modules.networks.base_value_network import BaseValueNetwork
 from openrl.modules.networks.utils.cnn import CNNBase
 from openrl.modules.networks.utils.mix import MIXBase

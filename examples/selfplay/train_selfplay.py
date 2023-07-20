@@ -54,7 +54,11 @@ def test_env():
     env_num = 1
     render_model = None
     env = make(
-        "tictactoe_v3", render_mode=render_model, env_num=env_num, asynchronous=False
+        "tictactoe_v3",
+        render_mode=render_model,
+        env_num=env_num,
+        asynchronous=False,
+        env_wrappers=[RandomOpponentWrapper],
     )
     obs, info = env.reset(seed=1)
     done = False

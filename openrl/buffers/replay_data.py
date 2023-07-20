@@ -428,7 +428,7 @@ class ReplayData(object):
             "PPO requires the nfumber of processes ({}) * episode length ({}) "
             "to be greater than or equal to the number of "
             "data chunk length ({}).".format(
-                n_rollout_threads, num_agents, episode_length, data_chunk_length
+                n_rollout_threads, episode_length, data_chunk_length
             )
         )
 

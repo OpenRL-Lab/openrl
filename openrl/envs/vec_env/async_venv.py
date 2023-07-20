@@ -6,7 +6,7 @@ from copy import deepcopy
 from enum import Enum
 from multiprocessing import Queue
 from multiprocessing.connection import Connection
-from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, Type, Union
+from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, Union
 
 import gymnasium as gym
 import numpy as np
@@ -21,7 +21,7 @@ from gymnasium.error import (
 from gymnasium.vector.utils import CloudpickleWrapper, clear_mpi_env_vars
 from numpy.typing import NDArray
 
-from openrl.envs.vec_env.base_venv import BaseVecEnv, VecEnvIndices
+from openrl.envs.vec_env.base_venv import BaseVecEnv
 from openrl.envs.vec_env.utils.numpy_utils import (
     concatenate,
     create_empty_array,
@@ -32,8 +32,6 @@ from openrl.envs.vec_env.utils.share_memory import (
     read_from_shared_memory,
     write_to_shared_memory,
 )
-from openrl.envs.wrappers.base_wrapper import BaseWrapper
-from openrl.envs.wrappers.util import is_wrapped
 
 
 class AsyncState(Enum):

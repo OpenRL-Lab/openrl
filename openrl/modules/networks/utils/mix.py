@@ -88,8 +88,8 @@ class MIXBase(nn.Module):
 
             def _convert(params):
                 output = []
-                for l in params.split(" "):
-                    output.append(tuple(map(int, l.split(","))))
+                for line in params.split(" "):
+                    output.append(tuple(map(int, line.split(","))))
                 return output
 
             cnn_layers_params = _convert(cnn_layers_params)
