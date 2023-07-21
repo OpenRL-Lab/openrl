@@ -213,6 +213,7 @@ class SyncVectorEnv(BaseVecEnv):
             if need_reset:
                 old_observation, old_info = observation, info
                 observation, info = env.reset()
+                info = deepcopy(info)
                 info["final_observation"] = old_observation
                 info["final_info"] = old_info
 
@@ -271,6 +272,8 @@ class SyncVectorEnv(BaseVecEnv):
     def env_name(self):
         if hasattr(self.envs[0], "env_name"):
             return self.envs[0].env_name
+        elif "name" in self.metadata:
+            self._env_name = self.metadata["name"]
         else:
             return self.envs[0].unwrapped.spec.id
 

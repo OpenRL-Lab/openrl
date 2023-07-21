@@ -69,10 +69,9 @@ class BaseObservationWrapper(BaseWrapper):
     ) -> Tuple[WrapperObsType, SupportsFloat, bool, bool, Dict[str, Any]]:
         """Modifies the :attr:`env` after calling :meth:`step` using :meth:`self.observation` on the returned observations."""
         results = self.env.step(action)
-
         observation = results[0]
-
-        return self.observation(observation), *results[1:]
+        new_obs = self.observation(observation)
+        return new_obs, *results[1:]
 
     def observation(self, observation: ObsType) -> WrapperObsType:
         """Returns a modified observation.

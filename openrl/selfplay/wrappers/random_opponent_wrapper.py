@@ -73,12 +73,12 @@ class RandomOpponentWrapper(BaseMultiPlayerWrapper):
 
     def step(self, action):
         self.env.step(action)
+
         while True:
             for agent in self.env.agent_iter():
                 observation, reward, termination, truncation, info = self.env.last()
                 if self.self_player == agent:
                     return copy.copy(observation), reward, termination, truncation, info
-
                 if termination or truncation:
                     return (
                         copy.copy(self.env.observe(self.self_player)),
