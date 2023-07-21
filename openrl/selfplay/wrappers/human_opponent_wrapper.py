@@ -16,17 +16,14 @@
 
 """"""
 import copy
-from typing import Optional, Union
-
-import numpy as np
-from gymnasium import spaces
-from gymnasium.core import ActType, ObsType, WrapperActType, WrapperObsType
+from typing import Optional
 
 from openrl.selfplay.wrappers.base_multiplayer_wrapper import BaseMultiPlayerWrapper
 
 
-class RandomOpponentWrapper(BaseMultiPlayerWrapper):
+class HumanOpponentWrapper(BaseMultiPlayerWrapper):
     def get_opponent_action(self, agent, observation, termination, truncation, info):
-        mask = observation["action_mask"]
-        action = self.env.action_space(agent).sample(mask)
+        action = self.env.get_human_action(
+            agent, observation, termination, truncation, info
+        )
         return action

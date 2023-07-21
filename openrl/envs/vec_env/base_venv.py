@@ -72,6 +72,7 @@ class BaseVecEnv(
         observation_space: gym.Space,
         action_space: gym.Space,
         render_mode: Optional[str] = None,
+        auto_reset: bool = True,
     ):
         self.parallel_env_num = parallel_env_num
         self.observation_space = observation_space
@@ -79,6 +80,7 @@ class BaseVecEnv(
         self.render_mode = render_mode
         self.closed = False
         self.viewer = None
+        self.auto_reset = auto_reset
 
     def reset(
         self,

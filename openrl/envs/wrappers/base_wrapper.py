@@ -15,7 +15,7 @@
 # limitations under the License.
 
 """"""
-from typing import Any, Dict, Optional, SupportsFloat, Tuple, TypeVar
+from typing import Any, Dict, Optional, SupportsFloat, Tuple, TypeVar, Union
 
 import gymnasium as gym
 from gymnasium.core import ActType, ObsType, WrapperObsType
@@ -54,6 +54,10 @@ class BaseWrapper(gym.Wrapper):
             return self.env.has_auto_reset
         else:
             return False
+
+    def set_render_mode(self, render_mode: Union[None, str]):
+        if hasattr(self.env, "set_render_mode"):
+            self.env.set_render_mode(render_mode)
 
 
 class BaseObservationWrapper(BaseWrapper):

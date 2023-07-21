@@ -52,12 +52,13 @@ class AsyncVectorEnv(BaseVecEnv):
         env_fns: Sequence[Callable[[], Env]],
         observation_space: Optional[gym.Space] = None,
         action_space: Optional[gym.Space] = None,
-        shared_memory: bool = True,  # TODO True,
-        copy: bool = False,
+        shared_memory: bool = False,  # TODO True,
+        copy: bool = True,
         context: Optional[str] = None,
         daemon: bool = True,
         worker: Optional[Callable] = None,
         render_mode: Optional[str] = None,
+        auto_reset: bool = True,
     ):
         """Vectorized environment that runs multiple environments in parallel.
 
@@ -93,6 +94,9 @@ class AsyncVectorEnv(BaseVecEnv):
         self.shared_memory = shared_memory
         self.copy = copy
         dummy_env = env_fns[0]()
+        if hasattr(dummy_env, "set_render_mode"):
+            dummy_env.set_render_mode(None)
+
         self.metadata = dummy_env.metadata
 
         if (observation_space is None) or (action_space is None):
@@ -114,6 +118,7 @@ class AsyncVectorEnv(BaseVecEnv):
             observation_space=observation_space,
             action_space=action_space,
             render_mode=render_mode,
+            auto_reset=auto_reset,
         )
 
         if self.shared_memory:
@@ -166,6 +171,7 @@ class AsyncVectorEnv(BaseVecEnv):
                         parent_pipe,
                         _obs_buffer,
                         self.error_queue,
+                        auto_reset,
                     ),
                 )
 
@@ -729,6 +735,7 @@ def _worker(
     parent_pipe: Connection,
     shared_memory: bool,
     error_queue: Queue,
+    auto_reset: bool = True,
 ):
     env = env_fn()
     observation_space = env.observation_space
@@ -797,7 +804,7 @@ def _worker(
                     raise NotImplementedError(
                         "Step result length can not be {}.".format(result_len)
                     )
-                if need_reset:
+                if need_reset and auto_reset:
                     old_observation, old_info = observation, info
                     observation, info = env.reset()
                     info = deepcopy(info)
