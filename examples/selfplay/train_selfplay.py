@@ -17,7 +17,7 @@ def train():
         "tictactoe_v3",
         render_mode=render_model,
         env_num=env_num,
-        asynchronous=True,
+        asynchronous=False,
         opponent_wrappers=[RandomOpponentWrapper],
         env_wrappers=[FlattenObservation],
     )
@@ -28,7 +28,7 @@ def train():
     # 初始化训练器
     agent = Agent(net)
     # 开始训练
-    agent.train(total_time_steps=5000000)
+    agent.train(total_time_steps=300000)
     env.close()
     agent.save("./ppo_agent/")
     return agent
@@ -96,5 +96,5 @@ def test_env():
 
 if __name__ == "__main__":
     agent = train()
-    evaluation(agent)
+    # evaluation(agent)
     # test_env()

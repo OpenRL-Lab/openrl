@@ -15,6 +15,7 @@
 # limitations under the License.
 
 """"""
+import time
 from copy import deepcopy
 
 import gymnasium as gym
