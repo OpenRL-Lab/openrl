@@ -53,9 +53,6 @@ def test_only_latest_selfplay(config):
     strategy = OnlyLatestSelfplayStrategy(config, 1, 1)
     strategy.get_plist()
     strategy.update_weight(enemy_loses=1)
-    # strategy.update_win_rate(enemy_wins=0,
-    #                          enemy_ties=0,
-    #                          enemy_loses=0)
     strategy.push_newone()
 
 
@@ -64,8 +61,6 @@ def test_weight_selfplay(config):
     strategy = WeightSelfplayStrategy(config, 1, 1)
     strategy.get_plist()
     strategy.update_weight(enemy_loses=1)
-    # strategy.update_win_rate(dones=True,
-    #                          enemy_wins=1)
     strategy.push_newone()
 
 
@@ -74,10 +69,6 @@ def test_win_rate_selfplay(config):
     strategy = WinRateSelfplayStrategy(config, 1, 1)
     strategy.get_plist()
     strategy.update_weight(enemy_loses=1)
-    # strategy.update_win_rate(enemy_wins=1,
-    #                          enemy_ties=1,
-    #                          enemy_loses=1)
-    # strategy.push_newone()
 
 
 @pytest.mark.unittest
@@ -85,9 +76,6 @@ def test_var_exist_enemy_selfplay(config):
     strategy = VarExistEnemySelfplayStrategy(config, 1, 1)
     strategy.get_plist()
     strategy.update_weight(enemy_loses=1)
-    # strategy.update_win_rate(enemy_wins=1,
-    #                          enemy_ties=1,
-    #                          enemy_loses=1)
     strategy.push_newone()
 
 
@@ -96,9 +84,6 @@ def test_weight_exist_enemy_selfplay(config):
     strategy = WeightExistEnemySelfplayStrategy(config, 1, 1)
     strategy.get_plist()
     strategy.update_weight(enemy_loses=1)
-    # strategy.update_win_rate(enemy_wins=1,
-    #                          enemy_ties=1,
-    #                          enemy_loses=1)
     strategy.push_newone()
 
 

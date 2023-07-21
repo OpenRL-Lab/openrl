@@ -15,6 +15,7 @@
 # limitations under the License.
 
 """"""
+import time
 from typing import Any, Dict, Optional, Tuple
 
 import numpy as np
@@ -22,7 +23,7 @@ import torch
 from torch.nn.parallel import DistributedDataParallel
 
 from openrl.drivers.rl_driver import RLDriver
-from openrl.envs.vec_env.utils.util import prepare_available_actions
+from openrl.envs.vec_env.utils.util import prepare_action_masks
 from openrl.utils.logger import Logger
 from openrl.utils.type_aliases import MaybeCallback
 from openrl.utils.util import _t2n
@@ -110,7 +111,7 @@ class OnPolicyDriver(RLDriver):
             (dones_env.sum(), self.num_agents, 1), dtype=np.float32
         )
 
-        available_actions = prepare_available_actions(
+        action_masks = prepare_action_masks(
             infos, agent_num=self.num_agents, as_batch=False
         )
 
@@ -147,7 +148,7 @@ class OnPolicyDriver(RLDriver):
             masks,
             active_masks=active_masks,
             bad_masks=bad_masks,
-            available_actions=available_actions,
+            action_masks=action_masks,
         )
 
     def actor_rollout(self) -> Tuple[Dict[str, Any], bool]:
@@ -250,9 +251,7 @@ class OnPolicyDriver(RLDriver):
             self.buffer.data.get_batch_data("rnn_states", step),
             self.buffer.data.get_batch_data("rnn_states_critic", step),
             self.buffer.data.get_batch_data("masks", step),
-            available_actions=self.buffer.data.get_batch_data(
-                "available_actions", step
-            ),
+            action_masks=self.buffer.data.get_batch_data("action_masks", step),
         )
 
         if value is None:

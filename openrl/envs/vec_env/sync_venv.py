@@ -16,20 +16,19 @@
 
 """"""
 from copy import deepcopy
-from typing import Any, Callable, Iterable, List, Optional, Sequence, Type, Union
+from typing import Any, Callable, Iterable, List, Optional, Sequence, Union
 
 import numpy as np
 from gymnasium import Env
 from gymnasium.core import ActType
 from gymnasium.spaces import Space
 
-from openrl.envs.vec_env.base_venv import BaseVecEnv, VecEnvIndices
+from openrl.envs.vec_env.base_venv import BaseVecEnv
 from openrl.envs.vec_env.utils.numpy_utils import (
     concatenate,
     create_empty_array,
     iterate_action,
 )
-from openrl.envs.wrappers.base_wrapper import BaseWrapper
 
 
 class SyncVectorEnv(BaseVecEnv):
@@ -42,6 +41,7 @@ class SyncVectorEnv(BaseVecEnv):
         action_space: Space = None,
         copy: bool = True,
         render_mode: Optional[str] = None,
+        auto_reset: bool = True,
     ):
         """Vectorized environment that serially runs multiple environments.
 
@@ -71,11 +71,13 @@ class SyncVectorEnv(BaseVecEnv):
         if (observation_space is None) or (action_space is None):
             observation_space = observation_space or self.envs[0].observation_space
             action_space = action_space or self.envs[0].action_space
+
         super().__init__(
             parallel_env_num=len(self.envs),
             observation_space=observation_space,
             action_space=action_space,
             render_mode=render_mode,
+            auto_reset=auto_reset,
         )
 
         self._check_spaces()
@@ -210,9 +212,10 @@ class SyncVectorEnv(BaseVecEnv):
                 ) = returns
                 need_reset = _need_reset and all(self._terminateds[i])
 
-            if need_reset:
+            if need_reset and self.auto_reset:
                 old_observation, old_info = observation, info
                 observation, info = env.reset()
+                info = deepcopy(info)
                 info["final_observation"] = old_observation
                 info["final_info"] = old_info
 
@@ -271,6 +274,8 @@ class SyncVectorEnv(BaseVecEnv):
     def env_name(self):
         if hasattr(self.envs[0], "env_name"):
             return self.envs[0].env_name
+        elif "name" in self.metadata:
+            self._env_name = self.metadata["name"]
         else:
             return self.envs[0].unwrapped.spec.id
 

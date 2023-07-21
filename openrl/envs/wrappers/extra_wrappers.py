@@ -15,15 +15,17 @@
 # limitations under the License.
 
 """"""
+import time
 from copy import deepcopy
-from typing import TypeVar
 
 import gymnasium as gym
 import numpy as np
+from gymnasium import spaces
 from gymnasium.wrappers import AutoResetWrapper, StepAPICompatibility
 
 from openrl.envs.wrappers import BaseObservationWrapper, BaseRewardWrapper, BaseWrapper
 from openrl.envs.wrappers.base_wrapper import ArrayType
+from openrl.envs.wrappers.flatten import flatten
 
 
 class RemoveTruncated(StepAPICompatibility, BaseWrapper):
@@ -33,6 +35,69 @@ class RemoveTruncated(StepAPICompatibility, BaseWrapper):
     ):
         output_truncation_bool = False
         super().__init__(env, output_truncation_bool=output_truncation_bool)
+
+
+class FlattenObservation(BaseObservationWrapper):
+    def __init__(self, env: gym.Env):
+        """Flattens the observations of an environment.
+
+        Args:
+            env: The environment to apply the wrapper
+        """
+        gym.utils.RecordConstructorArgs.__init__(self)
+        BaseObservationWrapper.__init__(self, env)
+
+        self.observation_space = spaces.flatten_space(env.observation_space)
+
+    def observation(self, observation):
+        """Flattens an observation.
+
+        Args:
+            observation: The observation to flatten
+
+        Returns:
+            The flattened observation
+        """
+
+        return flatten(self.env.observation_space, self.agent_num, observation)
+
+
+class MoveActionMask2InfoWrapper(BaseWrapper):
+    def __init__(
+        self,
+        env: gym.Env,
+    ):
+        super().__init__(env)
+        self.need_convert = False
+        if "action_mask" in self.env.observation_space.spaces.keys():
+            self.need_convert = True
+            self.observation_space = self.env.observation_space.spaces["observation"]
+
+    def step(self, action):
+        results = self.env.step(action)
+
+        if self.need_convert:
+            obs = results[0]["observation"]
+            info = results[-1]
+            info["action_masks"] = results[0]["action_mask"]
+            return obs, *results[1:-1], info
+        if "action_mask" in results[-1]:
+            info = results[-1]
+            info["action_masks"] = info["action_mask"]
+            del info["action_mask"]
+            return *results[0:-1], info
+        return results
+
+    def reset(self, **kwargs):
+        obs, info = self.env.reset(**kwargs)
+        if self.need_convert:
+            info["action_masks"] = obs["action_mask"]
+            obs = obs["observation"]
+        else:
+            if "action_mask" in info:
+                info["action_masks"] = info["action_mask"]
+                del info["action_mask"]
+        return obs, info
 
 
 class AutoReset(AutoResetWrapper, BaseWrapper):

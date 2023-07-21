@@ -88,7 +88,7 @@ class DQNNet(BaseNet):
             obs=observation,
             rnn_states_actor=self.rnn_states_actor,
             masks=self.masks,
-            available_actions=None,
+            action_masks=None,
         )
         q_values = np.array(np.split(_t2n(q_values), self.n_rollout_threads))
         actions = q_values.argmax(axis=-1)

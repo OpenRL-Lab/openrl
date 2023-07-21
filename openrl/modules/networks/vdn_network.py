@@ -17,7 +17,6 @@
 """"""
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 
 from openrl.buffers.utils.util import get_critic_obs_space
 from openrl.modules.networks.base_value_policy_network import BaseValuePolicyNetwork
@@ -115,7 +114,7 @@ class VDNNetwork(BaseValuePolicyNetwork):
         raise NotImplementedError
 
     def eval_actions(
-        self, obs, rnn_states, action, masks, available_actions, active_masks=None
+        self, obs, rnn_states, action, masks, action_masks, active_masks=None
     ):
         if self._mixed_obs:
             for key in obs.keys():
@@ -143,7 +142,7 @@ class VDNNetwork(BaseValuePolicyNetwork):
 
         return q_tot_value
 
-    def get_values(self, obs, rnn_states, masks, available_actions=None):
+    def get_values(self, obs, rnn_states, masks, action_masks=None):
         if self._mixed_obs:
             for key in obs.keys():
                 obs[key] = check(obs[key]).to(**self.tpdv)
@@ -159,13 +158,13 @@ class VDNNetwork(BaseValuePolicyNetwork):
 
         q_values = self.q_out(features)
 
-        if available_actions is not None:
-            q_values[available_actions == 0] = -1e10
+        if action_masks is not None:
+            q_values[action_masks == 0] = -1e10
 
         return q_values, rnn_states
 
     def eval_actions_target(
-        self, obs, rnn_states, action, masks, available_actions, active_masks=None
+        self, obs, rnn_states, action, masks, action_masks, active_masks=None
     ):
         if self._mixed_obs:
             for key in obs.keys():
@@ -189,7 +188,7 @@ class VDNNetwork(BaseValuePolicyNetwork):
 
         return q_tot_value
 
-    def eval_values(self, obs, rnn_states, masks, available_actions=None):
+    def eval_values(self, obs, rnn_states, masks, action_masks=None):
         if self._mixed_obs:
             for key in obs.keys():
                 obs[key] = check(obs[key]).to(**self.tpdv)
@@ -206,7 +205,7 @@ class VDNNetwork(BaseValuePolicyNetwork):
 
         q_values = self.q_out(features)
 
-        if available_actions is not None:
-            q_values[available_actions == 0] = -1e10
+        if action_masks is not None:
+            q_values[action_masks == 0] = -1e10
 
         return q_values, rnn_states

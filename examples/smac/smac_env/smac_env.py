@@ -54,10 +54,10 @@ class SMACEnv(gym.Env):
     def reset(self, seed=None, **kwargs):
         if seed is not None:
             self.env.seed(seed)
-        local_obs, global_state, available_actions = self.env.reset()
+        local_obs, global_state, action_masks = self.env.reset()
 
         return {"policy": local_obs, "critic": global_state}, {
-            "available_actions": available_actions
+            "action_masks": action_masks
         }
 
     def step(self, action):
@@ -67,9 +67,9 @@ class SMACEnv(gym.Env):
             rewards,
             dones,
             infos,
-            available_action,
+            action_mask,
         ) = self.env.step(action)
-        infos.update({"available_actions": available_action})
+        infos.update({"action_masks": action_mask})
         return (
             {"policy": local_obs, "critic": global_state},
             rewards,

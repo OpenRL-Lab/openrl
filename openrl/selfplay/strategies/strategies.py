@@ -2,7 +2,7 @@ import json
 
 import numpy as np
 
-from openrl.selfplay.base_strategy import BaseSelfplayStrategy
+from openrl.selfplay.strategies.base_strategy import BaseSelfplayStrategy
 
 
 class SelfplayStrategy(BaseSelfplayStrategy):

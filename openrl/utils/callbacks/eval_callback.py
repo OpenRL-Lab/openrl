@@ -248,7 +248,7 @@ class EvalCallback(EventCallback):
                         os.path.join(self.best_model_save_path, "best_model")
                     )
                     with open(
-                        os.path.join(self.best_model_save_path, f"best_model_info.txt"),
+                        os.path.join(self.best_model_save_path, "best_model_info.txt"),
                         "w",
                     ) as f:
                         f.write(f"best model at step: {self.num_time_steps}\n")

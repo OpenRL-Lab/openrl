@@ -9,8 +9,9 @@ super_mario_all_envs = [
     "SuperMarioBros",
 ]
 
-connect3_all_envs = [
+connect_all_envs = [
     "connect3",
+    "connect4",
 ]
 
 toy_all_envs = [
@@ -27,3 +28,5 @@ toy_all_envs = [
 gridworld_all_envs = ["GridWorldEnv", "GridWorldEnvRandomGoal"]
 
 offline_all_envs = ["OfflineEnv"]
+
+pettingzoo_all_envs = ["tictactoe_v3"]

@@ -15,29 +15,44 @@
 # limitations under the License.
 
 """"""
-from typing import Callable, List, Optional, Union
-
-import gymnasium as gym
-from gymnasium import Env
+import copy
+from typing import List, Optional, Union
 
 from openrl.envs.common import build_envs
-from openrl.envs.connect3.connect3_env import make
 
 
-def make_connect3_envs(
+def PettingZoo_make(id, render_mode, disable_env_checker, **kwargs):
+    if id == "tictactoe_v3":
+        from pettingzoo.classic import tictactoe_v3
+
+        env = tictactoe_v3.env(render_mode=render_mode)
+    else:
+        raise NotImplementedError
+    return env
+
+
+def make_PettingZoo_envs(
     id: str,
     env_num: int = 1,
     render_mode: Optional[Union[str, List[str]]] = None,
     **kwargs,
-) -> List[Callable[[], Env]]:
-    from openrl.envs.wrappers import RemoveTruncated, Single2MultiAgentWrapper
+):
+    from openrl.envs.wrappers import (  # AutoReset,; DictWrapper,
+        MoveActionMask2InfoWrapper,
+        RemoveTruncated,
+        Single2MultiAgentWrapper,
+    )
 
-    env_wrappers = [
+    env_wrappers = copy.copy(kwargs.pop("opponent_wrappers", []))
+    env_wrappers += [
         Single2MultiAgentWrapper,
         RemoveTruncated,
+        MoveActionMask2InfoWrapper,
     ]
+    env_wrappers += copy.copy(kwargs.pop("env_wrappers", []))
+
     env_fns = build_envs(
-        make=make,
+        make=PettingZoo_make,
         id=id,
         env_num=env_num,
         render_mode=render_mode,

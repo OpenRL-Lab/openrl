@@ -6,7 +6,7 @@ from copy import deepcopy
 from enum import Enum
 from multiprocessing import Queue
 from multiprocessing.connection import Connection
-from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, Type, Union
+from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, Union
 
 import gymnasium as gym
 import numpy as np
@@ -21,7 +21,7 @@ from gymnasium.error import (
 from gymnasium.vector.utils import CloudpickleWrapper, clear_mpi_env_vars
 from numpy.typing import NDArray
 
-from openrl.envs.vec_env.base_venv import BaseVecEnv, VecEnvIndices
+from openrl.envs.vec_env.base_venv import BaseVecEnv
 from openrl.envs.vec_env.utils.numpy_utils import (
     concatenate,
     create_empty_array,
@@ -32,8 +32,6 @@ from openrl.envs.vec_env.utils.share_memory import (
     read_from_shared_memory,
     write_to_shared_memory,
 )
-from openrl.envs.wrappers.base_wrapper import BaseWrapper
-from openrl.envs.wrappers.util import is_wrapped
 
 
 class AsyncState(Enum):
@@ -60,6 +58,7 @@ class AsyncVectorEnv(BaseVecEnv):
         daemon: bool = True,
         worker: Optional[Callable] = None,
         render_mode: Optional[str] = None,
+        auto_reset: bool = True,
     ):
         """Vectorized environment that runs multiple environments in parallel.
 
@@ -95,6 +94,9 @@ class AsyncVectorEnv(BaseVecEnv):
         self.shared_memory = shared_memory
         self.copy = copy
         dummy_env = env_fns[0]()
+        if hasattr(dummy_env, "set_render_mode"):
+            dummy_env.set_render_mode(None)
+
         self.metadata = dummy_env.metadata
 
         if (observation_space is None) or (action_space is None):
@@ -104,6 +106,8 @@ class AsyncVectorEnv(BaseVecEnv):
 
         if hasattr(dummy_env, "env_name"):
             self._env_name = dummy_env.env_name
+        elif "name" in self.metadata:
+            self._env_name = self.metadata["name"]
         else:
             self._env_name = dummy_env.unwrapped.spec.id
 
@@ -114,6 +118,7 @@ class AsyncVectorEnv(BaseVecEnv):
             observation_space=observation_space,
             action_space=action_space,
             render_mode=render_mode,
+            auto_reset=auto_reset,
         )
 
         if self.shared_memory:
@@ -166,6 +171,7 @@ class AsyncVectorEnv(BaseVecEnv):
                         parent_pipe,
                         _obs_buffer,
                         self.error_queue,
+                        auto_reset,
                     ),
                 )
 
@@ -354,6 +360,7 @@ class AsyncVectorEnv(BaseVecEnv):
             NoAsyncCallError: If :meth:`step_fetch` was called without any prior call to :meth:`step_send`.
             TimeoutError: If :meth:`step_fetch` timed out.
         """
+
         self._assert_is_running()
         if self._state != AsyncState.WAITING_STEP:
             raise NoAsyncCallError(
@@ -370,8 +377,10 @@ class AsyncVectorEnv(BaseVecEnv):
         observations_list, rewards, terminateds, truncateds, infos = [], [], [], [], []
         result_len = None
         successes = []
+
         for i, pipe in enumerate(self.parent_pipes):
             result, success = pipe.recv()
+
             successes.append(success)
             if success:
                 if result_len is None:
@@ -581,8 +590,8 @@ class AsyncVectorEnv(BaseVecEnv):
         """Calls all parent pipes and waits for the results.
 
         Args:
-            timeout: Number of seconds before the call to `step_fetch` times out.
-                If `None` (default), the call to `step_fetch` never times out.
+            timeout: Number of seconds before the call to `call_fetch` times out.
+                If `None` (default), the call to `call_fetch` never times out.
 
         Returns:
             List of the results of the individual calls to the method or property for each environment.
@@ -641,8 +650,8 @@ class AsyncVectorEnv(BaseVecEnv):
         """Calls all parent pipes and waits for the results.
 
         Args:
-            timeout: Number of seconds before the call to `step_fetch` times out.
-                If `None` (default), the call to `step_fetch` never times out.
+            timeout: Number of seconds before the call to `exec_func_fetch` times out.
+                If `None` (default), the call to `exec_func_fetch` never times out.
 
         Returns:
             List of the results of the individual calls to the method or property for each environment.
@@ -718,16 +727,6 @@ class AsyncVectorEnv(BaseVecEnv):
         _, successes = zip(*[pipe.recv() for pipe in self.parent_pipes])
         self._raise_if_errors(successes)
 
-    # def env_is_wrapped(
-    #     self, wrapper_class: Type[BaseWrapper], indices: VecEnvIndices = None
-    # ) -> List[bool]:
-    #     """Check if worker environments are wrapped with a given wrapper"""
-    #     indices = self._get_indices(indices)
-    #     results = self.exec_func(
-    #         is_wrapped, indices=indices, wrapper_class=wrapper_class
-    #     )
-    #     return [results[i] for i in indices]
-
 
 def _worker(
     index: int,
@@ -736,6 +735,7 @@ def _worker(
     parent_pipe: Connection,
     shared_memory: bool,
     error_queue: Queue,
+    auto_reset: bool = True,
 ):
     env = env_fn()
     observation_space = env.observation_space
@@ -760,6 +760,7 @@ def _worker(
     try:
         while True:
             command, data = pipe.recv()
+
             if command == "reset":
                 result = env.reset(**data)
 
@@ -803,19 +804,22 @@ def _worker(
                     raise NotImplementedError(
                         "Step result length can not be {}.".format(result_len)
                     )
-                if need_reset:
+                if need_reset and auto_reset:
                     old_observation, old_info = observation, info
                     observation, info = env.reset()
+                    info = deepcopy(info)
                     info["final_observation"] = old_observation
                     info["final_info"] = old_info
 
                 observation = prepare_obs(observation)
+
                 if result_len == 4:
                     pipe.send(((observation, reward, terminated, info), True))
                 else:
                     pipe.send(
                         ((observation, reward, terminated, truncated, info), True)
                     )
+
             elif command == "seed":
                 env.seed(data)
                 pipe.send((None, True))

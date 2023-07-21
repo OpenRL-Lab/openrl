@@ -6,7 +6,7 @@ from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 import gym
 import numpy as np
 
-from openrl.envs.vec_env import BaseVecEnv, SyncVectorEnv, is_vecenv_wrapped
+from openrl.envs.vec_env import BaseVecEnv, SyncVectorEnv
 from openrl.utils import type_aliases
 
 

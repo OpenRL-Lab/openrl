@@ -15,10 +15,10 @@
 # limitations under the License.
 
 """"""
-from typing import Any, Dict, SupportsFloat, Tuple, TypeVar
+from typing import Any, Dict, Optional, SupportsFloat, Tuple, TypeVar, Union
 
 import gymnasium as gym
-from gymnasium.core import ActType, ObsType
+from gymnasium.core import ActType, ObsType, WrapperObsType
 
 ArrayType = TypeVar("ArrayType")
 
@@ -55,10 +55,38 @@ class BaseWrapper(gym.Wrapper):
         else:
             return False
 
+    def set_render_mode(self, render_mode: Union[None, str]):
+        if hasattr(self.env, "set_render_mode"):
+            self.env.set_render_mode(render_mode)
 
-class BaseObservationWrapper(BaseWrapper, gym.ObservationWrapper):
-    def __init__(self, env):
-        super().__init__(env)
+
+class BaseObservationWrapper(BaseWrapper):
+    def reset(
+        self, *, seed: Optional[int] = None, options: Optional[Dict[str, Any]] = None
+    ) -> Tuple[WrapperObsType, Dict[str, Any]]:
+        """Modifies the :attr:`env` after calling :meth:`reset`, returning a modified observation using :meth:`self.observation`."""
+        obs, info = self.env.reset(seed=seed, options=options)
+        return self.observation(obs), info
+
+    def step(
+        self, action: ActType
+    ) -> Tuple[WrapperObsType, SupportsFloat, bool, bool, Dict[str, Any]]:
+        """Modifies the :attr:`env` after calling :meth:`step` using :meth:`self.observation` on the returned observations."""
+        results = self.env.step(action)
+        observation = results[0]
+        new_obs = self.observation(observation)
+        return new_obs, *results[1:]
+
+    def observation(self, observation: ObsType) -> WrapperObsType:
+        """Returns a modified observation.
+
+        Args:
+            observation: The :attr:`env` observation
+
+        Returns:
+            The modified observation
+        """
+        raise NotImplementedError
 
 
 class BaseRewardWrapper(BaseWrapper):

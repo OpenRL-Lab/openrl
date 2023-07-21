@@ -39,6 +39,7 @@ def make(
     add_monitor: bool = True,
     render_mode: Optional[str] = None,
     make_custom_envs: Optional[Callable] = None,
+    auto_reset: bool = True,
     **kwargs,
 ) -> BaseVecEnv:
     if render_mode in [None, "human", "rgb_array"]:
@@ -99,10 +100,10 @@ def make(
             env_fns = make_super_mario_envs(
                 id=id, env_num=env_num, render_mode=convert_render_mode, **kwargs
             )
-        elif id in openrl.envs.connect3_all_envs:
-            from openrl.envs.connect3 import make_connect3_envs
+        elif id in openrl.envs.connect_all_envs:
+            from openrl.envs.connect_env import make_connect_envs
 
-            env_fns = make_connect3_envs(
+            env_fns = make_connect_envs(
                 id=id, env_num=env_num, render_mode=convert_render_mode, **kwargs
             )
         elif id in openrl.envs.gridworld_all_envs:
@@ -125,13 +126,19 @@ def make(
                 render_mode=convert_render_mode,
                 **kwargs,
             )
+        elif id in openrl.envs.pettingzoo_all_envs:
+            from openrl.envs.PettingZoo import make_PettingZoo_envs
+
+            env_fns = make_PettingZoo_envs(
+                id=id, env_num=env_num, render_mode=convert_render_mode, **kwargs
+            )
         else:
             raise NotImplementedError(f"env {id} is not supported.")
 
     if asynchronous:
-        env = AsyncVectorEnv(env_fns, render_mode=render_mode)
+        env = AsyncVectorEnv(env_fns, render_mode=render_mode, auto_reset=auto_reset)
     else:
-        env = SyncVectorEnv(env_fns, render_mode=render_mode)
+        env = SyncVectorEnv(env_fns, render_mode=render_mode, auto_reset=auto_reset)
 
     reward_class = cfg.reward_class if cfg else None
     reward_class = RewardFactory.get_reward_class(reward_class, env)

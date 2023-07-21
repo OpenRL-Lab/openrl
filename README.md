@@ -26,16 +26,20 @@
 [![Contributors](https://img.shields.io/github/contributors/OpenRL-Lab/openrl)](https://github.com/OpenRL-Lab/openrl/graphs/contributors)
 [![GitHub license](https://img.shields.io/github/license/OpenRL-Lab/openrl)](https://github.com/OpenRL-Lab/openrl/blob/master/LICENSE)
 
-[![Embark](https://img.shields.io/badge/discord-OpenRL-%237289da.svg?logo=discord)](https://discord.gg/tyy96TGbep)
+[![Embark](https://img.shields.io/badge/discord-OpenRL-%237289da.svg?logo=discord)](https://discord.gg/uHNTPpsJ)
 [![slack badge](https://img.shields.io/badge/Slack-join-blueviolet?logo=slack&amp)](https://join.slack.com/t/openrlhq/shared_invite/zt-1tqwpvthd-Eeh0IxQ~DIaGqYXoW2IUQg)
 
-OpenRL-v0.0.13 is updated on June 21, 2023
+OpenRL-v0.0.14 is updated on July 7, 2023
 
 The main branch is the latest version of OpenRL, which is under active development. If you just want to have a try with OpenRL, you can switch to the stable branch.
 
 ## Welcome to OpenRL
 
 [Documentation](https://openrl-docs.readthedocs.io/en/latest/) | [中文介绍](README_zh.md) |  [中文文档](https://openrl-docs.readthedocs.io/zh/latest/)
+
+<div align="center">
+    Crafting Reinforcement Learning Frameworks with Passion, Your Valuable Insights Welcome.   <br><br>
+</div>
 
 OpenRL is an open-source general reinforcement learning research framework that supports training for various tasks 
 such as single-agent, multi-agent, offline RL, and natural language. 
@@ -90,8 +94,9 @@ Environments currently supported by OpenRL (for more details, please refer to [G
 - [Chat Bot](https://openrl-docs.readthedocs.io/en/latest/quick_start/train_nlp.html)
 - [Atari](https://gymnasium.farama.org/environments/atari/)
 - [StarCraft II](https://github.com/oxwhirl/smac)
+- [PettingZoo](https://pettingzoo.farama.org/)
+- [Omniverse Isaac Gym](https://github.com/NVIDIA-Omniverse/OmniIsaacGymEnvs)
 - [GridWorld](./examples/gridworld/)
-- [Tic-Tac-Toe](https://en.wikipedia.org/wiki/Tic-tac-toe)
 - [Super Mario Bros](https://github.com/Kautenja/gym-super-mario-bros)
 - [Gym Retro](https://github.com/openai/retro)
 

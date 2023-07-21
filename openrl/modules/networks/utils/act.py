@@ -42,7 +42,7 @@ class ACTLayer(nn.Module):
                 ]
             )
 
-    def forward(self, x, available_actions=None, deterministic=False):
+    def forward(self, x, action_masks=None, deterministic=False):
         if self.mixed_action:
             actions = []
             action_log_probs = []
@@ -77,12 +77,12 @@ class ACTLayer(nn.Module):
             action_log_probs = action_logits.log_probs(actions)
 
         else:
-            action_logits = self.action_out(x, available_actions)
+            action_logits = self.action_out(x, action_masks)
             actions = action_logits.mode() if deterministic else action_logits.sample()
             action_log_probs = action_logits.log_probs(actions)
         return actions, action_log_probs
 
-    def get_probs(self, x, available_actions=None):
+    def get_probs(self, x, action_masks=None):
         if self.mixed_action or self.multidiscrete_action:
             action_probs = []
             for action_out in self.action_outs:
@@ -94,13 +94,13 @@ class ACTLayer(nn.Module):
             action_logits = self.action_out(x)
             action_probs = action_logits.probs
         else:
-            action_logits = self.action_out(x, available_actions)
+            action_logits = self.action_out(x, action_masks)
             action_probs = action_logits.probs
 
         return action_probs
 
     def evaluate_actions(
-        self, x, action, available_actions=None, active_masks=None, get_probs=False
+        self, x, action, action_masks=None, active_masks=None, get_probs=False
     ):
         if self.mixed_action:
             a, b = action.split((2, 1), -1)
@@ -158,7 +158,7 @@ class ACTLayer(nn.Module):
                 dist_entropy = act_entropy.mean()
 
         else:
-            action_logits = self.action_out(x, available_actions)
+            action_logits = self.action_out(x, action_masks)
             action_log_probs = action_logits.log_probs(action)
             if active_masks is not None:
                 dist_entropy = (

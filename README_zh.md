@@ -2,6 +2,7 @@
     <a href="https://openrl-docs.readthedocs.io/zh/latest/index.html"><img width="450px" height="auto" src="docs/images/openrl_text.png"></a>
 </div>
 
+
 ---
 [![PyPI](https://img.shields.io/pypi/v/openrl)](https://pypi.org/project/openrl/)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/openrl)
@@ -26,16 +27,20 @@
 [![Contributors](https://img.shields.io/github/contributors/OpenRL-Lab/openrl)](https://github.com/OpenRL-Lab/openrl/graphs/contributors)
 [![GitHub license](https://img.shields.io/github/license/OpenRL-Lab/openrl)](https://github.com/OpenRL-Lab/openrl/blob/master/LICENSE)
 
-[![Embark](https://img.shields.io/badge/discord-OpenRL-%237289da.svg?logo=discord)](https://discord.gg/tyy96TGbep)
+[![Embark](https://img.shields.io/badge/discord-OpenRL-%237289da.svg?logo=discord)](https://discord.gg/uHNTPpsJ)
 [![slack badge](https://img.shields.io/badge/Slack-join-blueviolet?logo=slack&amp)](https://join.slack.com/t/openrlhq/shared_invite/zt-1tqwpvthd-Eeh0IxQ~DIaGqYXoW2IUQg)
 
-OpenRL-v0.0.13 is updated on June 21, 2023
+OpenRL-v0.0.14 is updated on July 7, 2023
 
 The main branch is the latest version of OpenRL, which is under active development. If you just want to have a try with OpenRL, you can switch to the stable branch.
 
 ## 欢迎来到OpenRL
 
 [中文文档](https://openrl-docs.readthedocs.io/zh/latest/) | [English](./README.md)  | [Documentation](https://openrl-docs.readthedocs.io/en/latest/)
+
+<div align="center">
+    用心做好强化学习框架，欢迎提出宝贵意见   <br><br>
+</div>
 
 OpenRL是一个开源的通用强化学习研究框架，支持单智能体、多智能体、离线强化学习、自然语言等多种任务的训练。 OpenRL基于PyTorch进行开发，目标是为强化学习研究社区提供一个简单易用、灵活高效、可持续扩展的平台。
 目前，OpenRL支持的特性包括：
@@ -74,8 +79,9 @@ OpenRL目前支持的环境（更多详情请参考 [Gallery](Gallery.md)）：
 - [Chat Bot](https://openrl-docs.readthedocs.io/en/latest/quick_start/train_nlp.html)
 - [Atari](https://gymnasium.farama.org/environments/atari/)
 - [StarCraft II](https://github.com/oxwhirl/smac)
+- [PettingZoo](https://pettingzoo.farama.org/)
+- [Omniverse Isaac Gym](https://github.com/NVIDIA-Omniverse/OmniIsaacGymEnvs)
 - [GridWorld](./examples/gridworld/)
-- [Tic-Tac-Toe](https://en.wikipedia.org/wiki/Tic-tac-toe)
 - [Super Mario Bros](https://github.com/Kautenja/gym-super-mario-bros)
 - [Gym Retro](https://github.com/openai/retro)
 

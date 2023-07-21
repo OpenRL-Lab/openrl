@@ -62,7 +62,7 @@ class PolicyValueNetworkGPT(CausalLMActorCriticPolicy):
             raise NotImplementedError
 
     def get_actions(
-        self, obs, rnn_states, masks, available_actions=None, deterministic=False
+        self, obs, rnn_states, masks, action_masks=None, deterministic=False
     ):
         for key in obs.keys():
             obs[key] = check(obs[key], self.use_half, self.tpdv)
@@ -79,7 +79,7 @@ class PolicyValueNetworkGPT(CausalLMActorCriticPolicy):
         # TODO: add past_model_kwargs, i.e., past key value.
 
     def eval_actions(
-        self, obs, rnn_states, action, masks, available_actions, active_masks=None
+        self, obs, rnn_states, action, masks, action_masks, active_masks=None
     ):
         for key in obs.keys():
             obs[key] = check(obs[key], self.use_half, self.tpdv)
