@@ -95,7 +95,7 @@ Environments currently supported by OpenRL (for more details, please refer to [G
 - [Atari](https://gymnasium.farama.org/environments/atari/)
 - [StarCraft II](https://github.com/oxwhirl/smac)
 - [PettingZoo](https://pettingzoo.farama.org/)
-- [OmniIsaacGymEnvs](https://github.com/NVIDIA-Omniverse/OmniIsaacGymEnvs)
+- [Omniverse Isaac Gym](https://github.com/NVIDIA-Omniverse/OmniIsaacGymEnvs)
 - [GridWorld](./examples/gridworld/)
 - [Super Mario Bros](https://github.com/Kautenja/gym-super-mario-bros)
 - [Gym Retro](https://github.com/openai/retro)
