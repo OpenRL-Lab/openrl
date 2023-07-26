@@ -23,7 +23,7 @@ import torch.nn.functional as F
 
 from openrl.algorithms.base_algorithm import BaseAlgorithm
 from openrl.modules.networks.utils.distributed_utils import reduce_tensor
-from openrl.modules.utils.util import get_gard_norm
+from openrl.modules.utils.util import get_grad_norm
 from openrl.utils.util import check
 
 
@@ -182,8 +182,8 @@ class SACAlgorithm(BaseAlgorithm):
         else:
             critic_para = self.algo_module.models["critic"].parameters()
             critic_para_2 = self.algo_module.models["critic_2"].parameters()
-            critic_grad_norm = get_gard_norm(critic_para)
-            critic_grad_norm_2 = get_gard_norm(critic_para_2)
+            critic_grad_norm = get_grad_norm(critic_para)
+            critic_grad_norm_2 = get_grad_norm(critic_para_2)
 
         if self.use_amp:
             raise NotImplementedError
@@ -231,7 +231,7 @@ class SACAlgorithm(BaseAlgorithm):
             raise NotImplementedError
         else:
             actor_para = self.algo_module.models["actor"].parameters()
-            actor_grad_norm = get_gard_norm(actor_para)
+            actor_grad_norm = get_grad_norm(actor_para)
 
         if self.use_amp:
             self.algo_module.scaler.unscale_(self.algo_module.optimizers["actor"])

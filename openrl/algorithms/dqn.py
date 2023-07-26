@@ -23,7 +23,7 @@ import torch.nn.functional as F
 
 from openrl.algorithms.base_algorithm import BaseAlgorithm
 from openrl.modules.networks.utils.distributed_utils import reduce_tensor
-from openrl.modules.utils.util import get_gard_norm, huber_loss, mse_loss
+from openrl.modules.utils.util import get_grad_norm, huber_loss, mse_loss
 from openrl.utils.util import check
 
 
@@ -102,7 +102,7 @@ class DQNAlgorithm(BaseAlgorithm):
             raise NotImplementedError
         else:
             actor_para = self.algo_module.models["q_net"].parameters()
-            actor_grad_norm = get_gard_norm(actor_para)
+            actor_grad_norm = get_grad_norm(actor_para)
 
         if self.use_amp:
             for optimizer in self.algo_module.optimizers.values():

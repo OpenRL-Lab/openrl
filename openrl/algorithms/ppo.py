@@ -25,7 +25,7 @@ from torch.nn.parallel import DistributedDataParallel
 
 from openrl.algorithms.base_algorithm import BaseAlgorithm
 from openrl.modules.networks.utils.distributed_utils import reduce_tensor
-from openrl.modules.utils.util import get_gard_norm, huber_loss, mse_loss
+from openrl.modules.utils.util import get_grad_norm, huber_loss, mse_loss
 from openrl.utils.util import check
 
 
@@ -120,7 +120,7 @@ class PPOAlgorithm(BaseAlgorithm):
         if self._use_max_grad_norm:
             actor_grad_norm = nn.utils.clip_grad_norm_(actor_para, self.max_grad_norm)
         else:
-            actor_grad_norm = get_gard_norm(actor_para)
+            actor_grad_norm = get_grad_norm(actor_para)
 
         if self._use_share_model:
             critic_para = self.algo_module.models["model"].get_critic_para()
@@ -130,7 +130,7 @@ class PPOAlgorithm(BaseAlgorithm):
         if self._use_max_grad_norm:
             critic_grad_norm = nn.utils.clip_grad_norm_(critic_para, self.max_grad_norm)
         else:
-            critic_grad_norm = get_gard_norm(critic_para)
+            critic_grad_norm = get_grad_norm(critic_para)
 
         if self.use_amp:
             for optimizer in self.algo_module.optimizers.values():
