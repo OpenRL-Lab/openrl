@@ -991,7 +991,7 @@ def create_config_parser():
         help="Control the exploration variance of the generated actions",
     )
     parser.add_argument(
-        "actor_lr", type=float, default=5e-4, help="The learning rate of actor network"
+        "actor_lr", type=float, default=0.001, help="The learning rate of actor network"
     )
     # for SAC
     parser.add_argument(
