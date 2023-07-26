@@ -90,9 +90,8 @@ class OffPolicyDriver(RLDriver):
 
         if self.episode % self.log_interval == 0:
             # rollout_infos can only be used when env is wrapped with VevMonitor
-            # self.logger.log_info(rollout_infos, step=self.total_num_steps)
-            # self.logger.log_info(train_infos, step=self.total_num_steps)
-            pass
+            self.logger.log_info(rollout_infos, step=self.total_num_steps)
+            self.logger.log_info(train_infos, step=self.total_num_steps)
 
         return True
 
@@ -172,7 +171,7 @@ class OffPolicyDriver(RLDriver):
                 next_obs, rewards, dones, infos = self.envs.step(actions, extra_data)
                 # print("rewards: ", rewards)
 
-            elif self.algorithm_name == "DDPG":
+            elif self.algorithm_name == "DDPG" or "SAC":
                 actions = self.act(step)
                 extra_data = {
                     "step": step,
@@ -188,9 +187,9 @@ class OffPolicyDriver(RLDriver):
 
                 # counter += 1
                 if any(dones):
-                    next_obs = np.array(
-                        [infos[i]["final_observation"] for i in range(len(infos))]
-                    )
+                    for i in range(len(infos)):
+                        if all(dones[i]):
+                            next_obs[i] = infos[i]["final_observation"]
                     # print("运行次数为：%d, 回报为：%.3f, 探索方差为：%.4f" % (counter, ep_reward, self.var))
                     # counter = 0
                     # ep_reward = 0
@@ -290,7 +289,7 @@ class OffPolicyDriver(RLDriver):
                 rnn_states,
             )
 
-        elif self.algorithm_name == "DDPG":
+        elif self.algorithm_name == "DDPG" or self.algorithm_name == "SAC":
             actions = self.trainer.algo_module.get_actions(
                 self.buffer.data.get_batch_data(
                     "next_policy_obs" if step != 0 else "policy_obs", step
