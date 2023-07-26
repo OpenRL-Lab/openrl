@@ -23,7 +23,7 @@ import torch.nn.functional as F
 
 from openrl.algorithms.base_algorithm import BaseAlgorithm
 from openrl.modules.networks.utils.distributed_utils import reduce_tensor
-from openrl.modules.utils.util import get_gard_norm
+from openrl.modules.utils.util import get_grad_norm
 from openrl.utils.util import check
 
 
@@ -63,7 +63,9 @@ class DDPGAlgorithm(BaseAlgorithm):
             action_masks_batch,
             active_masks_batch,
         )
-        target_q_values = (rewards_batch + self.gamma * target_q_values).detach()
+        target_q_values = (
+            rewards_batch + self.gamma * target_q_values * torch.tensor(masks_batch)
+        ).detach()
         critic_loss = F.mse_loss(current_q_values, target_q_values)
 
         return critic_loss
@@ -153,7 +155,7 @@ class DDPGAlgorithm(BaseAlgorithm):
             raise NotImplementedError
         else:
             critic_para = self.algo_module.models["critic"].parameters()
-            critic_grad_norm = get_gard_norm(critic_para)
+            critic_grad_norm = get_grad_norm(critic_para)
 
         if self.use_amp:
             self.algo_module.scaler.unscale_(self.algo_module.optimizers["critic"])
@@ -199,7 +201,7 @@ class DDPGAlgorithm(BaseAlgorithm):
             raise NotImplementedError
         else:
             actor_para = self.algo_module.models["actor"].parameters()
-            actor_grad_norm = get_gard_norm(actor_para)
+            actor_grad_norm = get_grad_norm(actor_para)
 
         if self.use_amp:
             self.algo_module.scaler.unscale_(self.algo_module.optimizers["actor"])
