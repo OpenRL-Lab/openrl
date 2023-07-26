@@ -70,6 +70,7 @@ OpenRL目前支持的算法（更多详情请参考 [Gallery](Gallery.md)）：
 - [Deep Q-Network (DQN)](https://arxiv.org/abs/1312.5602)
 - [Multi-Agent Transformer (MAT)](https://arxiv.org/abs/2205.14953)
 - [Value-Decomposition Network (VDN)](https://arxiv.org/abs/1706.05296)
+- [Soft Actor Critic (SAC)](https://arxiv.org/abs/1812.05905)
 - [Deep Deterministic Policy Gradient (DDPG)](https://arxiv.org/abs/1509.02971)
 
 OpenRL目前支持的环境（更多详情请参考 [Gallery](Gallery.md)）：

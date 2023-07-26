@@ -85,6 +85,7 @@ Algorithms currently supported by OpenRL (for more details, please refer to [Gal
 - [Deep Q-Network (DQN)](https://arxiv.org/abs/1312.5602)
 - [Multi-Agent Transformer (MAT)](https://arxiv.org/abs/2205.14953)
 - [Value-Decomposition Network (VDN)](https://arxiv.org/abs/1706.05296)
+- [Soft Actor Critic (SAC)](https://arxiv.org/abs/1812.05905)
 - [Deep Deterministic Policy Gradient (DDPG)](https://arxiv.org/abs/1509.02971)
 
 Environments currently supported by OpenRL (for more details, please refer to [Gallery](./Gallery.md)):
