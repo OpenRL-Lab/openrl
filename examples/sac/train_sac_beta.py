@@ -39,16 +39,19 @@ def evaluation(agent):
     obs, info = env.reset()
     done = False
     step = 0
+    totoal_reward = 0.0
     while not np.any(done):
         # Based on environmental observation input, predict next action.
         action = agent.act(obs, sample=False)  # sample=False in evaluation
         obs, r, done, info = env.step(action)
         step += 1
+        totoal_reward += np.mean(r)
         if step % 50 == 0:
             print(f"{step}: reward:{np.mean(r)}")
+    print(f"total reward: {totoal_reward}")
     env.close()
 
 
 if __name__ == "__main__":
     agent = train()
-    # evaluation(agent)
+    evaluation(agent)
