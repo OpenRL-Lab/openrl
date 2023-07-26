@@ -173,6 +173,16 @@ class SACModule(RLModule):
         if masks_batch is None:
             masks_batch = masks
 
+        with torch.no_grad():
+            next_action, next_log_prob = self.models["actor"].evaluate(next_obs_batch)
+            # ERROR: rnn and masks are wrong here
+            target_q_values, _ = self.models["critic_target"](
+                next_obs_batch, next_action, rnn_states_batch, masks_batch
+            )
+            target_q_values_2, _ = self.models["critic_target_2"](
+                next_obs_batch, next_action, rnn_states_batch, masks_batch
+            )
+
         current_q_values, _ = self.models["critic"](
             obs_batch, actions_batch, rnn_states_batch, masks_batch
         )
@@ -180,15 +190,6 @@ class SACModule(RLModule):
         current_q_values_2, _ = self.models["critic_2"](
             obs_batch, actions_batch, rnn_states_batch, masks_batch
         )
-
-        with torch.no_grad():
-            next_action, next_log_prob = self.models["actor"].evaluate(next_obs_batch)
-            target_q_values, _ = self.models["critic_target"](
-                next_obs_batch, next_action, rnn_states_batch, masks_batch
-            )
-            target_q_values_2, _ = self.models["critic_target_2"](
-                next_obs_batch, next_action, rnn_states_batch, masks_batch
-            )
 
         return (
             target_q_values,

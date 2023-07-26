@@ -76,12 +76,21 @@ class SACAlgorithm(BaseAlgorithm):
                 torch.min(target_q_values, target_q_values_2)
                 - torch.exp(self.algo_module.log_alpha) * next_log_prob
             )
+            # self.gamma = 1
             q_target = (
                 rewards_batch + self.gamma * torch.tensor(masks_batch) * next_q_values
             )
 
         critic_loss = F.mse_loss(current_q_values, q_target)
         critic_loss_2 = F.mse_loss(current_q_values_2, q_target)
+
+        # print(
+        #     current_q_values[:5].flatten(),
+        #     q_target[:5].flatten(),
+        #     rewards_batch[:5].flatten(),
+        # )
+        # print(current_q_values_2[:5].flatten(), q_target[:5].flatten())
+        # exit()
 
         return critic_loss, critic_loss_2
 

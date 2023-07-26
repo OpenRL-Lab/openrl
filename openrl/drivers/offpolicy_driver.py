@@ -115,7 +115,7 @@ class OffPolicyDriver(RLDriver):
         else:
             pass
 
-        # todo add image obs
+        # # todo add image obs
         if "Dict" in next_obs.__class__.__name__:
             for key in next_obs.keys():
                 next_obs[key][dones] = np.zeros(
@@ -127,7 +127,7 @@ class OffPolicyDriver(RLDriver):
                 (dones.sum(), next_obs.shape[2]),
                 dtype=np.float32,
             )
-            # pass
+        # pass
 
         masks = np.ones((self.n_rollout_threads, self.num_agents, 1), dtype=np.float32)
         masks[dones] = np.zeros((dones.sum(), 1), dtype=np.float32)
