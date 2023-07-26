@@ -63,7 +63,9 @@ class DDPGAlgorithm(BaseAlgorithm):
             action_masks_batch,
             active_masks_batch,
         )
-        target_q_values = (rewards_batch + self.gamma * target_q_values).detach()
+        target_q_values = (
+            rewards_batch + self.gamma * target_q_values * torch.tensor(masks_batch)
+        ).detach()
         critic_loss = F.mse_loss(current_q_values, target_q_values)
 
         return critic_loss
