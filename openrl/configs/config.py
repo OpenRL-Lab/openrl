@@ -657,8 +657,8 @@ def create_config_parser():
     parser.add_argument(
         "--mini_batch_size",
         type=int,
-        default=128,
-        help="number of batches for ppo (default: 1)",
+        default=None,
+        help="batch size (default: 1)",
     )
     parser.add_argument(
         "--policy_value_loss_coef",

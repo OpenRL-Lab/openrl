@@ -85,9 +85,11 @@ class SACNet(BaseNet):
     def act(
         self,
         observation: Union[np.ndarray, Dict[str, np.ndarray]],
-        sample=True,
+        deterministic=True,
     ) -> Tuple[np.ndarray, Optional[Tuple[np.ndarray, ...]]]:
-        actions = self.module.act(observation, sample=sample).detach().numpy()
+        actions = (
+            self.module.act(observation, deterministic=deterministic).detach().numpy()
+        )
         return actions
 
     def reset(self, env: Optional[gym.Env] = None) -> None:

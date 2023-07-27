@@ -172,11 +172,13 @@ class RLAgent(BaseAgent):
         env: Union[gym.Env, str],
     ):
         self.net.reset()
+
         if env is not None:
             self._env = env
             self.env_num = env.parallel_env_num
             self.agent_num = env.agent_num
         env.reset(seed=self._cfg.seed)
+
         self.net.reset(env)
 
     def save(self, path: Union[str, pathlib.Path, io.BufferedIOBase]) -> None:

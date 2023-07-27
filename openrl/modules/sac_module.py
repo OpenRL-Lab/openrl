@@ -124,8 +124,8 @@ class SACModule(RLModule):
             self.optimizers["alpha"], episode, episodes, self.cfg.alpha_lr
         )
 
-    def get_actions(self, obs, sample=True):
-        actions, _ = self.models["actor"].evaluate(obs, sample=sample)
+    def get_actions(self, obs, deterministic=True):
+        actions, _ = self.models["actor"].evaluate(obs, deterministic=deterministic)
 
         return actions
 
@@ -155,7 +155,11 @@ class SACModule(RLModule):
                 0
             ],
         )
-        actor_loss = (torch.exp(self.log_alpha) * log_prob - q_values).mean()
+        # actor_loss = (torch.exp(self.log_alpha) * log_prob - q_values).mean()
+        print(type(action), type(obs_batch))
+        from openrl.utils.util import check_v2 as check
+
+        actor_loss = -((action - check(obs_batch)).pow(2).mean())
 
         return actor_loss, log_prob
 
@@ -203,8 +207,8 @@ class SACModule(RLModule):
         # This function is not required in SAC
         pass
 
-    def act(self, obs, sample=True):
-        actions, _ = self.models["actor"].evaluate(obs, sample=sample)
+    def act(self, obs, deterministic=True):
+        actions, _ = self.models["actor"].evaluate(obs, deterministic=deterministic)
 
         return actions
 

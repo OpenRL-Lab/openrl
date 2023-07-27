@@ -61,7 +61,7 @@ class OffPolicyDriver(RLDriver):
         self.var = config["cfg"].var
         self.obs_space = self.trainer.algo_module.obs_space
         self.act_space = self.trainer.algo_module.act_space
-        self.var_step = self.var / self.num_env_steps
+        self.var_step = self.var / self.num_env_steps if self.num_env_steps > 0 else 0
 
         if self.envs.parallel_env_num > 1:
             self.episode_steps = np.zeros((self.envs.parallel_env_num,))

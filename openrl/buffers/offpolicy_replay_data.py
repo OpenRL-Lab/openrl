@@ -229,12 +229,10 @@ class OffPolicyReplayData(ReplayData):
         critic_obs_process_func=None,
     ):
         episode_length, n_rollout_threads, num_agents = self.rewards.shape[0:3]
-        batch_size = n_rollout_threads * episode_length * num_agents
+        batch_size = n_rollout_threads * (episode_length - 1) * num_agents
 
         if mini_batch_size is None:
-            assert (
-                batch_size >= num_mini_batch
-            ), (
+            assert batch_size >= num_mini_batch, (
                 "DQN requires the number of processes ({}) "
                 "* number of steps ({}) * number of agents ({}) = {} "
                 "to be greater than or equal to the number of DQN mini batches ({})."
@@ -247,12 +245,11 @@ class OffPolicyReplayData(ReplayData):
                 )
             )
             mini_batch_size = batch_size // num_mini_batch
+        # print(batch_size, n_rollout_threads, mini_batch_size)
+        # assert (batch_size - n_rollout_threads) >= mini_batch_size
 
-        assert (batch_size - n_rollout_threads) >= mini_batch_size
         sampler = BatchSampler(
-            SubsetRandomSampler(
-                range(batch_size - n_rollout_threads - (num_agents - 1))
-            ),
+            SubsetRandomSampler(range(batch_size)),
             mini_batch_size,
             drop_last=True,
         )
@@ -323,6 +320,7 @@ class OffPolicyReplayData(ReplayData):
                 for key in next_policy_obs.keys():
                     next_policy_obs_batch[key] = next_policy_obs[key][indices]
             else:
+                print(indices, len(indices), len(critic_obs))
                 critic_obs_batch = critic_obs[indices]
                 policy_obs_batch = policy_obs[indices]
                 next_critic_obs_batch = next_critic_obs[indices]
@@ -360,9 +358,7 @@ class OffPolicyReplayData(ReplayData):
         batch_size = n_rollout_threads * episode_length * num_agents
 
         if mini_batch_size is None:
-            assert (
-                batch_size >= num_mini_batch
-            ), (
+            assert batch_size >= num_mini_batch, (
                 "DQN requires the number of processes ({}) "
                 "* number of steps ({}) * number of agents ({}) = {} "
                 "to be greater than or equal to the number of DQN mini batches ({})."

@@ -59,7 +59,9 @@ class SACActorNetwork(ActorNetwork):
         if isinstance(self.action_space, gym.spaces.box.Box):
             self.actor_out = init_(nn.Linear(input_size, action_space.shape[0] * 2))
         else:
-            raise NotImplementedError(f"This type of game has not been implemented.")
+            raise NotImplementedError(
+                f"This type ({type(self.action_space)}) of game has not been implemented."
+            )
 
         self.log_std_min = log_std_min
         self.log_std_max = log_std_max
@@ -75,6 +77,7 @@ class SACActorNetwork(ActorNetwork):
 
         if isinstance(self.action_space, gym.spaces.box.Box):
             output = self.actor_out(features)
+            # print(output)
             mean, log_std = output.chunk(2, dim=-1)
             log_std = torch.clamp(log_std, self.log_std_min, self.log_std_max)
         else:
@@ -87,16 +90,21 @@ class SACActorNetwork(ActorNetwork):
         Normalize the action value to the action space range.
         the return values of self.fcs is between -1 and 1 since we use tanh as output activation, while we want the action ranges to be (self.action_space.low, self.action_space.high).
         """
+        # print(self.action_space.high, self.action_space.low)
+        # exit()
+        # return action
         action = (action + 1) / 2 * (
             torch.tensor(self.action_space.high) - torch.tensor(self.action_space.low)
         ) + torch.tensor(self.action_space.low)
         return action
 
-    def evaluate(self, obs, sample=True):
+    def evaluate(self, obs, deterministic=True):
         mean, log_std = self.forward(obs)
-        if not sample:
+
+        if deterministic:
             action = torch.tanh(mean)  # add tanh to activate
-            return self._normalize(action), None
+            # action = mean
+            return self._normalize(action), log_std
 
         # sample action from N(mean, std) if sample is True
         # obtain log_prob for policy and Q function update

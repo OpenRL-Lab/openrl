@@ -74,7 +74,7 @@ class SACAlgorithm(BaseAlgorithm):
         with torch.no_grad():
             next_q_values = (
                 torch.min(target_q_values, target_q_values_2)
-                - torch.exp(self.algo_module.log_alpha) * next_log_prob
+                # - torch.exp(self.algo_module.log_alpha) * next_log_prob
             )
             # self.gamma = 1
             q_target = (

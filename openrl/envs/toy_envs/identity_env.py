@@ -17,7 +17,7 @@ class IdentityEnv(gym.Env, Generic[T]):
         self,
         dim: Optional[int] = None,
         space: Optional[spaces.Space] = None,
-        ep_length: int = 100,
+        ep_length: int = 10,
     ):
         """
         Identity environment for testing purposes
@@ -31,14 +31,15 @@ class IdentityEnv(gym.Env, Generic[T]):
         """
         if space is None:
             if dim is None:
-                dim = 1
+                dim = 2
             space = spaces.Discrete(dim)
         else:
             assert (
                 dim is None
             ), "arguments for both 'dim' and 'space' provided: at most one allowed"
 
-        self.action_space = self.observation_space = space
+        self.observation_space = spaces.Discrete(1)
+        self.action_space = space
         self.ep_length = ep_length
         self.current_step = 0
         self.num_resets = -1  # Becomes 0 after __init__ exits.
@@ -69,7 +70,7 @@ class IdentityEnv(gym.Env, Generic[T]):
         self.state = [self.action_space.sample()]
 
     def _get_reward(self, action: T) -> float:
-        return 1.0 if np.all(self.state == action) else 0.0
+        return 0 if np.all(self.state == action) else 1.0
 
     def render(self, mode: str = "human") -> None:
         pass
@@ -82,7 +83,7 @@ class IdentityEnvcontinuous(gym.Env, Generic[T]):
         self,
         dim: Optional[int] = None,
         space: Optional[spaces.Space] = None,
-        ep_length: int = 100,
+        ep_length: int = 10,
     ):
         """
         Identity environment for testing purposes
@@ -96,15 +97,16 @@ class IdentityEnvcontinuous(gym.Env, Generic[T]):
         """
         if space is None:
             if dim is None:
-                dim = 1
+                dim = 2
             space = spaces.Discrete(dim)
         else:
             assert (
                 dim is None
             ), "arguments for both 'dim' and 'space' provided: at most one allowed"
-
-        self.observation_space = space
-        self.action_space = spaces.Box(low=-dim, high=dim, shape=(1,))
+        self.dim = dim
+        self.state_generator = space.sample
+        self.observation_space = spaces.Discrete(1)
+        self.action_space = spaces.Box(low=0, high=dim - 1, shape=(1,))
 
         self.ep_length = ep_length
         self.current_step = 0
@@ -133,10 +135,10 @@ class IdentityEnvcontinuous(gym.Env, Generic[T]):
         return self.state, reward, done, {}
 
     def _choose_next_state(self) -> None:
-        self.state = [self.observation_space.sample()]
+        self.state = [self.state_generator()]
 
     def _get_reward(self, action: T) -> float:
-        r = (self.state - action) ** 2
+        r = (self.state - np.clip(action, a_min=0, a_max=self.dim - 1)) ** 2
         return r
 
     def render(self, mode: str = "human") -> None:
