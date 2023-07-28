@@ -174,7 +174,7 @@ class SACModule(RLModule):
         # actor_loss = (-q_values).mean()
 
         # print(obs_batch.flatten()[:5], action.flatten()[:5])
-        from openrl.utils.util import check_v2 as check
+        # from openrl.utils.util import check_v2 as check
 
         # actor_loss = (
         #     (action.flatten() - check(obs_batch[..., :-1].flatten())).pow(2).mean()

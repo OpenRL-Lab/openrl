@@ -4,6 +4,7 @@ import gymnasium as gym
 import numpy as np
 from gymnasium import spaces
 from gymnasium.envs.registration import EnvSpec
+from gymnasium.utils import seeding
 
 from openrl.utils.type_aliases import GymStepReturn
 
@@ -83,7 +84,7 @@ class IdentityEnvcontinuous(gym.Env, Generic[T]):
         self,
         dim: Optional[int] = None,
         space: Optional[spaces.Space] = None,
-        ep_length: int = 5,
+        ep_length: int = 4,
     ):
         """
         Identity environment for testing purposes
@@ -111,8 +112,12 @@ class IdentityEnvcontinuous(gym.Env, Generic[T]):
         self.ep_length = ep_length
         self.current_step = 0
         self.num_resets = -1  # Becomes 0 after __init__ exits.
-        self.seed = 0
-        self.reset()
+
+        # self.reset()
+
+    def seed(self, seed: Optional[int] = None) -> None:
+        if seed is not None:
+            self._np_random, seed = seeding.np_random(seed)
 
     def reset(
         self,
@@ -121,7 +126,7 @@ class IdentityEnvcontinuous(gym.Env, Generic[T]):
         options: Optional[Dict[str, Any]] = None,
     ) -> T:
         if seed is not None:
-            self.seed = seed
+            self.seed(seed)
         self.current_step = 0
         self.num_resets += 1
         self._choose_next_state()
@@ -136,7 +141,8 @@ class IdentityEnvcontinuous(gym.Env, Generic[T]):
         return self.state, reward, done, {}
 
     def _choose_next_state(self) -> None:
-        self.state = [self.state_generator()]
+        # self.state = [self._np_random.randint(0, self.dim - 1)]
+        self.state = [self._np_random.integers(0, self.dim)]
 
     def _get_reward(self, action: T) -> float:
         r = 1 - np.abs(self.state - np.clip(action, a_min=0, a_max=self.dim - 1))

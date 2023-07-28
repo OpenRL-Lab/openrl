@@ -13,11 +13,11 @@ env_wrappers = [AddStep]
 
 def train():
     cfg_parser = create_config_parser()
-    cfg = cfg_parser.parse_args()
+    cfg = cfg_parser.parse_args(["--config", "ddpg.yaml"])
 
     # create environment, set environment parallelism
     env = make(
-        "InvertedPendulum-v4", env_num=9, asynchronous=False, env_wrappers=env_wrappers
+        "InvertedPendulum-v4", env_num=9, asynchronous=False, cfg=cfg,env_wrappers=env_wrappers
     )
 
     # create the neural network
@@ -26,7 +26,7 @@ def train():
     agent = Agent(net)
     # start training, set total number of training steps
     # agent.train(total_time_steps=200000)
-    agent.train(total_time_steps=200000)
+    agent.train(total_time_steps=1000000)
 
     env.close()
     return agent

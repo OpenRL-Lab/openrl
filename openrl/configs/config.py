@@ -986,8 +986,8 @@ def create_config_parser():
     # for DDPG
     parser.add_argument(
         "--var",
-        type=int,
-        default=3,
+        type=float,
+        default=0.5,
         help="Control the exploration variance of the generated actions",
     )
     parser.add_argument(

@@ -124,13 +124,26 @@ class DDPGModule(RLModule):
         action_masks=None,
         masks_batch=None,
     ):
+        # print(masks_batch)
         if masks_batch is None:
             masks_batch = masks
-
+        actions = self.get_actions(obs_batch)
+        # if masks_batch.mean()<1:
+        #     print(masks_batch)
+        #     exit()
         actor_loss, _ = self.models["critic"](
-            obs_batch, self.get_actions(obs_batch), rnn_states_batch, masks_batch
+            obs_batch, actions, rnn_states_batch, masks_batch
         )
+        # print("q_value:",actor_loss[:5])
         actor_loss = -actor_loss.mean()
+        # from openrl.utils.util import check_v2 as check
+        #
+        # actor_loss = (
+        #     (actions.flatten() - check(obs_batch[..., :-1].flatten())).pow(2).mean()
+        # ).mean()
+        # print(obs_batch[..., :-1].flatten()[:5], actions.flatten()[:5])
+        # print("obs_batch:",obs_batch[:5], "\naction:",actions.flatten()[:5])
+
 
         return actor_loss
 
@@ -142,23 +155,25 @@ class DDPGModule(RLModule):
         rewards_batch,
         actions_batch,
         masks,
+        next_masks_batch,
         action_masks=None,
         masks_batch=None,
     ):
+
         if masks_batch is None:
             masks_batch = masks
-
-        target_q_values, _ = self.models["critic_target"](
-            next_obs_batch,
-            self.models["actor_target"](next_obs_batch),
-            rnn_states_batch,
-            masks_batch,
-        )
+        with torch.no_grad():
+            next_q_values, _ = self.models["critic_target"](
+                next_obs_batch,
+                self.models["actor_target"](next_obs_batch),
+                rnn_states_batch,
+                masks_batch,
+            )
         current_q_values, _ = self.models["critic"](
             obs_batch, actions_batch, rnn_states_batch, masks_batch
         )
 
-        return target_q_values, current_q_values
+        return next_q_values, current_q_values
 
     def evaluate_actions(
         self,

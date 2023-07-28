@@ -97,12 +97,15 @@ class ActorNetwork(BasePolicyNetwork):
 
         features = self.base(obs)
 
+
         if isinstance(self.action_space, gym.spaces.discrete.Discrete):
             features = F.relu(features)
             action = self.actor_out(features)
         elif isinstance(self.action_space, gym.spaces.box.Box):
-            features = F.tanh(features)
-            action = self.actor_out(features) * self.action_space.high[0]
+            action = self.actor_out(features)
+            action = F.tanh(action)
+            action = (action+1)/2 *(torch.tensor(self.action_space.high)-torch.tensor(self.action_space.low))+torch.tensor(self.action_space.low)
+
         else:
             raise NotImplementedError("This type of game has not been implemented.")
 
@@ -188,8 +191,8 @@ class CriticNetwork(BaseValueNetwork):
         masks = check(masks).to(**self.tpdv)
 
         input = torch.cat((state, action), 1)
-        features = F.relu(self.input_base(input))
-
+        # features = F.relu(self.input_base(input))
+        features = self.input_base(input)
         if self._use_naive_recurrent_policy or self._use_recurrent_policy:
             features, rnn_states = self.rnn(features, rnn_states, masks)
 

@@ -326,6 +326,7 @@ class OffPolicyReplayData(ReplayData):
         value_preds = self.value_preds[:-1].reshape(-1, self.act_space)
         rewards = self.rewards.reshape(-1, 1)
         masks = self.masks[:-1].reshape(-1, 1)
+        next_masks = self.masks[1:].reshape(-1, 1)
         active_masks = self.active_masks[:-1].reshape(-1, 1)
         action_log_probs = self.action_log_probs.reshape(
             -1, self.action_log_probs.shape[-1]
@@ -364,6 +365,7 @@ class OffPolicyReplayData(ReplayData):
             value_preds_batch = value_preds[indices]
             rewards_batch = rewards[indices]
             masks_batch = masks[indices]
+            next_masks_batch = next_masks[indices]
             active_masks_batch = active_masks[indices]
             old_action_log_probs_batch = action_log_probs[indices]
             if advantages is None:
@@ -382,7 +384,7 @@ class OffPolicyReplayData(ReplayData):
             # #
             # pdb.set_trace()
 
-            yield critic_obs_batch, policy_obs_batch, next_critic_obs_batch, next_policy_obs_batch, rnn_states_batch, rnn_states_critic_batch, actions_batch, value_preds_batch, rewards_batch, masks_batch, active_masks_batch, old_action_log_probs_batch, adv_targ, action_masks_batch
+            yield critic_obs_batch, policy_obs_batch, next_critic_obs_batch, next_policy_obs_batch, rnn_states_batch, rnn_states_critic_batch, actions_batch, value_preds_batch, rewards_batch, masks_batch, next_masks_batch, active_masks_batch, old_action_log_probs_batch, adv_targ, action_masks_batch
 
     def feed_forward_generator_old(
         self,

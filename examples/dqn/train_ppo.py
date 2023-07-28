@@ -12,12 +12,14 @@ from openrl.envs.wrappers.extra_wrappers import AddStep
 env_wrappers = [AddStep]
 
 
+
 def train(Agent, Net, env_name, env_num, total_time_steps):
     # create environment, set environment parallelism to 9
-    env = make(env_name, env_num=env_num, env_wrappers=env_wrappers)
-    # create the neural network
     cfg_parser = create_config_parser()
     cfg = cfg_parser.parse_args(["--config", "train.yaml"])
+    env = make(env_name, env_num=env_num, cfg=cfg, env_wrappers=env_wrappers)
+    # create the neural network
+
     net = Net(
         env,
         cfg=cfg,
@@ -38,9 +40,16 @@ def evaluation(agent, env_name):
     agent.set_env(env)
     # Initialize the environment and get initial observations and environmental information.
     obs, info = env.reset()
-    obs = np.array([[[0, 0]], [[1, 0]]])
-    action, _ = agent.act(obs, deterministic=True)
-    print(obs[..., 0].flatten(), action.flatten())
+    if len(env_wrappers) == 0:
+        obs = np.array([[[0]], [[1]]])
+        action, _ = agent.act(obs, deterministic=True)
+        print(obs[..., 0].flatten(), action.flatten())
+    else:
+        for step in range(4):
+            obs = np.array([[[0, step]], [[1, step]]])
+            action, _ = agent.act(obs, deterministic=True)
+            print("Step:",step,obs[..., 0].flatten(), action.flatten())
+
     return
     done = False
     step = 0

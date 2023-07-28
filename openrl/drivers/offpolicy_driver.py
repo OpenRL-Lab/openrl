@@ -318,7 +318,8 @@ class OffPolicyDriver(RLDriver):
             #         "next_policy_obs" if step != 0 else "policy_obs", step
             #     )
             # ).numpy()
-            obs = self.buffer.data.get_batch_data("next_policy_obs", step)
+            obs = self.buffer.data.get_batch_data("policy_obs", step)
+
 
             actions = self.trainer.algo_module.get_actions(obs).numpy()
 
@@ -327,12 +328,18 @@ class OffPolicyDriver(RLDriver):
             #     * (self.act_space.high - self.act_space.low)
             #     + self.act_space.low
             # )
+
             # print(actions.flatten()[:3])
+            # print("actions", actions.flatten(), "var:", self.var)
+
             # actions = np.clip(
             #     np.random.normal(actions, self.var),
             #     self.act_space.low,
             #     self.act_space.high,
             # )
+            # print("actions_before", actions.flatten())
+            actions = np.random.normal(actions, self.var)
+            # print("actions_after", actions.flatten())
 
             # actions = np.clip(
             #     actions,
