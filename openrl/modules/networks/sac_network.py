@@ -92,19 +92,32 @@ class SACActorNetwork(ActorNetwork):
         """
         # print(self.action_space.high, self.action_space.low)
         # exit()
-        # return action
-        action = (action + 1) / 2 * (
-            torch.tensor(self.action_space.high) - torch.tensor(self.action_space.low)
-        ) + torch.tensor(self.action_space.low)
+
         return action
+        # return torch.clamp(
+        #     action,
+        #     torch.tensor(self.action_space.low).detach(),
+        #     torch.tensor(self.action_space.high).detach(),
+        # )
+        # action = (action + 1) / 2 * (
+        #     torch.tensor(self.action_space.high) - torch.tensor(self.action_space.low)
+        # ) + torch.tensor(self.action_space.low)
+        # return action
 
     def evaluate(self, obs, deterministic=True):
         mean, log_std = self.forward(obs)
 
         if deterministic:
-            action = torch.tanh(mean)  # add tanh to activate
-            # action = mean
-            return self._normalize(action), log_std
+            # action = torch.tanh(mean)  # add tanh to activate
+            action = mean
+            std = torch.exp(log_std)
+            dist = torch.distributions.Normal(mean, std)
+            log_prob = dist.log_prob(action).sum(axis=-1)
+            log_prob -= (2 * (np.log(2) - action - F.softplus(-2 * action))).sum(
+                axis=-1
+            )
+            return self._normalize(action), log_prob.unsqueeze(dim=-1)
+        # print("action:", action.flatten()[:3])
 
         # sample action from N(mean, std) if sample is True
         # obtain log_prob for policy and Q function update
@@ -117,6 +130,6 @@ class SACActorNetwork(ActorNetwork):
         log_prob -= (2 * (np.log(2) - action - F.softplus(-2 * action))).sum(
             axis=-1
         )  # NOTE: The correction formula from the original SAC paper (arXiv 1801.01290) appendix C
-        action = torch.tanh(action)  # add tanh to activate
+        # action = torch.tanh(action)  # add tanh to activate
 
         return self._normalize(action), log_prob.unsqueeze(dim=-1)

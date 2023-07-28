@@ -15,6 +15,7 @@
 # limitations under the License.
 
 """"""
+import copy
 import random
 from typing import Any, Dict, Optional
 
@@ -80,9 +81,10 @@ class OffPolicyDriver(RLDriver):
 
         if self.buffer.get_buffer_size() >= 0:
             train_infos = self.learner_update()
-            self.buffer.after_update()
+
         else:
             train_infos = {"q_loss": 0}
+        self.buffer.after_update()
 
         self.total_num_steps = (
             (self.episode + 1) * self.episode_length * self.n_rollout_threads
@@ -98,7 +100,7 @@ class OffPolicyDriver(RLDriver):
     def add2buffer(self, data):
         (
             obs,
-            next_obs,
+            # next_obs,
             rewards,
             dones,
             infos,
@@ -115,18 +117,18 @@ class OffPolicyDriver(RLDriver):
         else:
             pass
 
-        # # todo add image obs
-        if "Dict" in next_obs.__class__.__name__:
-            for key in next_obs.keys():
-                next_obs[key][dones] = np.zeros(
-                    (dones.sum(), next_obs[key].shape[2]),
-                    dtype=np.float32,
-                )
-        else:
-            next_obs[dones] = np.zeros(
-                (dones.sum(), next_obs.shape[2]),
-                dtype=np.float32,
-            )
+        # # # todo add image obs
+        # if "Dict" in next_obs.__class__.__name__:
+        #     for key in next_obs.keys():
+        #         next_obs[key][dones] = np.zeros(
+        #             (dones.sum(), next_obs[key].shape[2]),
+        #             dtype=np.float32,
+        #         )
+        # else:
+        #     next_obs[dones] = np.zeros(
+        #         (dones.sum(), next_obs.shape[2]),
+        #         dtype=np.float32,
+        #     )
         # pass
 
         masks = np.ones((self.n_rollout_threads, self.num_agents, 1), dtype=np.float32)
@@ -137,7 +139,7 @@ class OffPolicyDriver(RLDriver):
 
         self.buffer.insert(
             obs,
-            next_obs,
+            # next_obs,
             rnn_states,
             rnn_states_critic,
             actions,
@@ -155,6 +157,7 @@ class OffPolicyDriver(RLDriver):
 
         counter = 0
         ep_reward = 0
+
         for step in range(self.episode_length):
             if self.algorithm_name == "DQN" or self.algorithm_name == "VDN":
                 q_values, actions, rnn_states = self.act(step)
@@ -173,11 +176,23 @@ class OffPolicyDriver(RLDriver):
 
             elif self.algorithm_name == "DDPG" or "SAC":
                 actions = self.act(step)
+
                 extra_data = {
                     "step": step,
                     "buffer": self.buffer,
                 }
-                next_obs, rewards, dones, infos = self.envs.step(actions, extra_data)
+                # print("obs_after:", obs.flatten()[:3])
+
+                obs, rewards, dones, infos = self.envs.step(actions, extra_data)
+                # if step == 1:
+                #     print(obs[0], actions[0], rewards[0])
+                # print("next_obs:", next_obs.flatten()[:3])
+                # print("r", rewards.flatten()[:3])
+                # if any(dones):
+                #     for i in range(len(infos)):
+                #         if all(dones[i]):
+                #             print("reward:", rewards[i])
+
                 self.var -= self.var_step
 
                 ep_reward += rewards
@@ -186,13 +201,16 @@ class OffPolicyDriver(RLDriver):
                 rnn_states = None
 
                 # counter += 1
-                if any(dones):
-                    for i in range(len(infos)):
-                        if all(dones[i]):
-                            next_obs[i] = infos[i]["final_observation"]
-                    # print("运行次数为：%d, 回报为：%.3f, 探索方差为：%.4f" % (counter, ep_reward, self.var))
-                    # counter = 0
-                    # ep_reward = 0
+                # import copy
+
+                # resumed_next_obs = copy.copy(next_obs)
+                # if any(dones):
+                #     for i in range(len(infos)):
+                #         if all(dones[i]):
+                #             resumed_next_obs[i] = infos[i]["final_observation"]
+                # print("运行次数为：%d, 回报为：%.3f, 探索方差为：%.4f" % (counter, ep_reward, self.var))
+                # counter = 0
+                # ep_reward = 0
 
             all_dones = np.all(dones)
             if type(self.episode_steps) == int:
@@ -215,9 +233,10 @@ class OffPolicyDriver(RLDriver):
             if self.callback.on_step() is False:
                 return {}, False
 
+            # print("next_obs_be:", next_obs.flatten()[:3])
             data = (
                 obs,
-                next_obs,
+                # next_obs,
                 rewards,
                 dones,
                 infos,
@@ -227,7 +246,11 @@ class OffPolicyDriver(RLDriver):
             )
 
             self.add2buffer(data)
-            obs = next_obs
+            # print("next_obs_af:", next_obs.flatten()[:3])
+            import copy
+
+            # obs = next_obs
+            # print("obs_inmit:", obs.flatten()[:3])
 
         batch_rew_infos = self.envs.batch_rewards(self.buffer)
         self.first_insert_buffer = False
@@ -248,8 +271,8 @@ class OffPolicyDriver(RLDriver):
     ):
         self.trainer.prep_rollout()
 
-        if step != 0:
-            step = step - 1
+        # if step != 0:
+        #     step = step - 1
 
         if self.algorithm_name == "DQN" or self.algorithm_name == "VDN":
             (
@@ -290,17 +313,32 @@ class OffPolicyDriver(RLDriver):
             )
 
         elif self.algorithm_name == "DDPG" or self.algorithm_name == "SAC":
-            actions = self.trainer.algo_module.get_actions(
-                self.buffer.data.get_batch_data(
-                    "next_policy_obs" if step != 0 else "policy_obs", step
-                )
-            ).numpy()
+            # actions = self.trainer.algo_module.get_actions(
+            #     self.buffer.data.get_batch_data(
+            #         "next_policy_obs" if step != 0 else "policy_obs", step
+            #     )
+            # ).numpy()
+            obs = self.buffer.data.get_batch_data("next_policy_obs", step)
 
-            actions = np.clip(
-                np.random.normal(actions, self.var),
-                self.act_space.low,
-                self.act_space.high,
-            )
+            actions = self.trainer.algo_module.get_actions(obs).numpy()
+
+            # actions = (
+            #     np.random.random(actions.shape)
+            #     * (self.act_space.high - self.act_space.low)
+            #     + self.act_space.low
+            # )
+            # print(actions.flatten()[:3])
+            # actions = np.clip(
+            #     np.random.normal(actions, self.var),
+            #     self.act_space.low,
+            #     self.act_space.high,
+            # )
+
+            # actions = np.clip(
+            #     actions,
+            #     self.act_space.low,
+            #     self.act_space.high,
+            # )
 
             actions = np.expand_dims(actions, -1)
 

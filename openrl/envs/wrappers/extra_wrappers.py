@@ -15,7 +15,7 @@
 # limitations under the License.
 
 """"""
-import time
+from typing import Any, Dict, Optional, SupportsFloat, Tuple
 from copy import deepcopy
 
 import gymnasium as gym
@@ -24,7 +24,7 @@ from gymnasium import spaces
 from gymnasium.wrappers import AutoResetWrapper, StepAPICompatibility
 
 from openrl.envs.wrappers import BaseObservationWrapper, BaseRewardWrapper, BaseWrapper
-from openrl.envs.wrappers.base_wrapper import ArrayType
+from openrl.envs.wrappers.base_wrapper import ArrayType, WrapperObsType, ActType
 from openrl.envs.wrappers.flatten import flatten
 
 
@@ -60,6 +60,50 @@ class FlattenObservation(BaseObservationWrapper):
         """
 
         return flatten(self.env.observation_space, self.agent_num, observation)
+
+
+class AddStep(BaseObservationWrapper):
+    def __init__(self, env: gym.Env):
+        """Flattens the observations of an environment.
+
+        Args:
+            env: The environment to apply the wrapper
+        """
+
+        BaseObservationWrapper.__init__(self, env)
+        assert isinstance(self.env.observation_space, spaces.Box)
+        assert len(self.env.observation_space.shape) == 1
+
+        self.observation_space = spaces.Box(
+            np.append(self.env.observation_space.low, 0),
+            np.append(self.env.observation_space.high, np.inf),
+            shape=(self.env.observation_space.shape[0] + 1,),
+        )
+
+    def reset(
+        self, *, seed: Optional[int] = None, options: Optional[Dict[str, Any]] = None
+    ) -> Tuple[WrapperObsType, Dict[str, Any]]:
+        """Modifies the :attr:`env` after calling :meth:`reset`, returning a modified observation using :meth:`self.observation`."""
+        self.step_count = 0
+        return super().reset(seed=seed, options=options)
+
+    def step(
+        self, action: ActType
+    ) -> Tuple[WrapperObsType, SupportsFloat, bool, bool, Dict[str, Any]]:
+        self.step_count += 1
+        return super().step(action)
+
+    def observation(self, observation):
+        """Flattens an observation.
+
+        Args:
+            observation: The observation to flatten
+
+        Returns:
+            The flattened observation
+        """
+        new_obs = np.append(observation, self.step_count)
+        return new_obs
 
 
 class MoveActionMask2InfoWrapper(BaseWrapper):

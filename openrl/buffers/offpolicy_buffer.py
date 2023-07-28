@@ -39,7 +39,7 @@ class OffPolicyReplayBuffer(NormalReplayBuffer):
     def insert(
         self,
         raw_obs,
-        next_raw_obs,
+        # next_raw_obs,
         rnn_states,
         rnn_states_critic,
         actions,
@@ -53,7 +53,7 @@ class OffPolicyReplayBuffer(NormalReplayBuffer):
     ):
         self.data.insert(
             raw_obs,
-            next_raw_obs,
+            # next_raw_obs,
             rnn_states,
             rnn_states_critic,
             actions,

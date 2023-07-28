@@ -144,10 +144,24 @@ class OffPolicyReplayData(ReplayData):
             self.first_insert_flag = False
         self.step = (self.step + 1) % self.episode_length
 
+    def init_buffer(self, raw_obs, action_masks=None):
+        critic_obs = get_critic_obs(raw_obs)
+        policy_obs = get_policy_obs(raw_obs)
+        if self._mixed_obs:
+            for key in self.critic_obs.keys():
+                self.critic_obs[key][0] = critic_obs[key].copy()
+            for key in self.policy_obs.keys():
+                self.policy_obs[key][0] = policy_obs[key].copy()
+        else:
+            self.critic_obs[0] = critic_obs.copy()
+            self.policy_obs[0] = policy_obs.copy()
+        if action_masks is not None and self.action_masks is not None:
+            self.action_masks[0] = action_masks
+
     def insert(
         self,
         raw_obs,
-        next_raw_obs,
+        # next_raw_obs,
         rnn_states,
         rnn_states_critic,
         actions,
@@ -161,31 +175,37 @@ class OffPolicyReplayData(ReplayData):
     ):
         critic_obs = get_critic_obs(raw_obs)
         policy_obs = get_policy_obs(raw_obs)
-        next_critic_obs = get_critic_obs(next_raw_obs)
-        next_policy_obs = get_policy_obs(next_raw_obs)
+        # next_critic_obs = get_critic_obs(next_raw_obs)
+        # next_policy_obs = get_policy_obs(next_raw_obs)
         if self._mixed_obs:
             for key in self.critic_obs.keys():
                 self.critic_obs[key][self.step + 1] = critic_obs[key].copy()
             for key in self.policy_obs.keys():
                 self.policy_obs[key][self.step + 1] = policy_obs[key].copy()
             for key in self.next_critic_obs.keys():
-                self.next_critic_obs[key][self.step + 1] = next_critic_obs[key].copy()
+                # self.next_critic_obs[key][self.step + 1] = next_critic_obs[key].copy()
+                self.next_critic_obs[key][self.step] = critic_obs[key].copy()
             for key in self.next_policy_obs.keys():
-                self.next_policy_obs[key][self.step + 1] = next_policy_obs[key].copy()
+                # self.next_policy_obs[key][self.step + 1] = next_policy_obs[key].copy()
+                self.next_policy_obs[key][self.step] = policy_obs[key].copy()
         else:
             self.critic_obs[self.step + 1] = critic_obs.copy()
             self.policy_obs[self.step + 1] = policy_obs.copy()
-            self.next_critic_obs[self.step + 1] = next_critic_obs.copy()
-            self.next_policy_obs[self.step + 1] = next_policy_obs.copy()
+            # self.next_critic_obs[self.step + 1] = next_critic_obs.copy()
+            self.next_critic_obs[self.step] = critic_obs.copy()
+            # self.next_policy_obs[self.step + 1] = next_policy_obs.copy()
+            self.next_policy_obs[self.step] = policy_obs.copy()
         if rnn_states is not None:
             self.rnn_states[self.step + 1] = rnn_states.copy()
         if rnn_states_critic is not None:
             self.rnn_states_critic[self.step + 1] = rnn_states_critic.copy()
-        self.actions[self.step + 1] = actions.copy()
+        self.actions[self.step] = actions.copy()
         self.action_log_probs[self.step] = action_log_probs.copy()
         self.value_preds[self.step] = value_preds.copy()
-        self.rewards[self.step + 1] = rewards.copy()
+        # self.rewards[self.step + 1] = rewards.copy()
         self.masks[self.step + 1] = masks.copy()
+        self.rewards[self.step] = rewards.copy()
+
         if bad_masks is not None:
             self.bad_masks[self.step + 1] = bad_masks.copy()
         if active_masks is not None:
@@ -207,11 +227,16 @@ class OffPolicyReplayData(ReplayData):
         if self._mixed_obs:
             for key in self.critic_obs.keys():
                 self.critic_obs[key][0] = self.critic_obs[key][-1].copy()
+                self.next_critic_obs[key][0] = self.next_critic_obs[key][-1].copy()
+
             for key in self.policy_obs.keys():
                 self.policy_obs[key][0] = self.policy_obs[key][-1].copy()
+                self.next_policy_obs[key][0] = self.next_policy_obs[key][-1].copy()
         else:
             self.critic_obs[0] = self.critic_obs[-1].copy()
+            self.next_critic_obs[0] = self.next_critic_obs[-1].copy()
             self.policy_obs[0] = self.policy_obs[-1].copy()
+            self.next_policy_obs[0] = self.next_policy_obs[-1].copy()
         self.rnn_states[0] = self.rnn_states[-1].copy()
         self.rnn_states_critic[0] = self.rnn_states_critic[-1].copy()
         self.actions[0] = self.actions[-1].copy()
@@ -228,6 +253,10 @@ class OffPolicyReplayData(ReplayData):
         mini_batch_size=None,
         critic_obs_process_func=None,
     ):
+        # print(self.rewards.shape)
+        # import pdb
+
+        # pdb.set_trace()
         episode_length, n_rollout_threads, num_agents = self.rewards.shape[0:3]
         batch_size = n_rollout_threads * (episode_length - 1) * num_agents
 
@@ -320,7 +349,6 @@ class OffPolicyReplayData(ReplayData):
                 for key in next_policy_obs.keys():
                     next_policy_obs_batch[key] = next_policy_obs[key][indices]
             else:
-                print(indices, len(indices), len(critic_obs))
                 critic_obs_batch = critic_obs[indices]
                 policy_obs_batch = policy_obs[indices]
                 next_critic_obs_batch = next_critic_obs[indices]
@@ -344,6 +372,15 @@ class OffPolicyReplayData(ReplayData):
                 adv_targ = advantages[indices]
             if critic_obs_process_func is not None:
                 critic_obs_batch = critic_obs_process_func(critic_obs_batch)
+            # print(rewards_batch.shape)
+            #
+            # print(self.critic_obs[:3, 0, 0, 0])
+            # print(self.actions[:3, 0, 0, 0])
+            # print(self.rewards[:3, 0, 0, 0])
+            # import pdb
+            #
+            # #
+            # pdb.set_trace()
 
             yield critic_obs_batch, policy_obs_batch, next_critic_obs_batch, next_policy_obs_batch, rnn_states_batch, rnn_states_critic_batch, actions_batch, value_preds_batch, rewards_batch, masks_batch, active_masks_batch, old_action_log_probs_batch, adv_targ, action_masks_batch
 

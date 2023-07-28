@@ -83,7 +83,7 @@ class IdentityEnvcontinuous(gym.Env, Generic[T]):
         self,
         dim: Optional[int] = None,
         space: Optional[spaces.Space] = None,
-        ep_length: int = 10,
+        ep_length: int = 5,
     ):
         """
         Identity environment for testing purposes
@@ -105,7 +105,7 @@ class IdentityEnvcontinuous(gym.Env, Generic[T]):
             ), "arguments for both 'dim' and 'space' provided: at most one allowed"
         self.dim = dim
         self.state_generator = space.sample
-        self.observation_space = spaces.Discrete(1)
+        self.observation_space = spaces.Box(low=0, high=dim, shape=(1,))
         self.action_space = spaces.Box(low=0, high=dim - 1, shape=(1,))
 
         self.ep_length = ep_length
@@ -125,6 +125,7 @@ class IdentityEnvcontinuous(gym.Env, Generic[T]):
         self.current_step = 0
         self.num_resets += 1
         self._choose_next_state()
+        # print("reset:", self.state)
         return self.state, {}
 
     def step(self, action: T) -> Tuple[T, float, bool, Dict[str, Any]]:
@@ -138,7 +139,7 @@ class IdentityEnvcontinuous(gym.Env, Generic[T]):
         self.state = [self.state_generator()]
 
     def _get_reward(self, action: T) -> float:
-        r = (self.state - np.clip(action, a_min=0, a_max=self.dim - 1)) ** 2
+        r = 1 - np.abs(self.state - np.clip(action, a_min=0, a_max=self.dim - 1))
         return r
 
     def render(self, mode: str = "human") -> None:

@@ -995,6 +995,18 @@ def create_config_parser():
     )
     # for SAC
     parser.add_argument(
+        "auto_alph",
+        type=bool,
+        default=False,
+        help="whether to use automatic alpha tuning",
+    )
+    parser.add_argument(
+        "alpha_value",
+        type=float,
+        default=0.2,
+        help="The value of alpha",
+    )
+    parser.add_argument(
         "alpha_lr",
         type=float,
         default=2e-4,

@@ -1,1 +1,4 @@
+seed: 0
 episode_length: 20
+layer_N: 5
+alpha_value: 0.01
