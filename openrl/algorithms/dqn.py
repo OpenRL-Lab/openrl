@@ -56,6 +56,7 @@ class DQNAlgorithm(BaseAlgorithm):
             value_preds_batch,
             rewards_batch,
             masks_batch,
+            next_masks_batch,
             active_masks_batch,
             old_action_log_probs_batch,
             adv_targ,
