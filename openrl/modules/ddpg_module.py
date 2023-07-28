@@ -179,6 +179,7 @@ class DDPGModule(RLModule):
         # rnn_states_actor,
         # masks,
         # action_masks=None
+        deterministic: bool,
     ):
         action = self.models["actor"](obs)
 
