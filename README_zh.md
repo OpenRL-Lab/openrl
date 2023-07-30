@@ -53,6 +53,7 @@ OpenRL是一个开源的通用强化学习研究框架，支持单智能体、�
 - 支持多种训练加速，例如：自动混合精度训练，半精度策略网络收集数据等
 - 支持用户自定义训练模型、奖励模型、训练数据以及环境
 - 支持[gymnasium](https://gymnasium.farama.org/)环境
+- 支持[Callbacks](https://openrl-docs.readthedocs.io/zh/latest/callbacks/index.html)，可以用于实现日志记录、保存、提前停止等各种功能
 - 支持字典观测空间
 - 支持[wandb](https://wandb.ai/)，[tensorboardX](https://tensorboardx.readthedocs.io/en/latest/index.html)等主流训练可视化工具
 - 支持环境的串行和并行训练，同时保证两种模式下的训练效果一致

@@ -657,8 +657,8 @@ def create_config_parser():
     parser.add_argument(
         "--mini_batch_size",
         type=int,
-        default=128,
-        help="number of batches for ppo (default: 1)",
+        default=None,
+        help="batch size (default: 1)",
     )
     parser.add_argument(
         "--policy_value_loss_coef",
@@ -986,14 +986,26 @@ def create_config_parser():
     # for DDPG
     parser.add_argument(
         "--var",
-        type=int,
-        default=3,
+        type=float,
+        default=0.5,
         help="Control the exploration variance of the generated actions",
     )
     parser.add_argument(
         "actor_lr", type=float, default=0.001, help="The learning rate of actor network"
     )
     # for SAC
+    parser.add_argument(
+        "auto_alph",
+        type=bool,
+        default=False,
+        help="whether to use automatic alpha tuning",
+    )
+    parser.add_argument(
+        "alpha_value",
+        type=float,
+        default=0.2,
+        help="The value of alpha",
+    )
     parser.add_argument(
         "alpha_lr",
         type=float,

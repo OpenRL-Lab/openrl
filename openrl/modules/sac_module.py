@@ -100,15 +100,19 @@ class SACModule(RLModule):
         self.cfg = cfg
 
         # alpha (can be dynamically adjusted)
-        self.log_alpha = torch.zeros(1, requires_grad=True, device=device)
-        alpha_optimizer = torch.optim.Adam(
-            [self.log_alpha],
-            lr=cfg.alpha_lr,
-            eps=cfg.opti_eps,
-            weight_decay=cfg.weight_decay,
-        )
-        self.optimizers["alpha"] = alpha_optimizer
-        self.target_entropy = -np.prod(act_space.shape).item()
+        self.auto_alph = cfg.auto_alph
+        if self.auto_alph:
+            self.log_alpha = torch.zeros(1, requires_grad=True, device=device)
+            alpha_optimizer = torch.optim.Adam(
+                [self.log_alpha],
+                lr=cfg.alpha_lr,
+                eps=cfg.opti_eps,
+                weight_decay=cfg.weight_decay,
+            )
+            self.optimizers["alpha"] = alpha_optimizer
+            self.target_entropy = -np.prod(act_space.shape).item()
+        else:
+            self.log_alpha = torch.log(torch.tensor(cfg.alpha_value))
 
     def lr_decay(self, episode, episodes):
         update_linear_schedule(
@@ -124,8 +128,8 @@ class SACModule(RLModule):
             self.optimizers["alpha"], episode, episodes, self.cfg.alpha_lr
         )
 
-    def get_actions(self, obs, sample=True):
-        actions, _ = self.models["actor"].evaluate(obs, sample=sample)
+    def get_actions(self, obs, deterministic=True):
+        actions, _ = self.models["actor"].evaluate(obs, deterministic=deterministic)
 
         return actions
 
@@ -148,13 +152,15 @@ class SACModule(RLModule):
         if masks_batch is None:
             masks_batch = masks
 
-        action, log_prob = self.models["actor"].evaluate(obs_batch)
+        action, log_prob = self.models["actor"].evaluate(obs_batch, deterministic=True)
+
         q_values = torch.min(
             self.models["critic"](obs_batch, action, rnn_states_batch, masks_batch)[0],
             self.models["critic_2"](obs_batch, action, rnn_states_batch, masks_batch)[
                 0
             ],
         )
+
         actor_loss = (torch.exp(self.log_alpha) * log_prob - q_values).mean()
 
         return actor_loss, log_prob
@@ -173,6 +179,20 @@ class SACModule(RLModule):
         if masks_batch is None:
             masks_batch = masks
 
+        with torch.no_grad():
+            next_action, next_log_prob = self.models["actor"].evaluate(
+                next_obs_batch, deterministic=True
+            )
+
+            target_q_values, _ = self.models["critic"](
+                next_obs_batch, next_action, rnn_states_batch, masks_batch
+            )
+            target_q_values = target_q_values.detach()
+            target_q_values_2, _ = self.models["critic_2"](
+                next_obs_batch, next_action, rnn_states_batch, masks_batch
+            )
+            target_q_values_2 = target_q_values_2.detach()
+
         current_q_values, _ = self.models["critic"](
             obs_batch, actions_batch, rnn_states_batch, masks_batch
         )
@@ -180,15 +200,6 @@ class SACModule(RLModule):
         current_q_values_2, _ = self.models["critic_2"](
             obs_batch, actions_batch, rnn_states_batch, masks_batch
         )
-
-        with torch.no_grad():
-            next_action, next_log_prob = self.models["actor"].evaluate(next_obs_batch)
-            target_q_values, _ = self.models["critic_target"](
-                next_obs_batch, next_action, rnn_states_batch, masks_batch
-            )
-            target_q_values_2, _ = self.models["critic_target_2"](
-                next_obs_batch, next_action, rnn_states_batch, masks_batch
-            )
 
         return (
             target_q_values,
@@ -202,8 +213,8 @@ class SACModule(RLModule):
         # This function is not required in SAC
         pass
 
-    def act(self, obs, sample=True):
-        actions, _ = self.models["actor"].evaluate(obs, sample=sample)
+    def act(self, obs, deterministic=True):
+        actions, _ = self.models["actor"].evaluate(obs, deterministic=deterministic)
 
         return actions
 

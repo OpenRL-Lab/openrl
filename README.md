@@ -63,6 +63,8 @@ Currently, the features supported by OpenRL include:
 
 - Support for [gymnasium](https://gymnasium.farama.org/) environments
 
+- Support for [Callbacks](https://openrl-docs.readthedocs.io/en/latest/callbacks/index.html), which can be used to implement various functions such as logging, saving, and early stopping
+
 - Dictionary observation space support
 
 - Popular visualization tools such as [wandb](https://wandb.ai/),  [tensorboardX](https://tensorboardx.readthedocs.io/en/latest/index.html) are supported

@@ -131,12 +131,12 @@ class SACAgent(RLAgent):
         callback.on_training_end()
 
     def act(
-        self, observation: Union[np.ndarray, Dict[str, np.ndarray]], sample=True
+        self, observation: Union[np.ndarray, Dict[str, np.ndarray]], deterministic=True
     ) -> Tuple[np.ndarray, Optional[Tuple[np.ndarray, ...]]]:
         assert self.net is not None, "net is None"
         observation = ObsData.prepare_input(observation)
 
-        action = self.net.act(observation, sample=sample)
+        action = self.net.act(observation, deterministic=deterministic)
         action = np.array(np.split(action, self.env_num))
 
-        return action
+        return action, None

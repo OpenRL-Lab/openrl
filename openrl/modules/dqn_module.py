@@ -102,6 +102,7 @@ class DQNModule(RLModule):
         rewards_batch,
         actions_batch,
         masks,
+        next_masks,
         action_masks=None,
         masks_batch=None,
         critic_masks_batch=None,
@@ -118,7 +119,7 @@ class DQNModule(RLModule):
         max_next_q_values, _ = self.models["target_q_net"](
             next_obs_batch, rnn_states_batch, masks_batch, action_masks
         )
-        max_next_q_values = max_next_q_values.max(1)[0].view(-1, 1)
+        max_next_q_values = max_next_q_values.max(-1)[0].view(-1, 1)
         return q_values, max_next_q_values
 
     def act(self, obs, rnn_states_actor, masks, action_masks=None):

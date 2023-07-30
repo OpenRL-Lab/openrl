@@ -57,6 +57,7 @@ class VDNAlgorithm(BaseAlgorithm):
             value_preds_batch,
             rewards_batch,
             masks_batch,
+            next_masks_batch,
             active_masks_batch,
             old_action_log_probs_batch,
             adv_targ,
@@ -66,6 +67,7 @@ class VDNAlgorithm(BaseAlgorithm):
         value_preds_batch = check(value_preds_batch).to(**self.tpdv)
         rewards_batch = check(rewards_batch).to(**self.tpdv)
         active_masks_batch = check(active_masks_batch).to(**self.tpdv)
+        next_masks_batch = check(next_masks_batch).to(**self.tpdv)
 
         if self.use_amp:
             with torch.cuda.amp.autocast():
@@ -75,6 +77,7 @@ class VDNAlgorithm(BaseAlgorithm):
                     rnn_states_batch,
                     actions_batch,
                     masks_batch,
+                    next_masks_batch,
                     action_masks_batch,
                     value_preds_batch,
                     rewards_batch,
@@ -90,6 +93,7 @@ class VDNAlgorithm(BaseAlgorithm):
                 rnn_states_batch,
                 actions_batch,
                 masks_batch,
+                next_masks_batch,
                 action_masks_batch,
                 value_preds_batch,
                 rewards_batch,
@@ -182,6 +186,7 @@ class VDNAlgorithm(BaseAlgorithm):
         rnn_states_batch,
         actions_batch,
         masks_batch,
+        next_masks_batch,
         action_masks_batch,
         value_preds_batch,
         rewards_batch,
@@ -205,7 +210,7 @@ class VDNAlgorithm(BaseAlgorithm):
 
         rewards_batch = rewards_batch.reshape(-1, self.n_agent, 1)
         rewards_batch = torch.sum(rewards_batch, dim=1, keepdim=True).view(-1, 1)
-        q_targets = rewards_batch + self.gamma * max_next_q_values
+        q_targets = rewards_batch + self.gamma * max_next_q_values * next_masks_batch
         q_loss = torch.mean(F.mse_loss(q_values, q_targets.detach()))  # 均方误差损失函数
 
         loss_list.append(q_loss)

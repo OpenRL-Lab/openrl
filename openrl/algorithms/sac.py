@@ -36,10 +36,11 @@ class SACAlgorithm(BaseAlgorithm):
         device: Union[str, torch.device] = "cpu",
     ) -> None:
         super().__init__(cfg, init_module, agent_num, device)
-
+        self.auto_alph = self.algo_module.auto_alph
         self.gamma = cfg.gamma
         self.tau = cfg.tau
-        self.target_entropy = self.algo_module.target_entropy
+        if self.auto_alph:
+            self.target_entropy = self.algo_module.target_entropy
 
     def prepare_critic_loss(
         self,
@@ -48,6 +49,7 @@ class SACAlgorithm(BaseAlgorithm):
         rnn_states_batch,
         actions_batch,
         masks_batch,
+        next_masks_batch,
         action_masks_batch,
         value_preds_batch,
         rewards_batch,
@@ -74,10 +76,12 @@ class SACAlgorithm(BaseAlgorithm):
         with torch.no_grad():
             next_q_values = (
                 torch.min(target_q_values, target_q_values_2)
-                - torch.exp(self.algo_module.log_alpha) * next_log_prob
+                # - torch.exp(self.algo_module.log_alpha) * next_log_prob
             )
+            self.gamma = 1
             q_target = (
-                rewards_batch + self.gamma * torch.tensor(masks_batch) * next_q_values
+                rewards_batch
+                + self.gamma * torch.tensor(next_masks_batch) * next_q_values
             )
 
         critic_loss = F.mse_loss(current_q_values, q_target)
@@ -131,6 +135,7 @@ class SACAlgorithm(BaseAlgorithm):
             value_preds_batch,
             rewards_batch,
             masks_batch,
+            next_masks_batch,
             active_masks_batch,
             old_action_log_probs_batch,
             adv_targ,
@@ -153,6 +158,7 @@ class SACAlgorithm(BaseAlgorithm):
                     rnn_states_batch,
                     actions_batch,
                     masks_batch,
+                    next_masks_batch,
                     action_masks_batch,
                     value_preds_batch,
                     rewards_batch,
@@ -168,6 +174,7 @@ class SACAlgorithm(BaseAlgorithm):
                 rnn_states_batch,
                 actions_batch,
                 masks_batch,
+                next_masks_batch,
                 action_masks_batch,
                 value_preds_batch,
                 rewards_batch,
@@ -257,15 +264,16 @@ class SACAlgorithm(BaseAlgorithm):
                 self.tau * param.data + (1 - self.tau) * target_param.data
             )
 
-        # update alpha
-        self.algo_module.optimizers["alpha"].zero_grad()
+        if self.auto_alph:
+            # update alpha
+            self.algo_module.optimizers["alpha"].zero_grad()
 
-        if self.use_amp:
-            raise NotImplementedError
-        else:
-            alpha_loss = self.prepare_alpha_loss(log_prob)
-            alpha_loss.backward()
-            self.algo_module.optimizers["alpha"].step()
+            if self.use_amp:
+                raise NotImplementedError
+            else:
+                alpha_loss = self.prepare_alpha_loss(log_prob)
+                alpha_loss.backward()
+                self.algo_module.optimizers["alpha"].step()
 
         # for others
         if self.world_size > 1:
@@ -274,7 +282,8 @@ class SACAlgorithm(BaseAlgorithm):
         loss_list = []
         loss_list.append(critic_loss)
         loss_list.append(actor_loss)
-        loss_list.append(alpha_loss)
+        if self.auto_alph:
+            loss_list.append(alpha_loss)
 
         return loss_list
 
@@ -300,11 +309,13 @@ class SACAlgorithm(BaseAlgorithm):
 
         train_info["critic_loss"] = 0
         train_info["actor_loss"] = 0
-        train_info["alpha_loss"] = 0
+        if self.auto_alph:
+            train_info["alpha_loss"] = 0
         if self.world_size > 1:
             train_info["reduced_critic_loss"] = 0
             train_info["reduced_actor_loss"] = 0
-            train_info["reduced_alpha_loss"] = 0
+            if self.auto_alph:
+                train_info["reduced_alpha_loss"] = 0
 
         # todo add rnn and transformer
 
@@ -337,7 +348,9 @@ class SACAlgorithm(BaseAlgorithm):
 
                 train_info["critic_loss"] += loss_list[0].item()
                 train_info["actor_loss"] += loss_list[1].item()
-                train_info["alpha_loss"] += loss_list[2].item()
+                if self.auto_alph:
+                    train_info["alpha_loss"] += loss_list[2].item()
+                train_info["alpha"] = self.algo_module.log_alpha.exp().item()
 
         num_updates = 1 * self.num_mini_batch
 

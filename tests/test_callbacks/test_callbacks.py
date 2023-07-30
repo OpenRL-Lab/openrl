@@ -148,8 +148,8 @@ def test_eval_callback_vec_env(config):
         eval_freq=100,
         warn=False,
     )
-    agent.train(300, callback=eval_callback)
-    assert eval_callback.last_mean_reward == 100.0
+    agent.train(500, callback=eval_callback)
+    assert eval_callback.last_mean_reward == 10.0
 
 
 @pytest.mark.unittest

@@ -81,9 +81,9 @@ class DDPGNet(BaseNet):
         self.masks = None
 
     def act(
-        self, observation: Union[np.ndarray, Dict[str, np.ndarray]]
+        self, observation: Union[np.ndarray, Dict[str, np.ndarray]], deterministic: bool
     ) -> Tuple[np.ndarray, Optional[Tuple[np.ndarray, ...]]]:
-        action = self.module.act(observation).detach().numpy()
+        action = self.module.act(observation, deterministic).detach().numpy()
 
         return action
 
