@@ -32,3 +32,21 @@ docker-cpu:
 
 docker-gpu:
 	RELEASE=True USE_GPU=True ./scripts/build_docker.sh
+
+pypi:
+	./scripts/pypi_build.sh
+
+pypi-upload:
+	./scripts/pypi_upload.sh
+
+pypi-test-upload:
+	./scripts/pypi_upload.sh test
+
+conda-build:
+	./scripts/conda_build.sh
+
+conda-upload:
+	./scripts/conda_upload.sh
+
+doc:
+	./scripts/gen_api_docs.sh
