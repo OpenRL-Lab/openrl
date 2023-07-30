@@ -97,14 +97,16 @@ class ActorNetwork(BasePolicyNetwork):
 
         features = self.base(obs)
 
-
         if isinstance(self.action_space, gym.spaces.discrete.Discrete):
             features = F.relu(features)
             action = self.actor_out(features)
         elif isinstance(self.action_space, gym.spaces.box.Box):
             action = self.actor_out(features)
             action = F.tanh(action)
-            action = (action+1)/2 *(torch.tensor(self.action_space.high)-torch.tensor(self.action_space.low))+torch.tensor(self.action_space.low)
+            action = (action + 1) / 2 * (
+                torch.tensor(self.action_space.high)
+                - torch.tensor(self.action_space.low)
+            ) + torch.tensor(self.action_space.low)
 
         else:
             raise NotImplementedError("This type of game has not been implemented.")

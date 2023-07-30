@@ -15,8 +15,8 @@
 # limitations under the License.
 
 """"""
-from typing import Any, Dict, Optional, SupportsFloat, Tuple
 from copy import deepcopy
+from typing import Any, Dict, Optional, SupportsFloat, Tuple
 
 import gymnasium as gym
 import numpy as np
@@ -24,7 +24,7 @@ from gymnasium import spaces
 from gymnasium.wrappers import AutoResetWrapper, StepAPICompatibility
 
 from openrl.envs.wrappers import BaseObservationWrapper, BaseRewardWrapper, BaseWrapper
-from openrl.envs.wrappers.base_wrapper import ArrayType, WrapperObsType, ActType
+from openrl.envs.wrappers.base_wrapper import ActType, ArrayType, WrapperObsType
 from openrl.envs.wrappers.flatten import flatten
 
 
@@ -71,14 +71,19 @@ class AddStep(BaseObservationWrapper):
         """
 
         BaseObservationWrapper.__init__(self, env)
-        assert isinstance(self.env.observation_space, spaces.Box)
-        assert len(self.env.observation_space.shape) == 1
-
-        self.observation_space = spaces.Box(
-            np.append(self.env.observation_space.low, 0),
-            np.append(self.env.observation_space.high, np.inf),
-            shape=(self.env.observation_space.shape[0] + 1,),
+        assert isinstance(self.env.observation_space, spaces.Box) or isinstance(
+            self.env.observation_space, spaces.Discrete
         )
+        if isinstance(self.env.observation_space, spaces.Box):
+            assert len(self.env.observation_space.shape) == 1
+
+            self.observation_space = spaces.Box(
+                np.append(self.env.observation_space.low, 0),
+                np.append(self.env.observation_space.high, np.inf),
+                shape=(self.env.observation_space.shape[0] + 1,),
+            )
+        else:
+            self.observation_space = spaces.Discrete(n=self.env.observation_space.n + 1)
 
     def reset(
         self, *, seed: Optional[int] = None, options: Optional[Dict[str, Any]] = None

@@ -84,13 +84,13 @@ class DQNNet(BaseNet):
     def act(
         self, observation: Union[np.ndarray, Dict[str, np.ndarray]]
     ) -> Tuple[np.ndarray, Optional[Tuple[np.ndarray, ...]]]:
-        q_values, self.rnn_states_actor = self.module.act(
-            obs=observation,
-            rnn_states_actor=self.rnn_states_actor,
-            masks=self.masks,
-            action_masks=None,
-        )
-        # q_values = np.array(np.split(_t2n(q_values), self.n_rollout_threads))
+        with torch.no_grad():
+            q_values, self.rnn_states_actor = self.module.act(
+                obs=observation,
+                rnn_states_actor=self.rnn_states_actor,
+                masks=self.masks,
+                action_masks=None,
+            )
 
         actions = q_values.argmax(axis=-1).unsqueeze(-1)
 

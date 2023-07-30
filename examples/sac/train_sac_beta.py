@@ -3,10 +3,9 @@ import numpy as np
 
 from openrl.configs.config import create_config_parser
 from openrl.envs.common import make
+from openrl.envs.wrappers.extra_wrappers import AddStep
 from openrl.modules.common import SACNet as Net
 from openrl.runners.common import SACAgent as Agent
-from openrl.envs.wrappers.extra_wrappers import AddStep
-
 
 env_wrappers = [AddStep]
 
@@ -25,7 +24,7 @@ def train():
     # initialize the trainer
     agent = Agent(net)
     # start training, set total number of training steps
-    # agent.train(total_time_steps=200000)
+
     agent.train(total_time_steps=200000)
 
     env.close()
@@ -55,7 +54,7 @@ def evaluation(agent):
         # Based on environmental observation input, predict next action.
 
         action, _ = agent.act(obs, deterministic=True)  # sample=False in evaluation
-        print(action)
+
         obs, r, done, info = env.step(action)
         step += 1
         totoal_reward += np.mean(r)

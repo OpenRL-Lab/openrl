@@ -124,26 +124,14 @@ class DDPGModule(RLModule):
         action_masks=None,
         masks_batch=None,
     ):
-        # print(masks_batch)
         if masks_batch is None:
             masks_batch = masks
         actions = self.get_actions(obs_batch)
-        # if masks_batch.mean()<1:
-        #     print(masks_batch)
-        #     exit()
+
         actor_loss, _ = self.models["critic"](
             obs_batch, actions, rnn_states_batch, masks_batch
         )
-        # print("q_value:",actor_loss[:5])
         actor_loss = -actor_loss.mean()
-        # from openrl.utils.util import check_v2 as check
-        #
-        # actor_loss = (
-        #     (actions.flatten() - check(obs_batch[..., :-1].flatten())).pow(2).mean()
-        # ).mean()
-        # print(obs_batch[..., :-1].flatten()[:5], actions.flatten()[:5])
-        # print("obs_batch:",obs_batch[:5], "\naction:",actions.flatten()[:5])
-
 
         return actor_loss
 
@@ -159,7 +147,6 @@ class DDPGModule(RLModule):
         action_masks=None,
         masks_batch=None,
     ):
-
         if masks_batch is None:
             masks_batch = masks
         with torch.no_grad():

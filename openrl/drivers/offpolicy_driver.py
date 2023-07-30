@@ -15,7 +15,7 @@
 # limitations under the License.
 
 """"""
-import copy
+
 import random
 from typing import Any, Dict, Optional
 
@@ -117,20 +117,6 @@ class OffPolicyDriver(RLDriver):
         else:
             pass
 
-        # # # todo add image obs
-        # if "Dict" in next_obs.__class__.__name__:
-        #     for key in next_obs.keys():
-        #         next_obs[key][dones] = np.zeros(
-        #             (dones.sum(), next_obs[key].shape[2]),
-        #             dtype=np.float32,
-        #         )
-        # else:
-        #     next_obs[dones] = np.zeros(
-        #         (dones.sum(), next_obs.shape[2]),
-        #         dtype=np.float32,
-        #     )
-        # pass
-
         masks = np.ones((self.n_rollout_threads, self.num_agents, 1), dtype=np.float32)
         masks[dones] = np.zeros((dones.sum(), 1), dtype=np.float32)
 
@@ -161,18 +147,14 @@ class OffPolicyDriver(RLDriver):
         for step in range(self.episode_length):
             if self.algorithm_name == "DQN" or self.algorithm_name == "VDN":
                 q_values, actions, rnn_states = self.act(step)
-                # print("step: ", step,
-                #       "state: ", self.buffer.data.get_batch_data("next_policy_obs" if step != 0 else "policy_obs", step),
-                #       "q_values: ", q_values,
-                #       "actions: ", actions)
+
                 extra_data = {
                     "q_values": q_values,
                     "step": step,
                     "buffer": self.buffer,
                 }
 
-                next_obs, rewards, dones, infos = self.envs.step(actions, extra_data)
-                # print("rewards: ", rewards)
+                obs, rewards, dones, infos = self.envs.step(actions, extra_data)
 
             elif self.algorithm_name == "DDPG" or "SAC":
                 actions = self.act(step)
@@ -181,17 +163,8 @@ class OffPolicyDriver(RLDriver):
                     "step": step,
                     "buffer": self.buffer,
                 }
-                # print("obs_after:", obs.flatten()[:3])
 
                 obs, rewards, dones, infos = self.envs.step(actions, extra_data)
-                # if step == 1:
-                #     print(obs[0], actions[0], rewards[0])
-                # print("next_obs:", next_obs.flatten()[:3])
-                # print("r", rewards.flatten()[:3])
-                # if any(dones):
-                #     for i in range(len(infos)):
-                #         if all(dones[i]):
-                #             print("reward:", rewards[i])
 
                 self.var -= self.var_step
 
@@ -199,18 +172,6 @@ class OffPolicyDriver(RLDriver):
 
                 q_values = np.zeros_like(actions)
                 rnn_states = None
-
-                # counter += 1
-                # import copy
-
-                # resumed_next_obs = copy.copy(next_obs)
-                # if any(dones):
-                #     for i in range(len(infos)):
-                #         if all(dones[i]):
-                #             resumed_next_obs[i] = infos[i]["final_observation"]
-                # print("运行次数为：%d, 回报为：%.3f, 探索方差为：%.4f" % (counter, ep_reward, self.var))
-                # counter = 0
-                # ep_reward = 0
 
             all_dones = np.all(dones)
             if type(self.episode_steps) == int:
@@ -233,10 +194,8 @@ class OffPolicyDriver(RLDriver):
             if self.callback.on_step() is False:
                 return {}, False
 
-            # print("next_obs_be:", next_obs.flatten()[:3])
             data = (
                 obs,
-                # next_obs,
                 rewards,
                 dones,
                 infos,
@@ -246,11 +205,6 @@ class OffPolicyDriver(RLDriver):
             )
 
             self.add2buffer(data)
-            # print("next_obs_af:", next_obs.flatten()[:3])
-            import copy
-
-            # obs = next_obs
-            # print("obs_inmit:", obs.flatten()[:3])
 
         batch_rew_infos = self.envs.batch_rewards(self.buffer)
         self.first_insert_buffer = False
@@ -271,17 +225,13 @@ class OffPolicyDriver(RLDriver):
     ):
         self.trainer.prep_rollout()
 
-        # if step != 0:
-        #     step = step - 1
-
+        obs = self.buffer.data.get_batch_data("policy_obs", step)
         if self.algorithm_name == "DQN" or self.algorithm_name == "VDN":
             (
                 q_values,
                 rnn_states,
             ) = self.trainer.algo_module.get_actions(
-                self.buffer.data.get_batch_data(
-                    "next_policy_obs" if step != 0 else "policy_obs", step
-                ),
+                obs,
                 np.concatenate(self.buffer.data.rnn_states[step]),
                 np.concatenate(self.buffer.data.masks[step]),
             )
@@ -313,14 +263,6 @@ class OffPolicyDriver(RLDriver):
             )
 
         elif self.algorithm_name == "DDPG" or self.algorithm_name == "SAC":
-            # actions = self.trainer.algo_module.get_actions(
-            #     self.buffer.data.get_batch_data(
-            #         "next_policy_obs" if step != 0 else "policy_obs", step
-            #     )
-            # ).numpy()
-            obs = self.buffer.data.get_batch_data("policy_obs", step)
-
-
             actions = self.trainer.algo_module.get_actions(obs).numpy()
 
             # actions = (
@@ -329,23 +271,13 @@ class OffPolicyDriver(RLDriver):
             #     + self.act_space.low
             # )
 
-            # print(actions.flatten()[:3])
-            # print("actions", actions.flatten(), "var:", self.var)
-
             # actions = np.clip(
             #     np.random.normal(actions, self.var),
             #     self.act_space.low,
             #     self.act_space.high,
             # )
-            # print("actions_before", actions.flatten())
-            actions = np.random.normal(actions, self.var)
-            # print("actions_after", actions.flatten())
 
-            # actions = np.clip(
-            #     actions,
-            #     self.act_space.low,
-            #     self.act_space.high,
-            # )
+            actions = np.random.normal(actions, self.var)
 
             actions = np.expand_dims(actions, -1)
 

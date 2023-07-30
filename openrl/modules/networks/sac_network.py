@@ -60,7 +60,8 @@ class SACActorNetwork(ActorNetwork):
             self.actor_out = init_(nn.Linear(input_size, action_space.shape[0] * 2))
         else:
             raise NotImplementedError(
-                f"This type ({type(self.action_space)}) of game has not been implemented."
+                f"This type ({type(self.action_space)}) of game has not been"
+                " implemented."
             )
 
         self.log_std_min = log_std_min
@@ -117,7 +118,6 @@ class SACActorNetwork(ActorNetwork):
                 axis=-1
             )
             return self._normalize(action), log_prob.unsqueeze(dim=-1)
-        # print("action:", action.flatten()[:3])
 
         # sample action from N(mean, std) if sample is True
         # obtain log_prob for policy and Q function update

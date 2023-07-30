@@ -1,3 +1,19 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# Copyright 2023 The OpenRL Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 """"""
 import copy
 
@@ -5,12 +21,9 @@ import numpy as np
 
 from openrl.configs.config import create_config_parser
 from openrl.envs.common import make
-from openrl.modules.common import PPONet as Net
-from openrl.runners.common import PPOAgent as Agent
 from openrl.envs.wrappers.extra_wrappers import AddStep
 
 env_wrappers = [AddStep]
-
 
 
 def train(Agent, Net, env_name, env_num, total_time_steps):
@@ -40,17 +53,7 @@ def evaluation(agent, env_name):
     agent.set_env(env)
     # Initialize the environment and get initial observations and environmental information.
     obs, info = env.reset()
-    if len(env_wrappers) == 0:
-        obs = np.array([[[0]], [[1]]])
-        action, _ = agent.act(obs, deterministic=True)
-        print(obs[..., 0].flatten(), action.flatten())
-    else:
-        for step in range(4):
-            obs = np.array([[[0, step]], [[1, step]]])
-            action, _ = agent.act(obs, deterministic=True)
-            print("Step:",step,obs[..., 0].flatten(), action.flatten())
 
-    return
     done = False
     step = 0
     total_reward = 0.0
@@ -61,10 +64,11 @@ def evaluation(agent, env_name):
         obs, r, done, info = env.step(action)
         step += 1
         total_reward += np.mean(r)
-        if step % 50 == 0:
-            print(f"{step}: reward:{np.mean(r)}")
+
         print(
-            f"{step}: action: {action.flatten()}, obs:{pre_obs.flatten()},reward:{np.mean(r)}"
+            f"{step}: obs:{pre_obs[..., 0].flatten()}, action: {action.flatten()},"
+            f" ,reward:{np.mean(r)}"
+            # f"{step}: obs:{pre_obs}, action: {action.flatten()}, ,reward:{np.mean(r)}"
         )
     env.close()
     print("total reward:", total_reward)
@@ -83,9 +87,3 @@ def test_env():
         step += 1
         # print(f"{step}: action: {action}, obs:{pre_obs},reward:{np.mean(r)}")
     env.close()
-
-
-if __name__ == "__main__":
-    agent = train(Agent, Net, "IdentityEnvcontinuous", 10, 2000)
-    evaluation(agent, "IdentityEnvcontinuous")
-    # test_env()

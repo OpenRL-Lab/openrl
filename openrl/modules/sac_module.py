@@ -161,25 +161,8 @@ class SACModule(RLModule):
             ],
         )
 
-        # print(
-        #     "\nobs:",
-        #     obs_batch.flatten()[:5],
-        #     "\naction:",
-        #     action.flatten()[:5],
-        #     "\nq_values:",
-        #     q_values.flatten()[:5],
-        # )
-        # print("alpha:", torch.exp(self.log_alpha))
         actor_loss = (torch.exp(self.log_alpha) * log_prob - q_values).mean()
-        # actor_loss = (-q_values).mean()
 
-        # print(obs_batch.flatten()[:5], action.flatten()[:5])
-        # from openrl.utils.util import check_v2 as check
-
-        # actor_loss = (
-        #     (action.flatten() - check(obs_batch[..., :-1].flatten())).pow(2).mean()
-        # )
-        actor_loss = -q_values.mean()
         return actor_loss, log_prob
 
     def get_q_values(
@@ -200,13 +183,6 @@ class SACModule(RLModule):
             next_action, next_log_prob = self.models["actor"].evaluate(
                 next_obs_batch, deterministic=True
             )
-            # ERROR: rnn and masks are wrong here
-            # target_q_values, _ = self.models["critic_target"](
-            #     next_obs_batch, next_action, rnn_states_batch, masks_batch
-            # )
-            # target_q_values_2, _ = self.models["critic_target_2"](
-            #     next_obs_batch, next_action, rnn_states_batch, masks_batch
-            # )
 
             target_q_values, _ = self.models["critic"](
                 next_obs_batch, next_action, rnn_states_batch, masks_batch
@@ -216,7 +192,7 @@ class SACModule(RLModule):
                 next_obs_batch, next_action, rnn_states_batch, masks_batch
             )
             target_q_values_2 = target_q_values_2.detach()
-        # print("obs:", obs_batch.flatten()[:5], "action:", actions_batch.flatten()[:5])
+
         current_q_values, _ = self.models["critic"](
             obs_batch, actions_batch, rnn_states_batch, masks_batch
         )

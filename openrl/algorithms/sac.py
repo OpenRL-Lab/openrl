@@ -49,6 +49,7 @@ class SACAlgorithm(BaseAlgorithm):
         rnn_states_batch,
         actions_batch,
         masks_batch,
+        next_masks_batch,
         action_masks_batch,
         value_preds_batch,
         rewards_batch,
@@ -79,35 +80,12 @@ class SACAlgorithm(BaseAlgorithm):
             )
             self.gamma = 1
             q_target = (
-                rewards_batch + self.gamma * torch.tensor(masks_batch) * next_q_values
+                rewards_batch
+                + self.gamma * torch.tensor(next_masks_batch) * next_q_values
             )
-        # if masks_batch.mean() < 1:
-        #     print("in")
-        #     import pdb
-        #
-        #     pdb.set_trace()
+
         critic_loss = F.mse_loss(current_q_values, q_target)
         critic_loss_2 = F.mse_loss(current_q_values_2, q_target)
-        # print(
-        #     "\nobs:",
-        #     obs_batch[:5],
-        #     "\nnext_obs:",
-        #     next_obs_batch[:5],
-        #     "\naction:",
-        #     actions_batch.flatten()[:5],
-        # )
-        # print(
-        #     # "\ncurrent_q_values",
-        #     # current_q_values[:5].flatten(),
-        #     # "\nnext_q_values",
-        #     # next_q_values[:5].flatten(),
-        #     # "\nq_target",
-        #     # q_target[:5].flatten(),
-        #     "\nrewards_batch",
-        #     rewards_batch[:5].flatten(),
-        # )
-        # print(current_q_values_2[:5].flatten(), q_target[:5].flatten())
-        # exit()
 
         return critic_loss, critic_loss_2
 
@@ -157,6 +135,7 @@ class SACAlgorithm(BaseAlgorithm):
             value_preds_batch,
             rewards_batch,
             masks_batch,
+            next_masks_batch,
             active_masks_batch,
             old_action_log_probs_batch,
             adv_targ,
@@ -179,6 +158,7 @@ class SACAlgorithm(BaseAlgorithm):
                     rnn_states_batch,
                     actions_batch,
                     masks_batch,
+                    next_masks_batch,
                     action_masks_batch,
                     value_preds_batch,
                     rewards_batch,
@@ -194,6 +174,7 @@ class SACAlgorithm(BaseAlgorithm):
                 rnn_states_batch,
                 actions_batch,
                 masks_batch,
+                next_masks_batch,
                 action_masks_batch,
                 value_preds_batch,
                 rewards_batch,

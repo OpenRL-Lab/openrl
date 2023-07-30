@@ -3,10 +3,9 @@ import numpy as np
 
 from openrl.configs.config import create_config_parser
 from openrl.envs.common import make
+from openrl.envs.wrappers.extra_wrappers import AddStep
 from openrl.modules.common import DDPGNet as Net
 from openrl.runners.common import DDPGAgent as Agent
-from openrl.envs.wrappers.extra_wrappers import AddStep
-
 
 env_wrappers = [AddStep]
 
@@ -17,7 +16,11 @@ def train():
 
     # create environment, set environment parallelism
     env = make(
-        "InvertedPendulum-v4", env_num=9, asynchronous=False, cfg=cfg,env_wrappers=env_wrappers
+        "InvertedPendulum-v4",
+        env_num=9,
+        asynchronous=False,
+        cfg=cfg,
+        env_wrappers=env_wrappers,
     )
 
     # create the neural network

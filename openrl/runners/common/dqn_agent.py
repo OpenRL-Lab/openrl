@@ -120,7 +120,9 @@ class DQNAgent(RLAgent):
         callback.on_training_end()
 
     def act(
-        self, observation: Union[np.ndarray, Dict[str, np.ndarray]], deterministic=None
+        self,
+        observation: Union[np.ndarray, Dict[str, np.ndarray]],
+        deterministic: bool = True,
     ) -> Tuple[np.ndarray, Optional[Tuple[np.ndarray, ...]]]:
         assert self.net is not None, "net is None"
         observation = ObsData.prepare_input(observation)

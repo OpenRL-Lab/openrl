@@ -66,6 +66,7 @@ class DQNAlgorithm(BaseAlgorithm):
         value_preds_batch = check(value_preds_batch).to(**self.tpdv)
         rewards_batch = check(rewards_batch).to(**self.tpdv)
         active_masks_batch = check(active_masks_batch).to(**self.tpdv)
+        next_masks_batch = check(next_masks_batch).to(**self.tpdv)
 
         if self.use_amp:
             with torch.cuda.amp.autocast():
@@ -75,6 +76,7 @@ class DQNAlgorithm(BaseAlgorithm):
                     rnn_states_batch,
                     actions_batch,
                     masks_batch,
+                    next_masks_batch,
                     action_masks_batch,
                     value_preds_batch,
                     rewards_batch,
@@ -90,6 +92,7 @@ class DQNAlgorithm(BaseAlgorithm):
                 rnn_states_batch,
                 actions_batch,
                 masks_batch,
+                next_masks_batch,
                 action_masks_batch,
                 value_preds_batch,
                 rewards_batch,
@@ -129,49 +132,6 @@ class DQNAlgorithm(BaseAlgorithm):
             self.update_count += 1
         return loss
 
-    def cal_value_loss(
-        self,
-        value_normalizer,
-        values,
-        value_preds_batch,
-        return_batch,
-        active_masks_batch,
-    ):
-        value_pred_clipped = value_preds_batch + (values - value_preds_batch).clamp(
-            -self.clip_param, self.clip_param
-        )
-
-        if self._use_popart or self._use_valuenorm:
-            value_normalizer.update(return_batch)
-            error_clipped = (
-                value_normalizer.normalize(return_batch) - value_pred_clipped
-            )
-            error_original = value_normalizer.normalize(return_batch) - values
-        else:
-            error_clipped = return_batch - value_pred_clipped
-            error_original = return_batch - values
-
-        if self._use_huber_loss:
-            value_loss_clipped = huber_loss(error_clipped, self.huber_delta)
-            value_loss_original = huber_loss(error_original, self.huber_delta)
-        else:
-            value_loss_clipped = mse_loss(error_clipped)
-            value_loss_original = mse_loss(error_original)
-
-        if self._use_clipped_value_loss:
-            value_loss = torch.max(value_loss_original, value_loss_clipped)
-        else:
-            value_loss = value_loss_original
-
-        if self._use_value_active_masks:
-            value_loss = (
-                value_loss * active_masks_batch
-            ).sum() / active_masks_batch.sum()
-        else:
-            value_loss = value_loss.mean()
-
-        return value_loss
-
     def to_single_np(self, input):
         reshape_input = input.reshape(-1, self.agent_num, *input.shape[1:])
         return reshape_input[:, 0, ...]
@@ -183,6 +143,7 @@ class DQNAlgorithm(BaseAlgorithm):
         rnn_states_batch,
         actions_batch,
         masks_batch,
+        next_masks_batch,
         action_masks_batch,
         value_preds_batch,
         rewards_batch,
@@ -199,15 +160,17 @@ class DQNAlgorithm(BaseAlgorithm):
             rewards_batch,
             actions_batch,
             masks_batch,
+            next_masks_batch,
             action_masks_batch,
             active_masks_batch,
             critic_masks_batch=critic_masks_batch,
         )
 
-        q_targets = rewards_batch + self.gamma * max_next_q_values
+        q_targets = rewards_batch + self.gamma * max_next_q_values * next_masks_batch
         q_loss = torch.mean(F.mse_loss(q_values, q_targets.detach()))  # 均方误差损失函数
 
         loss_list.append(q_loss)
+
         return loss_list
 
     def train(self, buffer, turn_on=True):
