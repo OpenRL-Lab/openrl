@@ -1,6 +1,6 @@
 import numpy as np
 import torch
-from tictactoe_render import TictactoeRender
+
 
 from openrl.configs.config import create_config_parser
 from openrl.envs.common import make
@@ -11,6 +11,9 @@ from openrl.selfplay.wrappers.random_opponent_wrapper import RandomOpponentWrapp
 
 
 def train():
+    cfg_parser = create_config_parser()
+    cfg = cfg_parser.parse_args(["--config", "selfplay.yaml"])
+
     # Create environment
     env_num = 10
     render_model = None
@@ -21,21 +24,24 @@ def train():
         asynchronous=False,
         opponent_wrappers=[RandomOpponentWrapper],
         env_wrappers=[FlattenObservation],
+        cfg=cfg,
     )
     # Create neural network
-    cfg_parser = create_config_parser()
-    cfg = cfg_parser.parse_args()
+
     net = Net(env, cfg=cfg, device="cuda" if torch.cuda.is_available() else "cpu")
     # Create agent
     agent = Agent(net)
     # Begin training
-    agent.train(total_time_steps=300000)
+    # agent.train(total_time_steps=300000)
+    agent.train(total_time_steps=2000)
     env.close()
-    agent.save("./ppo_agent/")
+    agent.save("./selfplay_agent/")
     return agent
 
 
 def evaluation():
+    from examples.selfplay.tictactoe_utils.tictactoe_render import TictactoeRender
+
     print("Evaluation...")
     env_num = 1
     env = make(
@@ -53,7 +59,7 @@ def evaluation():
 
     agent = Agent(net)
 
-    agent.load("./ppo_agent/")
+    agent.load("./selfplay_agent/")
     agent.set_env(env)
     env.reset(seed=0)
 
@@ -79,5 +85,5 @@ def evaluation():
 
 
 if __name__ == "__main__":
-    agent = train()
-    evaluation()
+    train()
+    # evaluation()

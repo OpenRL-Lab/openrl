@@ -154,3 +154,5 @@ api_docs
 .vscode
 *.pkl
 api_docs
+*.json
+opponent_pool

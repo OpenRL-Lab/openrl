@@ -9,6 +9,8 @@ from openrl.utils.callbacks.stop_callback import (
     StopTrainingOnNoModelImprovement,
     StopTrainingOnRewardThreshold,
 )
+from openrl.selfplay.callbacks.selfplay_callback import SelfplayCallback
+from openrl.selfplay.callbacks.selfplay_api import SelfplayAPI
 
 callbacks_dict = {
     "CheckpointCallback": CheckpointCallback,
@@ -18,6 +20,8 @@ callbacks_dict = {
     "StopTrainingOnNoModelImprovement": StopTrainingOnNoModelImprovement,
     "ProgressBarCallback": ProgressBarCallback,
     "EveryNTimesteps": EveryNTimesteps,
+    "SelfplayCallback": SelfplayCallback,
+    "SelfplayAPI": SelfplayAPI,
 }
 
 
