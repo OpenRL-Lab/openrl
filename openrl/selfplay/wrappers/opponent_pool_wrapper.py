@@ -14,14 +14,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-""""""
+"""
+Play with self.
+"""
 import copy
 from typing import Optional
 
 from openrl.selfplay.wrappers.base_multiplayer_wrapper import BaseMultiPlayerWrapper
 
 
-class HumanOpponentWrapper(BaseMultiPlayerWrapper):
+class OpponentPoolWrapper(BaseMultiPlayerWrapper):
+    def get_opponent(self):
+        return None
+
     def get_opponent_action(
         self, player_name, observation, termination, truncation, info
     ):
@@ -29,3 +34,6 @@ class HumanOpponentWrapper(BaseMultiPlayerWrapper):
             player_name, observation, termination, truncation, info
         )
         return action
+
+    def on_episode_end(self):
+        return None

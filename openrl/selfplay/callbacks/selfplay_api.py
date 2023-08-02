@@ -28,8 +28,11 @@ from openrl.selfplay.selfplay_api.selfplay_api import SelfplayAPIServer
 class SelfplayAPI(BaseSelfplayCallback):
     def __init__(self, host: str = "127.0.0.1", port: int = 10086, verbose: int = 0):
         super().__init__(verbose)
+
         self.host = host
         self.port = port
+        print(self.host, self.port)
+        exit()
 
     def _init_callback(self) -> None:
         serve.start(
@@ -43,8 +46,6 @@ class SelfplayAPI(BaseSelfplayCallback):
 
         self.bind = SelfplayAPIServer.bind()
         serve.run(self.bind)
-
-        pass
 
     def _on_step(self) -> bool:
         # print("To send request to API server.")

@@ -18,6 +18,8 @@ from typing import List
 
 from jsonargparse import ActionConfigFile, ArgumentParser
 
+from openrl.configs.utils import ProcessYamlAction
+
 
 def create_config_parser():
     """
@@ -26,6 +28,7 @@ def create_config_parser():
     parser = ArgumentParser(
         description="openrl",
     )
+    parser.add_argument("--config", action=ProcessYamlAction)
     parser.add_argument("--seed", type=int, default=0, help="Random seed.")
     # For Transformers
     parser.add_argument("--encode_state", action="store_true", default=False)
@@ -1146,7 +1149,6 @@ def create_config_parser():
         default=[],
         help="the id of the vec env's info class",
     )
-    parser.add_argument("--config", action=ActionConfigFile)
 
     # selfplay parameters
     parser.add_argument(

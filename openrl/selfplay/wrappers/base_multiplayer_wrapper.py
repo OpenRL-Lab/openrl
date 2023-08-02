@@ -92,7 +92,7 @@ class BaseMultiPlayerWrapper(BaseWrapper, ABC):
 
     @abstractmethod
     def get_opponent_action(
-        self, agent: str, observation, termination, truncation, info
+        self, player_name: str, observation, termination, truncation, info
     ):
         raise NotImplementedError
 
@@ -101,16 +101,16 @@ class BaseMultiPlayerWrapper(BaseWrapper, ABC):
             self.env.reset(seed=seed, **kwargs)
             self.self_player = self.np_random.choice(self.env.agents)
 
-            for agent in self.env.agent_iter():
+            for player_name in self.env.agent_iter():
                 observation, reward, termination, truncation, info = self.env.last()
                 if termination or truncation:
                     assert False, "This should not happen"
 
-                if self.self_player == agent:
+                if self.self_player == player_name:
                     return copy.copy(observation), info
 
                 action = self.get_opponent_action(
-                    agent, observation, termination, truncation, info
+                    player_name, observation, termination, truncation, info
                 )
                 self.env.step(action)
 
@@ -118,9 +118,9 @@ class BaseMultiPlayerWrapper(BaseWrapper, ABC):
         self.env.step(action)
 
         while True:
-            for agent in self.env.agent_iter():
+            for player_name in self.env.agent_iter():
                 observation, reward, termination, truncation, info = self.env.last()
-                if self.self_player == agent:
+                if self.self_player == player_name:
                     return copy.copy(observation), reward, termination, truncation, info
                 if termination or truncation:
                     return (
@@ -133,6 +133,6 @@ class BaseMultiPlayerWrapper(BaseWrapper, ABC):
 
                 else:
                     action = self.get_opponent_action(
-                        agent, observation, termination, truncation, info
+                        player_name, observation, termination, truncation, info
                     )
                     self.env.step(action)

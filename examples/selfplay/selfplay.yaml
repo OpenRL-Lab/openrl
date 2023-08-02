@@ -1,16 +1,20 @@
+globals:
+  selfplay_api_host: 127.0.0.1
+  selfplay_api_port: 10086
+
 seed: 0
 callbacks:
   - id: "ProgressBarCallback"
   - id: "SelfplayAPI"
     args: {
-        "host": "127.0.0.1",
-        "port": 10086,
+        host: {{ selfplay_api_host }},
+        port: {{ selfplay_api_port }}
     }
   - id: "SelfplayCallback"
     args: {
         "save_freq": 100, # how often to save the model
         "opponent_pool_path": "./opponent_pool/",  # where to save opponents
         "name_prefix": "opponent", # the prefix of the saved model
-        "api_address": "http://127.0.0.1:10086/selfplay/",
+        "api_address": "http://{{ selfplay_api_host }}:{{ selfplay_api_port }}/selfplay/",
          "verbose": 2,
     }
