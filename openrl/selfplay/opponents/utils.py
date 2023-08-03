@@ -107,7 +107,7 @@ def get_opponent_from_info(
 ) -> Tuple[Optional[BaseOpponent], bool]:
     opponent_id = opponent_info["opponent_id"]
     opponent_path = opponent_info["opponent_path"]
-    opponent_type = opponent_info["opponent_type"]
+
     is_new_opponent = False
     if current_opponent is not None and current_opponent.opponent_id == opponent_id:
         return current_opponent, is_new_opponent
