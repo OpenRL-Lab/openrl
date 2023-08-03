@@ -15,6 +15,9 @@
 # limitations under the License.
 
 """"""
+import time
+from typing import List
+
 import requests
 
 
@@ -22,9 +25,25 @@ class SelfPlayClient:
     def __init__(self, address: str):
         self.address = address
 
-    @staticmethod
-    def add_agent(address: str, agent_id: str, agent_info: dict):
+    def add_opponent(self, opponent_id: str, opponent_info: dict):
         response = requests.post(
-            f"{address}add", json={"agent_id": agent_id, "agent_info": agent_info}
+            f"{self.address}add_opponent",
+            json={"opponent_id": opponent_id, "opponent_info": opponent_info},
         )
-        print(response.json())
+        return response.json()
+
+    def get_opponent(self, opponent_players: List[str]):
+        try:
+            request_url = f"{self.address}get_opponent"
+            results = []
+            for opponent_player in opponent_players:
+                # if you want to get different types of opponents for different players, you can pass the player name to the request (TODO)
+                response = requests.get(request_url)
+
+                if response.status_code == 404:
+                    return None
+                else:
+                    results.append(response.json())
+            return results
+        except:
+            return None

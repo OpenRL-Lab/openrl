@@ -17,11 +17,12 @@
 """"""
 
 
-import tempfile
 import re
+import tempfile
+
 import yaml
-from jinja2 import Template, Environment, meta
-from jsonargparse import ArgumentParser, ActionConfigFile
+from jinja2 import Environment, Template, meta
+from jsonargparse import ActionConfigFile, ArgumentParser
 
 
 class ProcessYamlAction(ActionConfigFile):

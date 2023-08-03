@@ -15,13 +15,14 @@
 # limitations under the License.
 
 """"""
-import os
 import json
-
+import os
+import shutil
 from pathlib import Path
-from typing import Union
+from typing import Optional, Union
 
 from openrl.selfplay.callbacks.base_callback import BaseSelfplayCallback
+from openrl.selfplay.opponents.opponent_template import OpponentTemplate
 from openrl.selfplay.selfplay_api.selfplay_client import SelfPlayClient
 
 
@@ -53,43 +54,60 @@ class SelfplayCallback(BaseSelfplayCallback):
         api_address: str,
         name_prefix: str = "opponent",
         save_replay_buffer: bool = False,
+        opponent_template: Optional[str] = None,
+        clear_past_opponents: bool = False,
+        copy_script_file: bool = False,
         verbose: int = 0,
     ):
         super().__init__(verbose)
+
         self.save_freq = save_freq
-        self.opponent_pool_path = opponent_pool_path
+        if isinstance(opponent_pool_path, str):
+            self.opponent_pool_path = Path(opponent_pool_path)
         self.name_prefix = name_prefix
         self.save_replay_buffer = save_replay_buffer
         self.api_address = api_address
+        self.api_client = SelfPlayClient(api_address)
+        self.opponent_template = OpponentTemplate(opponent_template, copy_script_file)
+        self.clear_past_opponents = clear_past_opponents
 
     def _init_callback(self) -> None:
+        if self.clear_past_opponents and self.opponent_pool_path.exists():
+            shutil.rmtree(self.opponent_pool_path)
+            if self.verbose >= 2:
+                print(f"Removed past opponents in {self.opponent_pool_path}")
         # Create folder if needed
         self.last_opponent_link = Path(self.opponent_pool_path) / "latest"
         if self.opponent_pool_path is not None:
             os.makedirs(self.opponent_pool_path, exist_ok=True)
-
         self.save_opponent()
 
     def save_opponent(self):
-        model_path = self._checkpoint_path()
-        self.agent.save(model_path)
+        opponent_path = self.get_opponent_path()
+        self.agent.save(opponent_path)
 
-        info = {"num_time_steps": self.num_time_steps}
-        json.dump(info, open(model_path / "info.json", "w"))
+        opponent_info = {"num_time_steps": self.num_time_steps}
+        self.opponent_template.save(opponent_path, opponent_info)
+        # json.dump(info, open(opponent_path / "info.json", "w"))
 
         if os.path.islink(self.last_opponent_link):
             os.unlink(self.last_opponent_link)
 
-        os.symlink(model_path.absolute(), self.last_opponent_link)
+        os.symlink(opponent_path.absolute(), self.last_opponent_link)
 
-        SelfPlayClient.add_agent(
-            self.api_address, model_path.stem, {"model_path": str(model_path)}
+        response = self.api_client.add_opponent(
+            opponent_path.stem,
+            {
+                "opponent_path": str(opponent_path.absolute()),
+                "opponent_type": self.opponent_template.opponent_info["opponent_type"],
+            },
         )
 
         if self.verbose >= 2:
-            print(f"Saving opponent to {model_path}")
+            print(response)
+            print(f"Opponent is saved to {str(opponent_path.absolute())}")
 
-    def _checkpoint_path(self, checkpoint_type: str = "", extension: str = "") -> Path:
+    def get_opponent_path(self, checkpoint_type: str = "", extension: str = "") -> Path:
         """
         Helper to get checkpoint path for each type of checkpoint.
 
@@ -99,6 +117,7 @@ class SelfplayCallback(BaseSelfplayCallback):
         """
         return (
             Path(self.opponent_pool_path)
+            / "opponents"
             / f"{self.name_prefix}_{checkpoint_type}{self.num_time_steps}_steps{'.' if extension else ''}{extension}"
         )
 

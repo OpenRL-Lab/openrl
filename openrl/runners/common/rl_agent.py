@@ -167,6 +167,9 @@ class RLAgent(BaseAgent):
     def act(self, **kwargs) -> None:
         raise NotImplementedError
 
+    def reset(self):
+        self.net.reset()
+
     def set_env(
         self,
         env: Union[gym.Env, str],

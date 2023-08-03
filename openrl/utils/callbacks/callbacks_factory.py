@@ -1,5 +1,7 @@
 from typing import Any, Dict, List, Type, Union
 
+from openrl.selfplay.callbacks.selfplay_api import SelfplayAPI
+from openrl.selfplay.callbacks.selfplay_callback import SelfplayCallback
 from openrl.utils.callbacks.callbacks import BaseCallback, CallbackList, EveryNTimesteps
 from openrl.utils.callbacks.checkpoint_callback import CheckpointCallback
 from openrl.utils.callbacks.eval_callback import EvalCallback
@@ -9,8 +11,6 @@ from openrl.utils.callbacks.stop_callback import (
     StopTrainingOnNoModelImprovement,
     StopTrainingOnRewardThreshold,
 )
-from openrl.selfplay.callbacks.selfplay_callback import SelfplayCallback
-from openrl.selfplay.callbacks.selfplay_api import SelfplayAPI
 
 callbacks_dict = {
     "CheckpointCallback": CheckpointCallback,

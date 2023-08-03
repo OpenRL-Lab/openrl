@@ -3,6 +3,10 @@ globals:
   selfplay_api_port: 10086
 
 seed: 0
+selfplay_api:
+  host: {{ selfplay_api_host }}
+  port: {{ selfplay_api_port }}
+lazy_load_opponent: true # if true, when the opponents are the same opponent_type, will only load the weight. Otherwise, will load the pythoon script.
 callbacks:
   - id: "ProgressBarCallback"
   - id: "SelfplayAPI"
@@ -16,5 +20,8 @@ callbacks:
         "opponent_pool_path": "./opponent_pool/",  # where to save opponents
         "name_prefix": "opponent", # the prefix of the saved model
         "api_address": "http://{{ selfplay_api_host }}:{{ selfplay_api_port }}/selfplay/",
+        "opponent_template": "./opponent_templates/tictactoe_opponent",
+        "clear_past_opponents": true,
+        "copy_script_file": false,
          "verbose": 2,
     }

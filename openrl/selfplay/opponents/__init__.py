@@ -15,11 +15,3 @@
 # limitations under the License.
 
 """"""
-from typing import Optional
-
-from openrl.selfplay.wrappers.base_multiplayer_wrapper import BaseMultiPlayerWrapper
-
-
-class TwoPlayerWrapper(BaseMultiPlayerWrapper):
-    def reset(self, *, seed: Optional[int] = None, **kwargs):
-        return super().reset(seed=seed, **kwargs)

@@ -16,10 +16,9 @@
 
 """"""
 
+import ray
 import requests
-
 from ray import serve
-
 
 from openrl.selfplay.callbacks.base_callback import BaseSelfplayCallback
 from openrl.selfplay.selfplay_api.selfplay_api import SelfplayAPIServer
@@ -31,8 +30,6 @@ class SelfplayAPI(BaseSelfplayCallback):
 
         self.host = host
         self.port = port
-        print(self.host, self.port)
-        exit()
 
     def _init_callback(self) -> None:
         serve.start(
@@ -52,12 +49,13 @@ class SelfplayAPI(BaseSelfplayCallback):
         # response = requests.get("http://localhost:52365/api/serve/deployments/")
         # status_info = response.json()
         # print(status_info)
-
         return True
 
     def _on_training_end(self) -> None:
         application_name = "SelfplayAPIServer"
-        print(f"deleting {application_name}")
+        if self.verbose >= 2:
+            print(f"deleting {application_name}")
         serve.delete(application_name)
         del self.bind
-        print(f"delete {application_name} done!")
+        if self.verbose >= 2:
+            print(f"delete {application_name} done!")

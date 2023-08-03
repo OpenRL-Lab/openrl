@@ -16,41 +16,52 @@
 
 """"""
 
+import logging
 from abc import ABC
-from typing import Dict
+from typing import Dict, Optional
 
-from fastapi import FastAPI
 import trueskill
+from fastapi import FastAPI
 from pydantic import BaseModel
 
 
-class AgentData(BaseModel):
-    agent_id: str
-    agent_info: Dict[str, str]
+class OpponentData(BaseModel):
+    opponent_id: str
+    opponent_info: Dict[str, str]
 
 
 class SkillData(BaseModel):
-    agent_id: str
+    opponent_id: str
     other_id: str
     result: int
 
 
-class Agent:
-    def __init__(self, id, model_path=None):
-        self.id = id
-        self.model_path = model_path
+class OpponentModel:
+    def __init__(
+        self,
+        opponent_id: str,
+        opponent_path: Optional[str] = None,
+        opponent_info: Optional[Dict[str, str]] = None,
+    ):
+        self.opponent_id = opponent_id
+        self.opponent_path = opponent_path
+        self.opponent_info = opponent_info
         self.skill = trueskill.Rating()
         self.num_games = 0
         self.num_wins = 0
         self.num_losses = 0
         self.num_draws = 0
 
-    def update_skill(self, other_agent, result):
+    @property
+    def opponent_type(self):
+        return self.opponent_info["opponent_type"]
+
+    def update_skill(self, other_opponent, result):
         new_rating1, new_rating2 = trueskill.rate_1vs1(
-            self.skill, other_agent.skill, result
+            self.skill, other_opponent.skill, result
         )
         self.skill = new_rating1
-        other_agent.skill = new_rating2
+        other_opponent.skill = new_rating2
 
 
 app = FastAPI()
@@ -58,4 +69,6 @@ app = FastAPI()
 
 class BaseSelfplayAPIServer(ABC):
     def __init__(self):
-        self.agents = {}
+        logger = logging.getLogger("ray.serve")
+        logger.setLevel(logging.ERROR)
+        self.opponents = []

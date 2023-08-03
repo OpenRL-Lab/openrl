@@ -18,29 +18,47 @@
 
 
 from ray import serve
+
 from openrl.selfplay.selfplay_api.base_api import (
     BaseSelfplayAPIServer,
-    app,
-    AgentData,
+    OpponentData,
+    OpponentModel,
     SkillData,
-    Agent,
+    app,
 )
 
 
 @serve.deployment(route_prefix="/selfplay")
 @serve.ingress(app)
 class SelfplayAPIServer(BaseSelfplayAPIServer):
-    @app.post("/add")
-    async def add_agent(self, agent_data: AgentData):
-        agent_id = agent_data.agent_id
-        self.agents[agent_id] = Agent(
-            agent_id, model_path=agent_data.agent_info["model_path"]
+    @app.post("/add_opponent")
+    async def add_opponent(self, opponent_data: OpponentData):
+        opponent_id = opponent_data.opponent_id
+        self.opponents.append(
+            OpponentModel(
+                opponent_id,
+                opponent_path=opponent_data.opponent_info["opponent_path"],
+                opponent_info=opponent_data.opponent_info,
+            )
         )
         return {
-            "msg": f"Agent {agent_id} added with model path: {agent_data.agent_info['model_path']}"
+            "add_opponent reponse msg": (
+                f"Opponent {opponent_id} added with model path:"
+                f" {opponent_data.opponent_info['opponent_path']}"
+            )
+        }
+
+    @app.get("/get_opponent")
+    async def get_opponent(self):
+        return {
+            "opponent_id": self.opponents[-1].opponent_id,
+            "opponent_path": self.opponents[-1].opponent_path,
+            "opponent_type": self.opponents[-1].opponent_type,
         }
 
     @app.post("/update_skill")
     async def update_skill(self, data: SkillData):
-        self.agents[data.agent_id].update_skill(self.agents[data.other_id], data.result)
+        self.opponents[data.opponent_id].update_skill(
+            self.opponents[data.other_id], data.result
+        )
         return {"msg": "Skill updated."}
