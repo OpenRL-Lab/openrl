@@ -42,7 +42,7 @@ The main branch is the latest version of OpenRL, which is under active developme
 </div>
 
 OpenRL is an open-source general reinforcement learning research framework that supports training for various tasks 
-such as single-agent, multi-agent, offline RL, and natural language. 
+such as single-agent, multi-agent, offline RL, self-play, and natural language. 
 Developed based on PyTorch, the goal of OpenRL is to provide a simple-to-use, flexible, efficient and sustainable platform for the reinforcement learning research community.
 
 Currently, the features supported by OpenRL include:
@@ -50,6 +50,8 @@ Currently, the features supported by OpenRL include:
 - A simple-to-use universal interface that supports training for both single-agent and multi-agent
 
 - Support for offline RL training with expert dataset
+
+- Support self-play training
 
 - Reinforcement learning training support for natural language tasks (such as dialogue)
 
