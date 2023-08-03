@@ -22,8 +22,10 @@ from openrl.selfplay.wrappers.base_multiplayer_wrapper import BaseMultiPlayerWra
 
 
 class HumanOpponentWrapper(BaseMultiPlayerWrapper):
-    def get_opponent_action(self, agent, observation, termination, truncation, info):
+    def get_opponent_action(
+        self, player_name, observation, reward, termination, truncation, info
+    ):
         action = self.env.get_human_action(
-            agent, observation, termination, truncation, info
+            player_name, observation, termination, truncation, info
         )
         return action

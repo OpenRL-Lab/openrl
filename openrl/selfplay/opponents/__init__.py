@@ -15,20 +15,3 @@
 # limitations under the License.
 
 """"""
-import copy
-from typing import Optional, Union
-
-import numpy as np
-from gymnasium import spaces
-from gymnasium.core import ActType, ObsType, WrapperActType, WrapperObsType
-
-from openrl.selfplay.wrappers.base_multiplayer_wrapper import BaseMultiPlayerWrapper
-
-
-class RandomOpponentWrapper(BaseMultiPlayerWrapper):
-    def get_opponent_action(
-        self, player_name, observation, reward, termination, truncation, info
-    ):
-        mask = observation["action_mask"]
-        action = self.env.action_space(player_name).sample(mask)
-        return action

@@ -33,7 +33,6 @@ from openrl.rewards import RewardFactory
 
 def make(
     id: str,
-    cfg=None,
     env_num: int = 1,
     asynchronous: bool = False,
     add_monitor: bool = True,
@@ -42,6 +41,7 @@ def make(
     auto_reset: bool = True,
     **kwargs,
 ) -> BaseVecEnv:
+    cfg = kwargs.get("cfg", None)
     if render_mode in [None, "human", "rgb_array"]:
         convert_render_mode = render_mode
     elif render_mode in ["group_human", "group_rgb_array"]:

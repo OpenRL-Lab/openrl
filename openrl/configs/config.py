@@ -18,6 +18,8 @@ from typing import List
 
 from jsonargparse import ActionConfigFile, ArgumentParser
 
+from openrl.configs.utils import ProcessYamlAction
+
 
 def create_config_parser():
     """
@@ -26,6 +28,7 @@ def create_config_parser():
     parser = ArgumentParser(
         description="openrl",
     )
+    parser.add_argument("--config", action=ProcessYamlAction)
     parser.add_argument("--seed", type=int, default=0, help="Random seed.")
     # For Transformers
     parser.add_argument("--encode_state", action="store_true", default=False)
@@ -121,6 +124,27 @@ def create_config_parser():
         "--sample_interval", type=int, default=1, help="data sample interval"
     )
     # For Self-Play
+    parser.add_argument(
+        "--selfplay_api.host",
+        default="127.0.0.1",
+        type=str,
+        help="host for selfplay api",
+    )
+    parser.add_argument(
+        "--selfplay_api.port",
+        default=10086,
+        type=int,
+        help="port for selfplay api",
+    )
+    parser.add_argument(
+        "--lazy_load_opponent",
+        default=True,
+        type=bool,
+        help=(
+            "if true, when the opponents are the same opponent_type, will only load the"
+            " weight. Otherwise, will load the pythoon script."
+        ),
+    )
     parser.add_argument(
         "--self_play",
         action="store_true",
@@ -787,6 +811,12 @@ def create_config_parser():
         default=5,
         help="time duration between contiunous twice log printing.",
     )
+    parser.add_argument(
+        "--use_rich_handler",
+        type=bool,
+        default=True,
+        help="whether to use rich handler to print log.",
+    )
     # eval parameters
     parser.add_argument(
         "--use_eval",
@@ -1146,7 +1176,6 @@ def create_config_parser():
         default=[],
         help="the id of the vec env's info class",
     )
-    parser.add_argument("--config", action=ActionConfigFile)
 
     # selfplay parameters
     parser.add_argument(
