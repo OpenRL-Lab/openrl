@@ -1,6 +1,6 @@
 from typing import Any, Dict, List, Type, Union
 
-from openrl.selfplay.callbacks.selfplay_api import SelfplayAPI
+
 from openrl.selfplay.callbacks.selfplay_callback import SelfplayCallback
 from openrl.utils.callbacks.callbacks import BaseCallback, CallbackList, EveryNTimesteps
 from openrl.utils.callbacks.checkpoint_callback import CheckpointCallback
@@ -21,7 +21,6 @@ callbacks_dict = {
     "ProgressBarCallback": ProgressBarCallback,
     "EveryNTimesteps": EveryNTimesteps,
     "SelfplayCallback": SelfplayCallback,
-    "SelfplayAPI": SelfplayAPI,
 }
 
 
@@ -30,6 +29,9 @@ class CallbackFactory:
     def get_callback(
         callback: Dict[str, Any],
     ) -> BaseCallback:
+        if callback["id"] == "SelfplayAPI":
+            from openrl.selfplay.callbacks.selfplay_api import SelfplayAPI
+            callbacks_dict["SelfplayAPI"] = SelfplayAPI
         if callback["id"] not in callbacks_dict:
             raise ValueError(f"Callback {callback['id']} not found")
         if "args" in callback:
