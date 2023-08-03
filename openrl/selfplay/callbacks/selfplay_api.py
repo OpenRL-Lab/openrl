@@ -16,8 +16,6 @@
 
 """"""
 
-import ray
-import requests
 from ray import serve
 
 from openrl.selfplay.callbacks.base_callback import BaseSelfplayCallback
