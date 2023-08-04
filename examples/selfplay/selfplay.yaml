@@ -12,7 +12,8 @@ callbacks:
   - id: "SelfplayAPI"
     args: {
         host: {{ selfplay_api_host }},
-        port: {{ selfplay_api_port }}
+        port: {{ selfplay_api_port }},
+        sample_strategy: "RandomOpponent",
     }
   - id: "SelfplayCallback"
     args: {
