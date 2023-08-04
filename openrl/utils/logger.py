@@ -108,7 +108,10 @@ class Logger:
         if hasattr(self.cfg, "render"):
             self.cfg.render_save_path = run_dir / "render.png"
 
-        handlers = [RichHandler()]
+        handlers = []
+        if self.cfg.use_rich_handler:
+            handlers.append(RichHandler())
+
         if run_dir is not None:
             log_file = os.path.join(run_dir, "log.txt")
             handlers.append(logging.FileHandler(log_file))

@@ -27,10 +27,10 @@
 [![Contributors](https://img.shields.io/github/contributors/OpenRL-Lab/openrl)](https://github.com/OpenRL-Lab/openrl/graphs/contributors)
 [![GitHub license](https://img.shields.io/github/license/OpenRL-Lab/openrl)](https://github.com/OpenRL-Lab/openrl/blob/master/LICENSE)
 
-[![Embark](https://img.shields.io/badge/discord-OpenRL-%237289da.svg?logo=discord)](https://discord.gg/uHNTPpsJ)
+[![Embark](https://img.shields.io/badge/discord-OpenRL-%237289da.svg?logo=discord)](https://discord.gg/qfPBcVvT)
 [![slack badge](https://img.shields.io/badge/Slack-join-blueviolet?logo=slack&amp)](https://join.slack.com/t/openrlhq/shared_invite/zt-1tqwpvthd-Eeh0IxQ~DIaGqYXoW2IUQg)
 
-OpenRL-v0.0.14 is updated on July 7, 2023
+OpenRL-v0.0.16 is updated on July 30, 2023
 
 The main branch is the latest version of OpenRL, which is under active development. If you just want to have a try with OpenRL, you can switch to the stable branch.
 
@@ -42,17 +42,19 @@ The main branch is the latest version of OpenRL, which is under active developme
     用心做好强化学习框架，欢迎提出宝贵意见   <br><br>
 </div>
 
-OpenRL是一个开源的通用强化学习研究框架，支持单智能体、多智能体、离线强化学习、自然语言等多种任务的训练。 OpenRL基于PyTorch进行开发，目标是为强化学习研究社区提供一个简单易用、灵活高效、可持续扩展的平台。
+OpenRL是一个开源的通用强化学习研究框架，支持单智能体、多智能体、离线强化学习、自博弈训练、自然语言等多种任务的训练。 OpenRL基于PyTorch进行开发，目标是为强化学习研究社区提供一个简单易用、灵活高效、可持续扩展的平台。
 目前，OpenRL支持的特性包括：
 
 - 简单易用且支持单智能体、多智能体训练的通用接口
 - 支持通过专家数据进行离线强化学习训练
+- 支持自博弈训练
 - 支持自然语言任务（如对话任务）的强化学习训练
 - 支持从[Hugging Face](https://huggingface.co/)上导入模型和数据
 - 支持LSTM，GRU，Transformer等模型
 - 支持多种训练加速，例如：自动混合精度训练，半精度策略网络收集数据等
 - 支持用户自定义训练模型、奖励模型、训练数据以及环境
 - 支持[gymnasium](https://gymnasium.farama.org/)环境
+- 支持[Callbacks](https://openrl-docs.readthedocs.io/zh/latest/callbacks/index.html)，可以用于实现日志记录、保存、提前停止等各种功能
 - 支持字典观测空间
 - 支持[wandb](https://wandb.ai/)，[tensorboardX](https://tensorboardx.readthedocs.io/en/latest/index.html)等主流训练可视化工具
 - 支持环境的串行和并行训练，同时保证两种模式下的训练效果一致
@@ -70,6 +72,7 @@ OpenRL目前支持的算法（更多详情请参考 [Gallery](Gallery.md)）：
 - [Deep Q-Network (DQN)](https://arxiv.org/abs/1312.5602)
 - [Multi-Agent Transformer (MAT)](https://arxiv.org/abs/2205.14953)
 - [Value-Decomposition Network (VDN)](https://arxiv.org/abs/1706.05296)
+- [Soft Actor Critic (SAC)](https://arxiv.org/abs/1812.05905)
 - [Deep Deterministic Policy Gradient (DDPG)](https://arxiv.org/abs/1509.02971)
 
 OpenRL目前支持的环境（更多详情请参考 [Gallery](Gallery.md)）：
@@ -79,8 +82,9 @@ OpenRL目前支持的环境（更多详情请参考 [Gallery](Gallery.md)）：
 - [Chat Bot](https://openrl-docs.readthedocs.io/en/latest/quick_start/train_nlp.html)
 - [Atari](https://gymnasium.farama.org/environments/atari/)
 - [StarCraft II](https://github.com/oxwhirl/smac)
+- [PettingZoo](https://pettingzoo.farama.org/)
+- [Omniverse Isaac Gym](https://github.com/NVIDIA-Omniverse/OmniIsaacGymEnvs)
 - [GridWorld](./examples/gridworld/)
-- [Tic-Tac-Toe](https://en.wikipedia.org/wiki/Tic-tac-toe)
 - [Super Mario Bros](https://github.com/Kautenja/gym-super-mario-bros)
 - [Gym Retro](https://github.com/openai/retro)
 
@@ -241,7 +245,7 @@ openrl --mode train --env CartPole-v1
 </div>
 
 - 加入 [slack](https://join.slack.com/t/openrlhq/shared_invite/zt-1tqwpvthd-Eeh0IxQ~DIaGqYXoW2IUQg) 群组，与我们一起讨论OpenRL的使用和开发。
-- 加入 [Discord](https://discord.gg/tyy96TGbep) 群组，与我们一起讨论OpenRL的使用和开发。
+- 加入 [Discord](https://discord.gg/qfPBcVvT) 群组，与我们一起讨论OpenRL的使用和开发。
 - 发送邮件到: [huangshiyu@4paradigm.com](huangshiyu@4paradigm.com)
 - 加入 [GitHub Discussion](https://github.com/orgs/OpenRL-Lab/discussions)
 

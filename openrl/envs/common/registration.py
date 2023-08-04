@@ -33,14 +33,15 @@ from openrl.rewards import RewardFactory
 
 def make(
     id: str,
-    cfg=None,
     env_num: int = 1,
     asynchronous: bool = False,
     add_monitor: bool = True,
     render_mode: Optional[str] = None,
     make_custom_envs: Optional[Callable] = None,
+    auto_reset: bool = True,
     **kwargs,
 ) -> BaseVecEnv:
+    cfg = kwargs.get("cfg", None)
     if render_mode in [None, "human", "rgb_array"]:
         convert_render_mode = render_mode
     elif render_mode in ["group_human", "group_rgb_array"]:
@@ -135,9 +136,9 @@ def make(
             raise NotImplementedError(f"env {id} is not supported.")
 
     if asynchronous:
-        env = AsyncVectorEnv(env_fns, render_mode=render_mode)
+        env = AsyncVectorEnv(env_fns, render_mode=render_mode, auto_reset=auto_reset)
     else:
-        env = SyncVectorEnv(env_fns, render_mode=render_mode)
+        env = SyncVectorEnv(env_fns, render_mode=render_mode, auto_reset=auto_reset)
 
     reward_class = cfg.reward_class if cfg else None
     reward_class = RewardFactory.get_reward_class(reward_class, env)

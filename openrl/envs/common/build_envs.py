@@ -1,7 +1,10 @@
 import copy
+import inspect
 from typing import Callable, Iterable, List, Optional, Union
 
 from gymnasium import Env
+
+from openrl.envs.wrappers.base_wrapper import BaseWrapper
 
 
 def build_envs(
@@ -14,6 +17,8 @@ def build_envs(
     need_env_id: bool = False,
     **kwargs,
 ) -> List[Callable[[], Env]]:
+    cfg = kwargs.get("cfg", None)
+
     def create_env(env_id: int, env_num: int, need_env_id: bool) -> Callable[[], Env]:
         """Creates an environment that can enable or disable the environment checker."""
         # If the env_id > 0 then disable the environment checker otherwise use the parameter
@@ -38,12 +43,21 @@ def build_envs(
 
             if wrappers is not None:
                 if callable(wrappers):
-                    env = wrappers(env)
+                    if issubclass(wrappers, BaseWrapper):
+                        env = wrappers(env, cfg=cfg)
+                    else:
+                        env = wrappers(env)
                 elif isinstance(wrappers, Iterable) and all(
                     [callable(w) for w in wrappers]
                 ):
                     for wrapper in wrappers:
-                        env = wrapper(env)
+                        if (
+                            issubclass(wrapper, BaseWrapper)
+                            and "cfg" in inspect.signature(wrapper.__init__).parameters
+                        ):
+                            env = wrapper(env, cfg=cfg)
+                        else:
+                            env = wrapper(env)
                 else:
                     raise NotImplementedError
 

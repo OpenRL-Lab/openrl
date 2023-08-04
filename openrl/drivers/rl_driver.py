@@ -147,7 +147,7 @@ class RLDriver(BaseDriver, ABC):
         self.episodes = episodes
 
         self.reset_and_buffer_init()
-
+        self.real_step = 0
         for episode in range(episodes):
             self.logger.info("Episode: {}/{}".format(episode, episodes))
             self.episode = episode

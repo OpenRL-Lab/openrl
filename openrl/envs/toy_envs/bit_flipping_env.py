@@ -29,8 +29,8 @@ class BitFlippingEnv(Env):
 
     def __init__(
         self,
-        n_bits: int = 10,
-        continuous: bool = False,
+        n_bits: int = 2,
+        continuous: bool = True,
         max_steps: Optional[int] = None,
         discrete_obs_space: bool = False,
         image_obs_space: bool = False,
@@ -160,6 +160,7 @@ class BitFlippingEnv(Env):
                 ("desired_goal", self.convert_if_needed(self.desired_goal.copy())),
             ]
         )
+
         return obs
 
     def reset(

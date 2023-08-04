@@ -41,6 +41,7 @@ class SyncVectorEnv(BaseVecEnv):
         action_space: Space = None,
         copy: bool = True,
         render_mode: Optional[str] = None,
+        auto_reset: bool = True,
     ):
         """Vectorized environment that serially runs multiple environments.
 
@@ -76,6 +77,7 @@ class SyncVectorEnv(BaseVecEnv):
             observation_space=observation_space,
             action_space=action_space,
             render_mode=render_mode,
+            auto_reset=auto_reset,
         )
 
         self._check_spaces()
@@ -210,9 +212,10 @@ class SyncVectorEnv(BaseVecEnv):
                 ) = returns
                 need_reset = _need_reset and all(self._terminateds[i])
 
-            if need_reset:
+            if need_reset and self.auto_reset:
                 old_observation, old_info = observation, info
                 observation, info = env.reset()
+                info = deepcopy(info)
                 info["final_observation"] = old_observation
                 info["final_info"] = old_info
 
@@ -271,6 +274,8 @@ class SyncVectorEnv(BaseVecEnv):
     def env_name(self):
         if hasattr(self.envs[0], "env_name"):
             return self.envs[0].env_name
+        elif "name" in self.metadata:
+            self._env_name = self.metadata["name"]
         else:
             return self.envs[0].unwrapped.spec.id
 

@@ -1,0 +1,9 @@
+seed: 0
+episode_length: 300
+layer_N: 5
+log_interval: 5
+gamma: 0.99
+var: 3
+actor_lr: 0.0003
+critic_lr: 0.0003
+hidden_size: 256

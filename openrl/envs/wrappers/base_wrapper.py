@@ -15,7 +15,7 @@
 # limitations under the License.
 
 """"""
-from typing import Any, Dict, Optional, SupportsFloat, Tuple, TypeVar
+from typing import Any, Dict, Optional, SupportsFloat, Tuple, TypeVar, Union
 
 import gymnasium as gym
 from gymnasium.core import ActType, ObsType, WrapperObsType
@@ -24,8 +24,9 @@ ArrayType = TypeVar("ArrayType")
 
 
 class BaseWrapper(gym.Wrapper):
-    def __init__(self, env, reward_class=None) -> None:
+    def __init__(self, env, cfg=None, reward_class=None) -> None:
         super().__init__(env)
+        self.cfg = cfg
         self.reward_class = reward_class
 
     def step(self, action):
@@ -55,6 +56,10 @@ class BaseWrapper(gym.Wrapper):
         else:
             return False
 
+    def set_render_mode(self, render_mode: Union[None, str]):
+        if hasattr(self.env, "set_render_mode"):
+            self.env.set_render_mode(render_mode)
+
 
 class BaseObservationWrapper(BaseWrapper):
     def reset(
@@ -69,10 +74,9 @@ class BaseObservationWrapper(BaseWrapper):
     ) -> Tuple[WrapperObsType, SupportsFloat, bool, bool, Dict[str, Any]]:
         """Modifies the :attr:`env` after calling :meth:`step` using :meth:`self.observation` on the returned observations."""
         results = self.env.step(action)
-
         observation = results[0]
-
-        return self.observation(observation), *results[1:]
+        new_obs = self.observation(observation)
+        return new_obs, *results[1:]
 
     def observation(self, observation: ObsType) -> WrapperObsType:
         """Returns a modified observation.
@@ -87,8 +91,8 @@ class BaseObservationWrapper(BaseWrapper):
 
 
 class BaseRewardWrapper(BaseWrapper):
-    def __init__(self, env):
-        super().__init__(env)
+    def __init__(self, env, cfg=None):
+        super().__init__(env, cfg)
 
     def step(
         self, action: ActType

@@ -4,6 +4,7 @@ import gymnasium as gym
 import numpy as np
 from gymnasium import spaces
 from gymnasium.envs.registration import EnvSpec
+from gymnasium.utils import seeding
 
 from openrl.utils.type_aliases import GymStepReturn
 
@@ -17,7 +18,7 @@ class IdentityEnv(gym.Env, Generic[T]):
         self,
         dim: Optional[int] = None,
         space: Optional[spaces.Space] = None,
-        ep_length: int = 100,
+        ep_length: int = 10,
     ):
         """
         Identity environment for testing purposes
@@ -31,19 +32,18 @@ class IdentityEnv(gym.Env, Generic[T]):
         """
         if space is None:
             if dim is None:
-                dim = 1
+                dim = 2
             space = spaces.Discrete(dim)
         else:
             assert (
                 dim is None
             ), "arguments for both 'dim' and 'space' provided: at most one allowed"
-
-        self.action_space = self.observation_space = space
+        self.dim = dim
+        self.observation_space = spaces.Discrete(1)
+        self.action_space = space
         self.ep_length = ep_length
         self.current_step = 0
         self.num_resets = -1  # Becomes 0 after __init__ exits.
-        self.seed = 0
-        self.reset()
 
     def reset(
         self,
@@ -52,7 +52,7 @@ class IdentityEnv(gym.Env, Generic[T]):
         options: Optional[Dict[str, Any]] = None,
     ) -> T:
         if seed is not None:
-            self.seed = seed
+            self.seed(seed)
         self.current_step = 0
         self.num_resets += 1
         self._choose_next_state()
@@ -66,13 +66,18 @@ class IdentityEnv(gym.Env, Generic[T]):
         return self.state, reward, done, {}
 
     def _choose_next_state(self) -> None:
-        self.state = [self.action_space.sample()]
+        # self.state = [self.action_space.sample()]
+        self.state = [self._np_random.integers(0, self.dim)]
 
     def _get_reward(self, action: T) -> float:
-        return 1.0 if np.all(self.state == action) else 0.0
+        return 1 if np.all(self.state == action) else 0
 
     def render(self, mode: str = "human") -> None:
         pass
+
+    def seed(self, seed: Optional[int] = None) -> None:
+        if seed is not None:
+            self._np_random, seed = seeding.np_random(seed)
 
 
 class IdentityEnvcontinuous(gym.Env, Generic[T]):
@@ -82,7 +87,7 @@ class IdentityEnvcontinuous(gym.Env, Generic[T]):
         self,
         dim: Optional[int] = None,
         space: Optional[spaces.Space] = None,
-        ep_length: int = 100,
+        ep_length: int = 4,
     ):
         """
         Identity environment for testing purposes
@@ -96,21 +101,26 @@ class IdentityEnvcontinuous(gym.Env, Generic[T]):
         """
         if space is None:
             if dim is None:
-                dim = 1
+                dim = 2
             space = spaces.Discrete(dim)
         else:
             assert (
                 dim is None
             ), "arguments for both 'dim' and 'space' provided: at most one allowed"
-
-        self.observation_space = space
-        self.action_space = spaces.Box(low=-dim, high=dim, shape=(1,))
+        self.dim = dim
+        self.state_generator = space.sample
+        self.observation_space = spaces.Box(low=0, high=dim, shape=(1,))
+        self.action_space = spaces.Box(low=0, high=dim - 1, shape=(1,))
 
         self.ep_length = ep_length
         self.current_step = 0
         self.num_resets = -1  # Becomes 0 after __init__ exits.
-        self.seed = 0
-        self.reset()
+
+        # self.reset()
+
+    def seed(self, seed: Optional[int] = None) -> None:
+        if seed is not None:
+            self._np_random, seed = seeding.np_random(seed)
 
     def reset(
         self,
@@ -119,10 +129,11 @@ class IdentityEnvcontinuous(gym.Env, Generic[T]):
         options: Optional[Dict[str, Any]] = None,
     ) -> T:
         if seed is not None:
-            self.seed = seed
+            self.seed(seed)
         self.current_step = 0
         self.num_resets += 1
         self._choose_next_state()
+        # print("reset:", self.state)
         return self.state, {}
 
     def step(self, action: T) -> Tuple[T, float, bool, Dict[str, Any]]:
@@ -133,10 +144,11 @@ class IdentityEnvcontinuous(gym.Env, Generic[T]):
         return self.state, reward, done, {}
 
     def _choose_next_state(self) -> None:
-        self.state = [self.observation_space.sample()]
+        # self.state = [self._np_random.randint(0, self.dim - 1)]
+        self.state = [self._np_random.integers(0, self.dim)]
 
     def _get_reward(self, action: T) -> float:
-        r = (self.state - action) ** 2
+        r = 1 - np.abs(self.state - np.clip(action, a_min=0, a_max=self.dim - 1))
         return r
 
     def render(self, mode: str = "human") -> None:

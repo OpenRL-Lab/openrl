@@ -126,9 +126,10 @@ class DDPGModule(RLModule):
     ):
         if masks_batch is None:
             masks_batch = masks
+        actions = self.get_actions(obs_batch)
 
         actor_loss, _ = self.models["critic"](
-            obs_batch, self.get_actions(obs_batch), rnn_states_batch, masks_batch
+            obs_batch, actions, rnn_states_batch, masks_batch
         )
         actor_loss = -actor_loss.mean()
 
@@ -142,23 +143,24 @@ class DDPGModule(RLModule):
         rewards_batch,
         actions_batch,
         masks,
+        next_masks_batch,
         action_masks=None,
         masks_batch=None,
     ):
         if masks_batch is None:
             masks_batch = masks
-
-        target_q_values, _ = self.models["critic_target"](
-            next_obs_batch,
-            self.models["actor_target"](next_obs_batch),
-            rnn_states_batch,
-            masks_batch,
-        )
+        with torch.no_grad():
+            next_q_values, _ = self.models["critic_target"](
+                next_obs_batch,
+                self.models["actor_target"](next_obs_batch),
+                rnn_states_batch,
+                masks_batch,
+            )
         current_q_values, _ = self.models["critic"](
             obs_batch, actions_batch, rnn_states_batch, masks_batch
         )
 
-        return target_q_values, current_q_values
+        return next_q_values, current_q_values
 
     def evaluate_actions(
         self,
@@ -179,6 +181,7 @@ class DDPGModule(RLModule):
         # rnn_states_actor,
         # masks,
         # action_masks=None
+        deterministic: bool,
     ):
         action = self.models["actor"](obs)
 
