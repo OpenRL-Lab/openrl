@@ -64,6 +64,7 @@ def get_extra_requires() -> dict:
             "evaluate",
             "icetk",
         ],
+        "selfplay": ["ray[default]", "ray[serve]", "pettingzoo[classic]"],
         "retro": ["gym-retro"],
         "super_mario": ["gym-super-mario-bros"],
     }
