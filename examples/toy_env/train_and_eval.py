@@ -82,8 +82,7 @@ def test_env():
     step = 0
     while not np.any(done):
         action = env.random_action()
-        pre_obs = copy.copy(obs)
         obs, r, done, info = env.step(action)
         step += 1
-        # print(f"{step}: action: {action}, obs:{pre_obs},reward:{np.mean(r)}")
+
     env.close()

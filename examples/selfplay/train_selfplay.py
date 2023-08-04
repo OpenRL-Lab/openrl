@@ -32,8 +32,7 @@ def train():
     # Create agent
     agent = Agent(net)
     # Begin training
-    agent.train(total_time_steps=300000)
-    # agent.train(total_time_steps=2000)
+    agent.train(total_time_steps=20000)
     env.close()
     agent.save("./selfplay_agent/")
     return agent

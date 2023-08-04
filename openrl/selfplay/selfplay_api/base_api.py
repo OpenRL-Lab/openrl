@@ -36,6 +36,10 @@ class SkillData(BaseModel):
     result: int
 
 
+class SampleStrategyData(BaseModel):
+    sample_strategy: str
+
+
 class OpponentModel:
     def __init__(
         self,
@@ -72,3 +76,4 @@ class BaseSelfplayAPIServer(ABC):
         logger = logging.getLogger("ray.serve")
         logger.setLevel(logging.ERROR)
         self.opponents = []
+        self.sample_strategy = None

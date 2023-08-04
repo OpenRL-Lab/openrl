@@ -1,5 +1,5 @@
 __TITLE__ = "openrl"
-__VERSION__ = "v0.0.16"
+__VERSION__ = "v0.1.0"
 __DESCRIPTION__ = "Distributed Deep RL Framework"
 __AUTHOR__ = "OpenRL Contributors"
 __EMAIL__ = "huangshiyu@4paradigm.com"

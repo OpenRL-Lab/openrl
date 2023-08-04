@@ -15,14 +15,16 @@
 # limitations under the License.
 
 """"""
-
+import time
 
 from ray import serve
 
+from openrl.selfplay.sample_strategy import SampleStrategyFactory
 from openrl.selfplay.selfplay_api.base_api import (
     BaseSelfplayAPIServer,
     OpponentData,
     OpponentModel,
+    SampleStrategyData,
     SkillData,
     app,
 )
@@ -31,6 +33,22 @@ from openrl.selfplay.selfplay_api.base_api import (
 @serve.deployment(route_prefix="/selfplay")
 @serve.ingress(app)
 class SelfplayAPIServer(BaseSelfplayAPIServer):
+    @app.post("/set_sample_strategy")
+    async def set_sample_strategy(self, sample_strategy_data: SampleStrategyData):
+        try:
+            self.sample_strategy = SampleStrategyFactory.get_sample_strategy(
+                sample_strategy_data.sample_strategy
+            )()
+        except KeyError:
+            return {
+                "success": False,
+                "error": (
+                    f"Sample strategy {sample_strategy_data.sample_strategy} not found."
+                ),
+            }
+
+        return {"success": True}
+
     @app.post("/add_opponent")
     async def add_opponent(self, opponent_data: OpponentData):
         opponent_id = opponent_data.opponent_id
@@ -50,10 +68,14 @@ class SelfplayAPIServer(BaseSelfplayAPIServer):
 
     @app.get("/get_opponent")
     async def get_opponent(self):
+        while self.sample_strategy is None:
+            time.sleep(1)
+
+        opponent_index = self.sample_strategy.sample_opponent(self.opponents)
         return {
-            "opponent_id": self.opponents[-1].opponent_id,
-            "opponent_path": self.opponents[-1].opponent_path,
-            "opponent_type": self.opponents[-1].opponent_type,
+            "opponent_id": self.opponents[opponent_index].opponent_id,
+            "opponent_path": self.opponents[opponent_index].opponent_path,
+            "opponent_type": self.opponents[opponent_index].opponent_type,
         }
 
     @app.post("/update_skill")

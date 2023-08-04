@@ -1,3 +1,9 @@
+## Install
+
+```shell
+pip install "openrl[selfplay]"
+``` 
+
 ## How to Use
 
 Users can train Tic-Tac-Toe via:

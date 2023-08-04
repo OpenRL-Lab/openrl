@@ -15,19 +15,29 @@
 # limitations under the License.
 
 """"""
+from typing import Optional
 
 from ray import serve
 
 from openrl.selfplay.callbacks.base_callback import BaseSelfplayCallback
 from openrl.selfplay.selfplay_api.selfplay_api import SelfplayAPIServer
+from openrl.selfplay.selfplay_api.selfplay_client import SelfPlayClient
 
 
 class SelfplayAPI(BaseSelfplayCallback):
-    def __init__(self, host: str = "127.0.0.1", port: int = 10086, verbose: int = 0):
+    def __init__(
+        self,
+        host: str = "127.0.0.1",
+        port: int = 10086,
+        sample_strategy: Optional[str] = None,
+        verbose: int = 0,
+    ):
         super().__init__(verbose)
 
         self.host = host
         self.port = port
+        self.sample_strategy = sample_strategy
+        self.api_client = SelfPlayClient(host=host, port=port)
 
     def _init_callback(self) -> None:
         serve.start(
@@ -41,6 +51,13 @@ class SelfplayAPI(BaseSelfplayCallback):
 
         self.bind = SelfplayAPIServer.bind()
         serve.run(self.bind)
+        success = False
+        try_time = 10
+        while not success:
+            success = self.api_client.set_sample_strategy(self.sample_strategy)
+            try_time -= 1
+            if try_time <= 0:
+                raise RuntimeError("Failed to set sample strategy.")
 
     def _on_step(self) -> bool:
         # print("To send request to API server.")
