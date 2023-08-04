@@ -1,6 +1,5 @@
 from typing import Any, Dict, List, Type, Union
 
-
 from openrl.selfplay.callbacks.selfplay_callback import SelfplayCallback
 from openrl.utils.callbacks.callbacks import BaseCallback, CallbackList, EveryNTimesteps
 from openrl.utils.callbacks.checkpoint_callback import CheckpointCallback
@@ -52,6 +51,7 @@ class CallbackFactory:
         for callback in callbacks:
             if callback["id"] == "SelfplayAPI" and "SelfplayAPI" not in callbacks_dict:
                 from openrl.selfplay.callbacks.selfplay_api import SelfplayAPI
+
                 callbacks_dict["SelfplayAPI"] = SelfplayAPI
 
             if callback["id"] not in callbacks_dict:

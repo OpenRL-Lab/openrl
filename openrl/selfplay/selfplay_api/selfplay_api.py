@@ -19,15 +19,15 @@ import time
 
 from ray import serve
 
+from openrl.selfplay.sample_strategy import SampleStrategyFactory
 from openrl.selfplay.selfplay_api.base_api import (
     BaseSelfplayAPIServer,
     OpponentData,
     OpponentModel,
-    SkillData,
     SampleStrategyData,
+    SkillData,
     app,
 )
-from openrl.selfplay.sample_strategy import SampleStrategyFactory
 
 
 @serve.deployment(route_prefix="/selfplay")
