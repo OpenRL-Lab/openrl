@@ -40,6 +40,7 @@ def get_install_requires() -> list:
         "pygame",
         "mujoco",
         "tqdm",
+        "Jinja2",
     ]
 
 
