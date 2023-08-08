@@ -29,7 +29,6 @@ def offline_make(dataset, render_mode, disable_env_checker, **kwargs):
     env_num = kwargs["env_num"]
     seed = kwargs.pop("seed", None)
     assert seed is not None, "seed must be set"
-
     env = OfflineEnv(dataset, env_id, env_num, seed)
     return env
 

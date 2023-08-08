@@ -35,6 +35,7 @@ class VecMonitorWrapper(VecEnvWrapper):
 
     def step(self, action: ActType, extra_data: Optional[Dict[str, Any]] = None):
         returns = self.env.step(action, extra_data)
+
         self.vec_info.append(info=returns[-1])
 
         return returns

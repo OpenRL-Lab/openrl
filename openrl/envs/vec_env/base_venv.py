@@ -116,6 +116,7 @@ class BaseVecEnv(
         :param actions: the action
         :return: observation, reward, done, information
         """
+
         results = self._step(actions)
         self.vector_render()
         return results
@@ -315,7 +316,7 @@ class BaseVecEnv(
         action_masks = prepare_action_masks(
             infos, agent_num=self.agent_num, as_batch=False
         )
-        print(action_masks)
+
         return np.array(
             [
                 [
