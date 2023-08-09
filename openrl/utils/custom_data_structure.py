@@ -15,14 +15,14 @@
 # limitations under the License.
 
 """"""
-
-import random
-
-from openrl.selfplay.opponents.base_opponent import BaseOpponent
-from openrl.selfplay.sample_strategy.base_sample_strategy import BaseSampleStrategy
+from collections import OrderedDict
+from typing import Any
 
 
-class RandomOpponent(BaseSampleStrategy):
-    def sample_opponent(self, opponents) -> BaseOpponent:
-        opponent_index = random.randint(0, len(opponents) - 1)
-        return opponents.get_by_index(opponent_index)
+class ListDict(OrderedDict):
+    def append(self, key: str, value: Any):
+        self[key] = value
+
+    def get_by_index(self, index):
+        key = list(self.keys())[index]
+        return self[key]

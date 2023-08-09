@@ -58,8 +58,8 @@ class TictactoeRender(BaseWrapper):
         return obs
 
     def close(self):
-        self.game.close()
         super().close()
+        self.game.close()
 
     def set_render_mode(self, render_mode: Union[None, str]):
         self.render_mode = render_mode

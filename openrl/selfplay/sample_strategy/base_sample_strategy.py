@@ -19,11 +19,14 @@
 
 from abc import ABC, abstractmethod
 
+from openrl.selfplay.opponents.base_opponent import BaseOpponent
+from openrl.utils.custom_data_structure import ListDict
+
 
 class BaseSampleStrategy(ABC):
     def __init__(self):
         pass
 
     @abstractmethod
-    def sample_opponent(self, opponents) -> int:
+    def sample_opponent(self, opponents: ListDict) -> BaseOpponent:
         raise NotImplementedError

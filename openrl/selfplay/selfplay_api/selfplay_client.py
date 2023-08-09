@@ -15,7 +15,7 @@
 # limitations under the License.
 
 """"""
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 import requests
 
@@ -61,6 +61,24 @@ class SelfPlayClient:
             response = requests.post(
                 f"{self.address}set_sample_strategy",
                 json={"sample_strategy": sample_strategy},
+            )
+            if response.status_code == 404:
+                return False
+            else:
+                r = response.json()
+                if r["success"]:
+                    return True
+                else:
+                    print(r["error"])
+                    return False
+        except:
+            return False
+
+    def add_battle_result(self, battle_info: Dict[str, Any]) -> bool:
+        try:
+            response = requests.post(
+                f"{self.address}add_battle_result",
+                json={"battle_info": battle_info},
             )
             if response.status_code == 404:
                 return False

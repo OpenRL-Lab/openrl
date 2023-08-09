@@ -87,6 +87,7 @@ def get_opponent_from_path(
             opponent_info = json.load(f)
 
     opponent_type = opponent_info["opponent_type"]
+    opponent_id = opponent_info["opponent_id"]
 
     is_new_opponent = False
     if (
@@ -94,7 +95,10 @@ def get_opponent_from_path(
         and current_opponent.opponent_type == opponent_type
         and lazy_load_opponent
     ):
-        return current_opponent.load(opponent_path), is_new_opponent
+        return (
+            current_opponent.load(opponent_path, opponent_id=opponent_id),
+            is_new_opponent,
+        )
     else:
         is_new_opponent = True
         return load_opponent_from_path(opponent_path, opponent_info), is_new_opponent

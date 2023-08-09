@@ -17,17 +17,20 @@
 """"""
 import time
 
+import trueskill
 from ray import serve
 
 from openrl.selfplay.sample_strategy import SampleStrategyFactory
 from openrl.selfplay.selfplay_api.base_api import (
     BaseSelfplayAPIServer,
+    BattleData,
     OpponentData,
     OpponentModel,
     SampleStrategyData,
     SkillData,
     app,
 )
+from openrl.selfplay.selfplay_api.opponent_model import BattleResult
 
 
 @serve.deployment(route_prefix="/selfplay")
@@ -53,11 +56,12 @@ class SelfplayAPIServer(BaseSelfplayAPIServer):
     async def add_opponent(self, opponent_data: OpponentData):
         opponent_id = opponent_data.opponent_id
         self.opponents.append(
+            opponent_id,
             OpponentModel(
                 opponent_id,
                 opponent_path=opponent_data.opponent_info["opponent_path"],
                 opponent_info=opponent_data.opponent_info,
-            )
+            ),
         )
         return {
             "add_opponent reponse msg": (
@@ -71,16 +75,54 @@ class SelfplayAPIServer(BaseSelfplayAPIServer):
         while self.sample_strategy is None:
             time.sleep(1)
 
-        opponent_index = self.sample_strategy.sample_opponent(self.opponents)
+        opponent = self.sample_strategy.sample_opponent(self.opponents)
         return {
-            "opponent_id": self.opponents[opponent_index].opponent_id,
-            "opponent_path": self.opponents[opponent_index].opponent_path,
-            "opponent_type": self.opponents[opponent_index].opponent_type,
+            "opponent_id": opponent.opponent_id,
+            "opponent_path": opponent.opponent_path,
+            "opponent_type": opponent.opponent_type,
         }
 
-    @app.post("/update_skill")
-    async def update_skill(self, data: SkillData):
-        self.opponents[data.opponent_id].update_skill(
-            self.opponents[data.other_id], data.result
+    @app.post("/add_battle_result")
+    async def add_battle_result(self, battle_data: BattleData):
+        battle_info = battle_data.battle_info
+
+        assert "winner_ids" in battle_info, "battle_info must contain winners"
+        assert "loser_ids" in battle_info, "battle_info must contain losers"
+        the_winner = None
+        the_loser = None
+        drawn = False
+
+        if len(battle_info["loser_ids"]) == 0:
+            # draw
+            drawn = True
+            assert "training_agent" in battle_info["winner_ids"]
+            for winner_id in battle_info["winner_ids"]:
+                if winner_id == "training_agent":
+                    the_winner = self.training_agent
+                    the_winner.add_battle_result(BattleResult.DRAW)
+                else:
+                    the_loser = self.opponents[winner_id]
+                    the_loser.add_battle_result(BattleResult.DRAW)
+
+        else:
+            # win
+            for winner_id in battle_info["winner_ids"]:
+                if winner_id == "training_agent":
+                    the_winner = self.training_agent
+                else:
+                    the_winner = self.opponents[winner_id]
+                the_winner.add_battle_result(BattleResult.WIN)
+            # lose
+            for loser_id in battle_info["loser_ids"]:
+                if loser_id == "training_agent":
+                    the_loser = self.training_agent
+                else:
+                    the_loser = self.opponents[loser_id]
+                the_loser.add_battle_result(BattleResult.LOSE)
+
+        # update trueskill
+        the_winner.rating, the_loser.rating = trueskill.rate_1vs1(
+            the_winner.rating, the_loser.rating, drawn=drawn
         )
-        return {"msg": "Skill updated."}
+
+        return {"success": True}

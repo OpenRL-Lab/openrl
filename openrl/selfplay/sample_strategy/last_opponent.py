@@ -16,10 +16,12 @@
 
 """"""
 
+from openrl.selfplay.opponents.base_opponent import BaseOpponent
 from openrl.selfplay.sample_strategy.base_sample_strategy import BaseSampleStrategy
+from openrl.utils.custom_data_structure import ListDict
 
 
 class LastOpponent(BaseSampleStrategy):
-    def sample_opponent(self, opponents) -> int:
-        print("sample -1")
-        return -1
+    def sample_opponent(self, opponents: ListDict) -> BaseOpponent:
+        opponent_index = -1
+        return opponents.get_by_index(opponent_index)
