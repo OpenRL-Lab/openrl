@@ -15,13 +15,14 @@
 # limitations under the License.
 
 """"""
-
-from openrl.selfplay.sample_strategy.base_sample_strategy import BaseSampleStrategy
-from openrl.utils.custom_data_structure import ListDict
-from openrl.selfplay.opponents.base_opponent import BaseOpponent
+from typing import Any
+from collections import OrderedDict
 
 
-class LastOpponent(BaseSampleStrategy):
-    def sample_opponent(self, opponents: ListDict) -> BaseOpponent:
-        opponent_index = -1
-        return opponents.get_by_index(opponent_index)
+class ListDict(OrderedDict):
+    def append(self, key: str, value: Any):
+        self[key] = value
+
+    def get_by_index(self, index):
+        key = list(self.keys())[index]
+        return self[key]

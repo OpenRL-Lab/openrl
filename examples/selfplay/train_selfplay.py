@@ -8,6 +8,7 @@ from openrl.modules.common import PPONet as Net
 from openrl.runners.common import PPOAgent as Agent
 from openrl.selfplay.wrappers.opponent_pool_wrapper import OpponentPoolWrapper
 from openrl.selfplay.wrappers.random_opponent_wrapper import RandomOpponentWrapper
+from openrl.envs.wrappers.pettingzoo_wrappers import RecordWinner
 
 
 def train():
@@ -22,7 +23,7 @@ def train():
         render_mode=render_model,
         env_num=env_num,
         asynchronous=True,
-        opponent_wrappers=[OpponentPoolWrapper],
+        opponent_wrappers=[RecordWinner, OpponentPoolWrapper],
         env_wrappers=[FlattenObservation],
         cfg=cfg,
     )

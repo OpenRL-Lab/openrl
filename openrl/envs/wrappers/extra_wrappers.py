@@ -118,6 +118,7 @@ class MoveActionMask2InfoWrapper(BaseWrapper):
     ):
         super().__init__(env)
         self.need_convert = False
+
         if "action_mask" in self.env.observation_space.spaces.keys():
             self.need_convert = True
             self.observation_space = self.env.observation_space.spaces["observation"]

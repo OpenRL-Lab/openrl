@@ -19,8 +19,10 @@
 import random
 
 from openrl.selfplay.sample_strategy.base_sample_strategy import BaseSampleStrategy
+from openrl.selfplay.opponents.base_opponent import BaseOpponent
 
 
 class RandomOpponent(BaseSampleStrategy):
-    def sample_opponent(self, opponents) -> int:
-        return random.randint(0, len(opponents) - 1)
+    def sample_opponent(self, opponents) -> BaseOpponent:
+        opponent_index = random.randint(0, len(opponents) - 1)
+        return opponents.get_by_index(opponent_index)

@@ -21,6 +21,7 @@ from examples.selfplay.tictactoe_utils.tictactoe_render import TictactoeRender
 from openrl.envs.common import make
 from openrl.envs.wrappers import FlattenObservation
 from openrl.selfplay.wrappers.random_opponent_wrapper import RandomOpponentWrapper
+from openrl.envs.wrappers.pettingzoo_wrappers import RewardTrackingWrapper
 
 
 def test_env():
@@ -32,7 +33,11 @@ def test_env():
         render_mode=render_model,
         env_num=env_num,
         asynchronous=False,
-        opponent_wrappers=[TictactoeRender, RandomOpponentWrapper],
+        opponent_wrappers=[
+            RewardTrackingWrapper,
+            TictactoeRender,
+            RandomOpponentWrapper,
+        ],
         env_wrappers=[FlattenObservation],
     )
 
@@ -50,6 +55,7 @@ def test_env():
             print(
                 "step:"
                 f" {step_num},{[env_info['final_observation'] for env_info in info]}"
+                f"{[info_single['final_info']['winners'] for info_single in info]}"
             )
         else:
             print(f"step: {step_num},{obs}")

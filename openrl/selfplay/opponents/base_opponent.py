@@ -16,8 +16,9 @@
 
 """"""
 from abc import ABC, abstractmethod
+from typing import Dict, Union, Optional
+
 from pathlib import Path
-from typing import Dict, Union
 
 
 class BaseOpponent(ABC):
@@ -48,8 +49,12 @@ class BaseOpponent(ABC):
     def _set_env(self, env, opponent_player: str):
         pass
 
-    def load(self, opponent_path: Union[str, Path]) -> "BaseOpponent":
+    def load(
+        self, opponent_path: Union[str, Path], opponent_id: Optional[str] = None
+    ) -> "BaseOpponent":
         self.opponent_path = opponent_path
+        if opponent_id is not None:
+            self.opponent_id = opponent_id
         self._load(opponent_path)
         return self
 
