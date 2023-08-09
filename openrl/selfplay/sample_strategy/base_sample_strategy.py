@@ -19,8 +19,8 @@
 
 from abc import ABC, abstractmethod
 
-from openrl.utils.custom_data_structure import ListDict
 from openrl.selfplay.opponents.base_opponent import BaseOpponent
+from openrl.utils.custom_data_structure import ListDict
 
 
 class BaseSampleStrategy(ABC):

@@ -17,17 +17,17 @@
 """"""
 import time
 
-from ray import serve
 import trueskill
+from ray import serve
 
 from openrl.selfplay.sample_strategy import SampleStrategyFactory
 from openrl.selfplay.selfplay_api.base_api import (
     BaseSelfplayAPIServer,
+    BattleData,
     OpponentData,
     OpponentModel,
     SampleStrategyData,
     SkillData,
-    BattleData,
     app,
 )
 from openrl.selfplay.selfplay_api.opponent_model import BattleResult

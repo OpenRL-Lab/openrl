@@ -16,9 +16,9 @@
 
 """"""
 
+from openrl.selfplay.opponents.base_opponent import BaseOpponent
 from openrl.selfplay.sample_strategy.base_sample_strategy import BaseSampleStrategy
 from openrl.utils.custom_data_structure import ListDict
-from openrl.selfplay.opponents.base_opponent import BaseOpponent
 
 
 class LastOpponent(BaseSampleStrategy):

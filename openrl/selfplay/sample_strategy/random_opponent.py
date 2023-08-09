@@ -18,8 +18,8 @@
 
 import random
 
-from openrl.selfplay.sample_strategy.base_sample_strategy import BaseSampleStrategy
 from openrl.selfplay.opponents.base_opponent import BaseOpponent
+from openrl.selfplay.sample_strategy.base_sample_strategy import BaseSampleStrategy
 
 
 class RandomOpponent(BaseSampleStrategy):

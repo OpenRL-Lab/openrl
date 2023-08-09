@@ -17,7 +17,7 @@
 """"""
 
 
-from pettingzoo.utils.env import AECEnv, ActionType
+from pettingzoo.utils.env import ActionType, AECEnv
 from pettingzoo.utils.wrappers import BaseWrapper
 
 

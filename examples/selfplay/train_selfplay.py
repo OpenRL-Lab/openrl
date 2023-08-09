@@ -4,11 +4,11 @@ import torch
 from openrl.configs.config import create_config_parser
 from openrl.envs.common import make
 from openrl.envs.wrappers import FlattenObservation
+from openrl.envs.wrappers.pettingzoo_wrappers import RecordWinner
 from openrl.modules.common import PPONet as Net
 from openrl.runners.common import PPOAgent as Agent
 from openrl.selfplay.wrappers.opponent_pool_wrapper import OpponentPoolWrapper
 from openrl.selfplay.wrappers.random_opponent_wrapper import RandomOpponentWrapper
-from openrl.envs.wrappers.pettingzoo_wrappers import RecordWinner
 
 
 def train():

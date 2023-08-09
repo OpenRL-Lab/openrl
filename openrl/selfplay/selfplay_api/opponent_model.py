@@ -15,8 +15,8 @@
 # limitations under the License.
 
 """"""
-from typing import Dict, List, Optional
 from enum import Enum
+from typing import Dict, List, Optional
 
 import trueskill
 

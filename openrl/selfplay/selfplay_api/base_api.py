@@ -18,8 +18,7 @@
 
 import logging
 from abc import ABC
-from typing import Dict, Optional, Any
-
+from typing import Any, Dict, Optional
 
 from fastapi import FastAPI
 from pydantic import BaseModel

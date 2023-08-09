@@ -20,8 +20,8 @@ import numpy as np
 from examples.selfplay.tictactoe_utils.tictactoe_render import TictactoeRender
 from openrl.envs.common import make
 from openrl.envs.wrappers import FlattenObservation
-from openrl.selfplay.wrappers.random_opponent_wrapper import RandomOpponentWrapper
 from openrl.envs.wrappers.pettingzoo_wrappers import RewardTrackingWrapper
+from openrl.selfplay.wrappers.random_opponent_wrapper import RandomOpponentWrapper
 
 
 def test_env():
