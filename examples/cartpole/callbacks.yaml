@@ -1,3 +1,6 @@
+wandb_entity: openrl-lab
+experiment_name: test_callbacks
+run_dir: ./wandb_run
 callbacks:
   - id: "ProgressBarCallback"
   - id: "StopTrainingOnMaxEpisodes"
