@@ -29,11 +29,14 @@ class RecordWinner(BaseWrapper):
     def step(self, action: ActionType) -> None:
         super().step(action)
         winners = None
+        losers = None
         for agent in self.terminations:
             if self.terminations[agent]:
                 if winners is None:
                     winners = self.get_winners()
+                    losers = [player for player in self.agents if player not in winners]
                 self.infos[agent]["winners"] = winners
+                self.infos[agent]["losers"] = losers
 
     def get_winners(self):
         max_reward = max(self._cumulative_rewards.values())

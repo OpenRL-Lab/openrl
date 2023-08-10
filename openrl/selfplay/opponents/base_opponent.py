@@ -23,9 +23,9 @@ from typing import Dict, Optional, Union
 class BaseOpponent(ABC):
     def __init__(
         self,
-        opponent_id: str,
-        opponent_path: Union[str, Path],
-        opponent_info: Dict[str, str],
+        opponent_id: Optional[str] = None,
+        opponent_path: Optional[Union[str, Path]] = None,
+        opponent_info: Optional[Dict[str, str]] = None,
     ):
         self.opponent_id = opponent_id
         self.opponent_path = opponent_path
@@ -38,14 +38,15 @@ class BaseOpponent(ABC):
     def opponent_type(self):
         return self.opponent_info["opponent_type"]
 
-    def reset(self):
-        pass
+    def reset(self, env=None, opponent_player: Optional[str] = None):
+        if env is not None:
+            self.set_env(env, opponent_player)
 
-    def set_env(self, env, opponent_player: str):
+    def set_env(self, env, opponent_player: Optional[str] = None):
         self.env = env
         self._set_env(env, opponent_player)
 
-    def _set_env(self, env, opponent_player: str):
+    def _set_env(self, env, opponent_player: Optional[str] = None):
         pass
 
     def load(

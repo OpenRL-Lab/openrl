@@ -16,7 +16,7 @@
 
 """"""
 from enum import Enum
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 import trueskill
 
@@ -44,6 +44,14 @@ class BattleHistory:
         else:
             self.num_draws += 1
         self.battle_results.append(result)
+
+    def get_battle_info(self) -> Dict[str, Any]:
+        result = {}
+        result["win_rate"] = float(self.num_wins) / max(self.num_games, 1)
+        result["draw_rate"] = float(self.num_draws) / max(self.num_games, 1)
+        result["loss_rate"] = float(self.num_losses) / max(self.num_games, 1)
+        result["total_games"] = self.num_games
+        return result
 
 
 class OpponentModel:
