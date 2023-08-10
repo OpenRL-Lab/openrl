@@ -41,6 +41,25 @@ def check_opponent_template(opponent_template: Union[str, Path]):
     ), f"opponent_template {opponent_template} does not contain opponent.py"
 
 
+def get_opponent_info(
+    info_path: Optional[Union[str, Path]]
+) -> Optional[Dict[str, str]]:
+    if info_path is None:
+        return None
+    if isinstance(info_path, str):
+        info_path = Path(info_path)
+    if info_path.exists():
+        with open(info_path, "r") as f:
+            return json.load(f)
+    return None
+
+
+def get_opponent_id(opponent_info: Optional[Dict[str, str]]) -> Optional[str]:
+    if opponent_info is None:
+        return None
+    return opponent_info.get("opponent_id", None)
+
+
 def load_opponent_from_path(
     opponent_path: Union[str, Path], opponent_info: Optional[Dict[str, str]] = None
 ) -> Optional[BaseOpponent]:
@@ -52,8 +71,13 @@ def load_opponent_from_path(
         opponent_module = __import__(
             "{}.opponent".format(opponent_path.name), fromlist=["opponent"]
         )
+        if opponent_info is None:
+            opponent_info = get_opponent_info(opponent_path / "info.json")
+
+        opponent_id = get_opponent_id(opponent_info)
+
         opponent = opponent_module.Opponent(
-            opponent_id=opponent_info["opponent_id"],
+            opponent_id=opponent_id,
             opponent_path=opponent_path,
             opponent_info=opponent_info,
         )

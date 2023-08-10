@@ -21,7 +21,8 @@ from typing import Optional, Union
 import pygame
 from pettingzoo.utils.env import ActionType, AECEnv, ObsType
 from pettingzoo.utils.wrappers.base import BaseWrapper
-from tictactoe_utils.game import Game
+
+from .game import Game
 
 
 class TictactoeRender(BaseWrapper):

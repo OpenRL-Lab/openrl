@@ -16,7 +16,7 @@
 
 """"""
 from pathlib import Path
-from typing import Dict, Union
+from typing import Dict, Optional, Union
 
 from openrl.selfplay.opponents.base_opponent import BaseOpponent
 
@@ -33,7 +33,8 @@ class NetworkOpponent(BaseOpponent):
         self.deterministic_action = False
         super().__init__(opponent_id, opponent_path, opponent_info)
 
-    def reset(self):
+    def reset(self, env=None, opponent_player: Optional[str] = None):
+        super().reset(env, opponent_player)
         if self.opponent_env is not None:
             self.opponent_env.reset()
         if self.agent is not None:
@@ -44,7 +45,7 @@ class NetworkOpponent(BaseOpponent):
         if self.agent is not None:
             self.agent.load(model_path)
 
-    def _set_env(self, env, opponent_player: str):
+    def _set_env(self, env, opponent_player: Optional[str] = None):
         pass
 
     def act(self, player_name, observation, reward, termination, truncation, info):

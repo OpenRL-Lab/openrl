@@ -31,6 +31,25 @@ def PettingZoo_make(id, render_mode, disable_env_checker, **kwargs):
     return env
 
 
+def make_PettingZoo_env(
+    id: str,
+    render_mode: Optional[Union[str, List[str]]] = None,
+    **kwargs,
+):
+    env_num = 1
+    env_wrappers = []
+    env_wrappers += copy.copy(kwargs.pop("env_wrappers", []))
+    env_fns = build_envs(
+        make=PettingZoo_make,
+        id=id,
+        env_num=env_num,
+        render_mode=render_mode,
+        wrappers=env_wrappers,
+        **kwargs,
+    )
+    return env_fns[0]
+
+
 def make_PettingZoo_envs(
     id: str,
     env_num: int = 1,

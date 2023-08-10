@@ -86,9 +86,11 @@ class OpponentPoolWrapper(BaseMultiPlayerWrapper):
         self, player_name, observation, reward, termination, truncation, info
     ):
         assert "winners" in info, "winners must be in info"
+        assert "losers" in info, "losers must be in info"
         assert len(info["winners"]) >= 1, "winners must be at least 1"
-        all_ids = ["training_agent", self.opponent.opponent_id]
+
         winner_ids = []
+        loser_ids = []
 
         for player in info["winners"]:
             if player == self.self_player:
@@ -96,6 +98,16 @@ class OpponentPoolWrapper(BaseMultiPlayerWrapper):
             else:
                 winner_id = self.opponent.opponent_id
             winner_ids.append(winner_id)
-        loser_ids = list(set(all_ids) - set(winner_ids))
+
+        for player in info["losers"]:
+            if player == self.self_player:
+                loser_id = "training_agent"
+            else:
+                loser_id = self.opponent.opponent_id
+            loser_ids.append(loser_id)
+        assert set(winner_ids).isdisjoint(set(loser_ids)), (
+            "winners and losers must be disjoint, but get winners: {}, losers: {}"
+            .format(winner_ids, loser_ids)
+        )
         battle_info = {"winner_ids": winner_ids, "loser_ids": loser_ids}
         self.api_client.add_battle_result(battle_info)
