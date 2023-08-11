@@ -3,7 +3,7 @@
 Users can train CartPole via:
 
 ```shell
-python train_ppo.py
+python train_ppo.py --config ppo.yaml
 ```
 
 
