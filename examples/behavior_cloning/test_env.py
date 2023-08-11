@@ -10,9 +10,8 @@ def test_env():
     cfg_parser = create_config_parser()
     cfg = cfg_parser.parse_args()
 
-    # create environment, set environment parallelism to 9
-    # env = make("OfflineEnv", env_num=1, cfg=cfg, asynchronous=True)
-    env = make("OfflineEnv", env_num=1, cfg=cfg, asynchronous=False)
+    # create environment
+    env = make("OfflineEnv", env_num=1, cfg=cfg, asynchronous=True)
 
     for ep_index in range(10):
         done = False
