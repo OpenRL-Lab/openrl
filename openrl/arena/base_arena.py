@@ -39,13 +39,16 @@ class BaseArena(ABC):
         self.max_game_onetime = None
         self.agents = None
         self.game: Optional[BaseGame] = None
+        self.seed = None
 
     def reset(
         self,
         agents: Dict[str, BaseAgent],
         total_games: int,
         max_game_onetime: int = 5,
+        seed: int = 0,
     ):
+        self.seed = seed
         if self.pbar:
             self.pbar.refresh()
             self.pbar.close()
@@ -54,7 +57,7 @@ class BaseArena(ABC):
         self.max_game_onetime = max_game_onetime
         self.agents = agents
         assert isinstance(self.game, BaseGame)
-        self.game.reset(dispatch_func=self.dispatch_func)
+        self.game.reset(seed=seed, dispatch_func=self.dispatch_func)
 
     def close(self):
         if self.pbar:
@@ -67,9 +70,12 @@ class BaseArena(ABC):
         ) as executor:
             futures = [
                 executor.submit(
-                    self.game.run, CloudpickleWrapper(self.env_fn), self.agents
+                    self.game.run,
+                    self.seed + run_index,
+                    CloudpickleWrapper(self.env_fn),
+                    self.agents,
                 )
-                for _ in range(self.total_games)
+                for run_index in range(self.total_games)
             ]
             for future in as_completed(futures):
                 result = future.result()
@@ -77,12 +83,13 @@ class BaseArena(ABC):
                 self.pbar.update(1)
 
     def _run_serial(self):
-        for _ in range(self.total_games):
-            result = self.game.run(self.env_fn, self.agents)
+        for run_index in range(self.total_games):
+            result = self.game.run(self.seed + run_index, self.env_fn, self.agents)
             self._deal_result(result)
             self.pbar.update(1)
 
     def run(self, parallel: bool = True) -> Dict[str, Any]:
+        assert self.seed is not None, "Please call reset() to set seed first."
         if parallel:
             self._run_parallel()
         else:
