@@ -19,6 +19,7 @@ import copy
 from typing import List, Optional, Union
 
 from openrl.envs.common import build_envs
+from openrl.envs.wrappers.pettingzoo_wrappers import SeedEnv
 
 
 def PettingZoo_make(id, render_mode, disable_env_checker, **kwargs):
@@ -37,7 +38,7 @@ def make_PettingZoo_env(
     **kwargs,
 ):
     env_num = 1
-    env_wrappers = []
+    env_wrappers = [SeedEnv]
     env_wrappers += copy.copy(kwargs.pop("env_wrappers", []))
     env_fns = build_envs(
         make=PettingZoo_make,
@@ -62,7 +63,7 @@ def make_PettingZoo_envs(
         Single2MultiAgentWrapper,
     )
 
-    env_wrappers = copy.copy(kwargs.pop("opponent_wrappers", []))
+    env_wrappers = copy.copy(kwargs.pop("opponent_wrappers", [SeedEnv]))
     env_wrappers += [
         Single2MultiAgentWrapper,
         RemoveTruncated,

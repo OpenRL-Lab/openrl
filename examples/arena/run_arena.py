@@ -20,8 +20,13 @@ from openrl.arena.agents.local_agent import LocalAgent
 from openrl.envs.wrappers.pettingzoo_wrappers import RecordWinner
 
 
-def run_arena():
-    render = True
+def run_arena(
+    render: bool = False,
+    parallel: bool = True,
+    seed=0,
+    total_games: int = 10,
+    max_game_onetime: int = 5,
+):
     env_wrappers = [RecordWinner]
     if render:
         from examples.selfplay.tictactoe_utils.tictactoe_render import TictactoeRender
@@ -35,13 +40,15 @@ def run_arena():
 
     arena.reset(
         agents={"agent1": agent1, "agent2": agent2},
-        total_games=10,
-        max_game_onetime=5,
+        total_games=total_games,
+        max_game_onetime=max_game_onetime,
+        seed=seed,
     )
-    result = arena.run(parallel=True)
-    print(result)
+    result = arena.run(parallel=parallel)
     arena.close()
+    print(result)
+    return result
 
 
 if __name__ == "__main__":
-    run_arena()
+    run_arena(render=False, parallel=True, seed=0, total_games=100, max_game_onetime=10)

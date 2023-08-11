@@ -16,26 +16,32 @@
 
 """"""
 import random
-from typing import Dict, List
+from typing import Callable, Dict, List
 
+import numpy as np
+
+from openrl.arena.agents.base_agent import BaseAgent
 from openrl.arena.games.base_game import BaseGame
 
 
 class TwoPlayerGame(BaseGame):
     @staticmethod
     def default_dispatch_func(
-        players: List[str], agent_names: List[str]
+        np_random: np.random.Generator,
+        players: List[str],
+        agent_names: List[str],
     ) -> Dict[str, str]:
         assert len(players) == len(
             agent_names
         ), "The number of players must be equal to the number of agents."
         assert len(players) == 2, "The number of players must be equal to 2."
-        random.shuffle(agent_names)
+        np_random.shuffle(agent_names)
         return dict(zip(players, agent_names))
 
-    def run(self, env_fn, agents):
+    def _run(self, env_fn: Callable, agents: List[BaseAgent]):
         env = env_fn()
-        env.reset()
+        env.reset(seed=self.seed)
+
         player2agent, player2agent_name = self.dispatch_agent_to_player(
             env.agents, agents
         )
