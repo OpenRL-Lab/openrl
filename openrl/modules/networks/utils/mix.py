@@ -97,7 +97,7 @@ class MIXBase(nn.Module):
         active_func = [nn.Tanh(), nn.ReLU(), nn.LeakyReLU(), nn.ELU()][activation_id]
         init_method = [nn.init.xavier_uniform_, nn.init.orthogonal_][use_orthogonal]
         gain = nn.init.calculate_gain(
-            ["tanh", "relu", "leaky_relu", "leaky_relu"][activation_id]
+            ["tanh", "relu", "leaky_relu", "selu"][activation_id]
         )
 
         def init_(m):
@@ -189,7 +189,7 @@ class MIXBase(nn.Module):
         active_func = [nn.Tanh(), nn.ReLU(), nn.LeakyReLU(), nn.ELU()][activation_id]
         init_method = [nn.init.xavier_uniform_, nn.init.orthogonal_][use_orthogonal]
         gain = nn.init.calculate_gain(
-            ["tanh", "relu", "leaky_relu", "leaky_relu"][activation_id]
+            ["tanh", "relu", "leaky_relu", "selu"][activation_id]
         )
 
         def init_(m):
