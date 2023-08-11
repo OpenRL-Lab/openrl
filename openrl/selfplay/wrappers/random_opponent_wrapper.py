@@ -26,7 +26,9 @@ from openrl.selfplay.wrappers.base_multiplayer_wrapper import BaseMultiPlayerWra
 
 
 class RandomOpponentWrapper(BaseMultiPlayerWrapper):
-    def get_opponent_action(self, agent, observation, termination, truncation, info):
+    def get_opponent_action(
+        self, player_name, observation, reward, termination, truncation, info
+    ):
         mask = observation["action_mask"]
-        action = self.env.action_space(agent).sample(mask)
+        action = self.env.action_space(player_name).sample(mask)
         return action

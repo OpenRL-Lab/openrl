@@ -23,7 +23,7 @@ import torch.nn.functional as F
 
 from openrl.algorithms.base_algorithm import BaseAlgorithm
 from openrl.modules.networks.utils.distributed_utils import reduce_tensor
-from openrl.modules.utils.util import get_gard_norm
+from openrl.modules.utils.util import get_grad_norm
 from openrl.utils.util import check
 
 
@@ -47,23 +47,32 @@ class DDPGAlgorithm(BaseAlgorithm):
         rnn_states_batch,
         actions_batch,
         masks_batch,
+        next_masks_batch,
         action_masks_batch,
         value_preds_batch,
         rewards_batch,
         active_masks_batch,
         turn_on,
     ):
-        target_q_values, current_q_values = self.algo_module.evaluate_critic_loss(
+        import copy
+
+        next_q_values, current_q_values = self.algo_module.evaluate_critic_loss(
             obs_batch,
             next_obs_batch,
             rnn_states_batch,
             rewards_batch,
             actions_batch,
             masks_batch,
+            next_masks_batch,
             action_masks_batch,
             active_masks_batch,
         )
-        target_q_values = (rewards_batch + self.gamma * target_q_values).detach()
+        with torch.no_grad():
+            target_q_values = (
+                rewards_batch
+                + self.gamma * next_q_values * torch.tensor(next_masks_batch)
+            ).detach()
+
         critic_loss = F.mse_loss(current_q_values, target_q_values)
 
         return critic_loss
@@ -106,6 +115,7 @@ class DDPGAlgorithm(BaseAlgorithm):
             value_preds_batch,
             rewards_batch,
             masks_batch,
+            next_masks_batch,
             active_masks_batch,
             old_action_log_probs_batch,
             adv_targ,
@@ -127,6 +137,7 @@ class DDPGAlgorithm(BaseAlgorithm):
                     rnn_states_batch,
                     actions_batch,
                     masks_batch,
+                    next_masks_batch,
                     action_masks_batch,
                     value_preds_batch,
                     rewards_batch,
@@ -141,6 +152,7 @@ class DDPGAlgorithm(BaseAlgorithm):
                 rnn_states_batch,
                 actions_batch,
                 masks_batch,
+                next_masks_batch,
                 action_masks_batch,
                 value_preds_batch,
                 rewards_batch,
@@ -153,7 +165,7 @@ class DDPGAlgorithm(BaseAlgorithm):
             raise NotImplementedError
         else:
             critic_para = self.algo_module.models["critic"].parameters()
-            critic_grad_norm = get_gard_norm(critic_para)
+            critic_grad_norm = get_grad_norm(critic_para)
 
         if self.use_amp:
             self.algo_module.scaler.unscale_(self.algo_module.optimizers["critic"])
@@ -199,7 +211,7 @@ class DDPGAlgorithm(BaseAlgorithm):
             raise NotImplementedError
         else:
             actor_para = self.algo_module.models["actor"].parameters()
-            actor_grad_norm = get_gard_norm(actor_para)
+            actor_grad_norm = get_grad_norm(actor_para)
 
         if self.use_amp:
             self.algo_module.scaler.unscale_(self.algo_module.optimizers["actor"])
@@ -214,7 +226,7 @@ class DDPGAlgorithm(BaseAlgorithm):
             self.algo_module.models["critic_target"].parameters(),
         ):
             target_param.data.copy_(
-                self.tau * param.data + (1 - self.tau) * target_param.data
+                (1 - self.tau) * param.data + self.tau * target_param.data
             )
 
         for param, target_param in zip(
@@ -222,7 +234,7 @@ class DDPGAlgorithm(BaseAlgorithm):
             self.algo_module.models["actor_target"].parameters(),
         ):
             target_param.data.copy_(
-                self.tau * param.data + (1 - self.tau) * target_param.data
+                (1 - self.tau) * param.data + self.tau * target_param.data
             )
 
         # for others

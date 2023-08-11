@@ -1,7 +1,7 @@
 import numpy as np
 import torch
-from tictactoe_render import TictactoeRender
 
+from examples.selfplay.tictactoe_utils.tictactoe_render import TictactoeRender
 from openrl.configs.config import create_config_parser
 from openrl.envs.common import make
 from openrl.envs.wrappers import FlattenObservation

@@ -20,7 +20,7 @@ def train():
         cfg=cfg,
     )
     # initialize the trainer
-    agent = Agent(net)
+    agent = Agent(net, use_wandb=True, project_name="CartPole-v1")
     # start training, set total number of training steps to 20000
     agent.train(total_time_steps=20000)
 

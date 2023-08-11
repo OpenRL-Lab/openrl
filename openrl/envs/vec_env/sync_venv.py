@@ -180,12 +180,14 @@ class SyncVectorEnv(BaseVecEnv):
         Returns:
             The batched environment step results
         """
+
         _actions = iterate_action(self.action_space, actions)
 
         observations, infos = [], []
 
         for i, (env, action) in enumerate(zip(self.envs, _actions)):
             returns = env.step(action)
+
             assert isinstance(
                 returns, tuple
             ), "step return must be tuple, but got: {}".format(type(returns))

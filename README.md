@@ -26,10 +26,10 @@
 [![Contributors](https://img.shields.io/github/contributors/OpenRL-Lab/openrl)](https://github.com/OpenRL-Lab/openrl/graphs/contributors)
 [![GitHub license](https://img.shields.io/github/license/OpenRL-Lab/openrl)](https://github.com/OpenRL-Lab/openrl/blob/master/LICENSE)
 
-[![Embark](https://img.shields.io/badge/discord-OpenRL-%237289da.svg?logo=discord)](https://discord.gg/uHNTPpsJ)
+[![Embark](https://img.shields.io/badge/discord-OpenRL-%237289da.svg?logo=discord)](https://discord.gg/guvAS2up)
 [![slack badge](https://img.shields.io/badge/Slack-join-blueviolet?logo=slack&amp)](https://join.slack.com/t/openrlhq/shared_invite/zt-1tqwpvthd-Eeh0IxQ~DIaGqYXoW2IUQg)
 
-OpenRL-v0.0.14 is updated on July 7, 2023
+OpenRL-v0.1.1 is updated on Aug 4, 2023
 
 The main branch is the latest version of OpenRL, which is under active development. If you just want to have a try with OpenRL, you can switch to the stable branch.
 
@@ -42,7 +42,7 @@ The main branch is the latest version of OpenRL, which is under active developme
 </div>
 
 OpenRL is an open-source general reinforcement learning research framework that supports training for various tasks 
-such as single-agent, multi-agent, offline RL, and natural language. 
+such as single-agent, multi-agent, offline RL, self-play, and natural language. 
 Developed based on PyTorch, the goal of OpenRL is to provide a simple-to-use, flexible, efficient and sustainable platform for the reinforcement learning research community.
 
 Currently, the features supported by OpenRL include:
@@ -51,7 +51,11 @@ Currently, the features supported by OpenRL include:
 
 - Support for offline RL training with expert dataset
 
+- Support self-play training
+
 - Reinforcement learning training support for natural language tasks (such as dialogue)
+
+- Support [Arena](https://openrl-docs.readthedocs.io/en/latest/arena/index.html) , which allows convenient evaluation of various agents in a competitive environment.
 
 - Importing models and datasets from [Hugging Face](https://huggingface.co/)
 
@@ -62,6 +66,8 @@ Currently, the features supported by OpenRL include:
 - User-defined training models, reward models, training data and environment support
 
 - Support for [gymnasium](https://gymnasium.farama.org/) environments
+
+- Support for [Callbacks](https://openrl-docs.readthedocs.io/en/latest/callbacks/index.html), which can be used to implement various functions such as logging, saving, and early stopping
 
 - Dictionary observation space support
 
@@ -82,19 +88,21 @@ Algorithms currently supported by OpenRL (for more details, please refer to [Gal
 - [Joint-ratio Policy Optimization (JRPO)](https://arxiv.org/abs/2302.07515)
 - [Generative Adversarial Imitation Learning (GAIL)](https://arxiv.org/abs/1606.03476)
 - [Behavior Cloning (BC)](http://www.cse.unsw.edu.au/~claude/papers/MI15.pdf)
+- Self-Play
 - [Deep Q-Network (DQN)](https://arxiv.org/abs/1312.5602)
 - [Multi-Agent Transformer (MAT)](https://arxiv.org/abs/2205.14953)
 - [Value-Decomposition Network (VDN)](https://arxiv.org/abs/1706.05296)
+- [Soft Actor Critic (SAC)](https://arxiv.org/abs/1812.05905)
 - [Deep Deterministic Policy Gradient (DDPG)](https://arxiv.org/abs/1509.02971)
 
 Environments currently supported by OpenRL (for more details, please refer to [Gallery](./Gallery.md)):
 - [Gymnasium](https://gymnasium.farama.org/)
 - [MuJoCo](https://github.com/deepmind/mujoco)
+- [PettingZoo](https://pettingzoo.farama.org/)
 - [MPE](https://github.com/openai/multiagent-particle-envs)
 - [Chat Bot](https://openrl-docs.readthedocs.io/en/latest/quick_start/train_nlp.html)
 - [Atari](https://gymnasium.farama.org/environments/atari/)
 - [StarCraft II](https://github.com/oxwhirl/smac)
-- [PettingZoo](https://pettingzoo.farama.org/)
 - [Omniverse Isaac Gym](https://github.com/NVIDIA-Omniverse/OmniIsaacGymEnvs)
 - [GridWorld](./examples/gridworld/)
 - [Super Mario Bros](https://github.com/Kautenja/gym-super-mario-bros)
@@ -262,7 +270,7 @@ If you are using OpenRL in your research project, you are also welcome to join t
 </div>
 
 - Join the [slack](https://join.slack.com/t/openrlhq/shared_invite/zt-1tqwpvthd-Eeh0IxQ~DIaGqYXoW2IUQg) group to discuss OpenRL usage and development with us.
-- Join the [Discord](https://discord.gg/tyy96TGbep) group to discuss OpenRL usage and development with us.
+- Join the [Discord](https://discord.gg/guvAS2up) group to discuss OpenRL usage and development with us.
 - Send an E-mail to: [huangshiyu@4paradigm.com](huangshiyu@4paradigm.com)
 - Join the [GitHub Discussion](https://github.com/orgs/OpenRL-Lab/discussions).
 

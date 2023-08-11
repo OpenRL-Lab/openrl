@@ -1,0 +1,4 @@
+{
+  "opponent_type": "tictactoe_opponent",
+  "description": "used for tictactoe game, need to load a nerual network"
+}

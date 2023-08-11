@@ -30,6 +30,7 @@ from openrl.runners.common.base_agent import SelfAgent
 from openrl.runners.common.rl_agent import RLAgent
 from openrl.utils.logger import Logger
 from openrl.utils.type_aliases import MaybeCallback
+from openrl.utils.util import _t2n
 
 
 class DQNAgent(RLAgent):
@@ -119,12 +120,14 @@ class DQNAgent(RLAgent):
         callback.on_training_end()
 
     def act(
-        self, observation: Union[np.ndarray, Dict[str, np.ndarray]], deterministic=None
+        self,
+        observation: Union[np.ndarray, Dict[str, np.ndarray]],
+        deterministic: bool = True,
     ) -> Tuple[np.ndarray, Optional[Tuple[np.ndarray, ...]]]:
         assert self.net is not None, "net is None"
         observation = ObsData.prepare_input(observation)
         action, rnn_state = self.net.act(observation)
 
-        action = np.array(np.split(action, self.env_num))
+        action = np.array(np.split(_t2n(action), self.env_num))
 
         return action, rnn_state

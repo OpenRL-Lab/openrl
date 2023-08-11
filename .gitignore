@@ -153,3 +153,8 @@ run_results/
 api_docs
 .vscode
 *.pkl
+api_docs
+*.json
+opponent_pool
+!/examples/selfplay/opponent_templates/tictactoe_opponent/info.json
+wandb_run

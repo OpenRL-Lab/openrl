@@ -1,16 +1,20 @@
 import numpy as np
 import torch
-from tictactoe_render import TictactoeRender
 
 from openrl.configs.config import create_config_parser
 from openrl.envs.common import make
 from openrl.envs.wrappers import FlattenObservation
+from openrl.envs.wrappers.pettingzoo_wrappers import RecordWinner
 from openrl.modules.common import PPONet as Net
 from openrl.runners.common import PPOAgent as Agent
+from openrl.selfplay.wrappers.opponent_pool_wrapper import OpponentPoolWrapper
 from openrl.selfplay.wrappers.random_opponent_wrapper import RandomOpponentWrapper
 
 
 def train():
+    cfg_parser = create_config_parser()
+    cfg = cfg_parser.parse_args(["--config", "selfplay.yaml"])
+
     # Create environment
     env_num = 10
     render_model = None
@@ -18,24 +22,26 @@ def train():
         "tictactoe_v3",
         render_mode=render_model,
         env_num=env_num,
-        asynchronous=False,
-        opponent_wrappers=[RandomOpponentWrapper],
+        asynchronous=True,
+        opponent_wrappers=[RecordWinner, OpponentPoolWrapper],
         env_wrappers=[FlattenObservation],
+        cfg=cfg,
     )
     # Create neural network
-    cfg_parser = create_config_parser()
-    cfg = cfg_parser.parse_args()
+
     net = Net(env, cfg=cfg, device="cuda" if torch.cuda.is_available() else "cpu")
     # Create agent
     agent = Agent(net)
     # Begin training
-    agent.train(total_time_steps=300000)
+    agent.train(total_time_steps=20000)
     env.close()
-    agent.save("./ppo_agent/")
+    agent.save("./selfplay_agent/")
     return agent
 
 
 def evaluation():
+    from examples.selfplay.tictactoe_utils.tictactoe_render import TictactoeRender
+
     print("Evaluation...")
     env_num = 1
     env = make(
@@ -53,7 +59,7 @@ def evaluation():
 
     agent = Agent(net)
 
-    agent.load("./ppo_agent/")
+    agent.load("./selfplay_agent/")
     agent.set_env(env)
     env.reset(seed=0)
 
@@ -79,5 +85,5 @@ def evaluation():
 
 
 if __name__ == "__main__":
-    agent = train()
+    train()
     evaluation()

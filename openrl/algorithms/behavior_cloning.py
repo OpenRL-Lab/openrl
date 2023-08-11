@@ -23,7 +23,7 @@ import torch.nn as nn
 
 from openrl.algorithms.base_algorithm import BaseAlgorithm
 from openrl.modules.networks.utils.distributed_utils import reduce_tensor
-from openrl.modules.utils.util import get_gard_norm
+from openrl.modules.utils.util import get_grad_norm
 from openrl.utils.util import check
 
 
@@ -115,7 +115,7 @@ class BCAlgorithm(BaseAlgorithm):
         if self._use_max_grad_norm:
             actor_grad_norm = nn.utils.clip_grad_norm_(actor_para, self.max_grad_norm)
         else:
-            actor_grad_norm = get_gard_norm(actor_para)
+            actor_grad_norm = get_grad_norm(actor_para)
 
         if self.use_amp:
             for optimizer in self.algo_module.optimizers.values():

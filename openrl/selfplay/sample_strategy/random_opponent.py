@@ -15,11 +15,14 @@
 # limitations under the License.
 
 """"""
-from typing import Optional
 
-from openrl.selfplay.wrappers.base_multiplayer_wrapper import BaseMultiPlayerWrapper
+import random
+
+from openrl.selfplay.opponents.base_opponent import BaseOpponent
+from openrl.selfplay.sample_strategy.base_sample_strategy import BaseSampleStrategy
 
 
-class TwoPlayerWrapper(BaseMultiPlayerWrapper):
-    def reset(self, *, seed: Optional[int] = None, **kwargs):
-        return super().reset(seed=seed, **kwargs)
+class RandomOpponent(BaseSampleStrategy):
+    def sample_opponent(self, opponents) -> BaseOpponent:
+        opponent_index = random.randint(0, len(opponents) - 1)
+        return opponents.get_by_index(opponent_index)

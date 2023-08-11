@@ -12,7 +12,7 @@ test:
 lint:
 	$(call check_install, ruff)
 	ruff ${PYTHON_FILES} --select=E9,F63,F7,F82 --show-source
-	ruff ${PYTHON_FILES} --exit-zero
+	ruff ${PYTHON_FILES} --exit-zero | grep -v '501\|405\|401\|402\|403'
 
 format:
 	$(call check_install, isort)
@@ -32,3 +32,21 @@ docker-cpu:
 
 docker-gpu:
 	RELEASE=True USE_GPU=True ./scripts/build_docker.sh
+
+pypi:
+	./scripts/pypi_build.sh
+
+pypi-upload:
+	./scripts/pypi_upload.sh
+
+pypi-test-upload:
+	./scripts/pypi_upload.sh test
+
+conda-build:
+	./scripts/conda_build.sh
+
+conda-upload:
+	./scripts/conda_upload.sh
+
+doc:
+	./scripts/gen_api_docs.sh

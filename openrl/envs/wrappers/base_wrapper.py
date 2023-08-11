@@ -24,8 +24,9 @@ ArrayType = TypeVar("ArrayType")
 
 
 class BaseWrapper(gym.Wrapper):
-    def __init__(self, env, reward_class=None) -> None:
+    def __init__(self, env, cfg=None, reward_class=None) -> None:
         super().__init__(env)
+        self.cfg = cfg
         self.reward_class = reward_class
 
     def step(self, action):
@@ -90,8 +91,8 @@ class BaseObservationWrapper(BaseWrapper):
 
 
 class BaseRewardWrapper(BaseWrapper):
-    def __init__(self, env):
-        super().__init__(env)
+    def __init__(self, env, cfg=None):
+        super().__init__(env, cfg)
 
     def step(
         self, action: ActType

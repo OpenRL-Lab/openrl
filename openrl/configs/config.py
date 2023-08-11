@@ -18,6 +18,8 @@ from typing import List
 
 from jsonargparse import ActionConfigFile, ArgumentParser
 
+from openrl.configs.utils import ProcessYamlAction
+
 
 def create_config_parser():
     """
@@ -26,6 +28,7 @@ def create_config_parser():
     parser = ArgumentParser(
         description="openrl",
     )
+    parser.add_argument("--config", action=ProcessYamlAction)
     parser.add_argument("--seed", type=int, default=0, help="Random seed.")
     # For Transformers
     parser.add_argument("--encode_state", action="store_true", default=False)
@@ -121,6 +124,27 @@ def create_config_parser():
         "--sample_interval", type=int, default=1, help="data sample interval"
     )
     # For Self-Play
+    parser.add_argument(
+        "--selfplay_api.host",
+        default="127.0.0.1",
+        type=str,
+        help="host for selfplay api",
+    )
+    parser.add_argument(
+        "--selfplay_api.port",
+        default=10086,
+        type=int,
+        help="port for selfplay api",
+    )
+    parser.add_argument(
+        "--lazy_load_opponent",
+        default=True,
+        type=bool,
+        help=(
+            "if true, when the opponents are the same opponent_type, will only load the"
+            " weight. Otherwise, will load the pythoon script."
+        ),
+    )
     parser.add_argument(
         "--self_play",
         action="store_true",
@@ -456,7 +480,7 @@ def create_config_parser():
         "--activation_id",
         type=int,
         default=1,
-        help="choose 0 to use tanh, 1 to use relu, 2 to use leaky relu, 3 to use elu",
+        help="choose 0 to use tanh, 1 to use relu, 2 to use leaky relu, 3 to use selu",
     )
     parser.add_argument(
         "--use_popart",
@@ -657,8 +681,8 @@ def create_config_parser():
     parser.add_argument(
         "--mini_batch_size",
         type=int,
-        default=128,
-        help="number of batches for ppo (default: 1)",
+        default=None,
+        help="batch size (default: 1)",
     )
     parser.add_argument(
         "--policy_value_loss_coef",
@@ -786,6 +810,12 @@ def create_config_parser():
         type=int,
         default=5,
         help="time duration between contiunous twice log printing.",
+    )
+    parser.add_argument(
+        "--use_rich_handler",
+        type=bool,
+        default=True,
+        help="whether to use rich handler to print log.",
     )
     # eval parameters
     parser.add_argument(
@@ -983,22 +1013,35 @@ def create_config_parser():
             "After how many evaluation network updates target network should be updated"
         ),
     )
-    ## for DDPG
+    # for DDPG
     parser.add_argument(
         "--var",
-        type=int,
-        default=3,
+        type=float,
+        default=0.5,
         help="Control the exploration variance of the generated actions",
     )
     parser.add_argument(
         "actor_lr", type=float, default=0.001, help="The learning rate of actor network"
     )
-    # parser.add_argument(
-    #     "critic_lr",
-    #     type=float,
-    #     default=0.002,
-    #     help="The learning rate of critic network",
-    # )
+    # for SAC
+    parser.add_argument(
+        "auto_alph",
+        type=bool,
+        default=False,
+        help="whether to use automatic alpha tuning",
+    )
+    parser.add_argument(
+        "alpha_value",
+        type=float,
+        default=0.2,
+        help="The value of alpha",
+    )
+    parser.add_argument(
+        "alpha_lr",
+        type=float,
+        default=2e-4,
+        help="The learning rate of temperature alpha",
+    )
     # update parameters
     parser.add_argument(
         "--use_soft_update",
@@ -1133,7 +1176,6 @@ def create_config_parser():
         default=[],
         help="the id of the vec env's info class",
     )
-    parser.add_argument("--config", action=ActionConfigFile)
 
     # selfplay parameters
     parser.add_argument(

@@ -11,16 +11,19 @@ def test_env():
     cfg = cfg_parser.parse_args()
 
     # create environment, set environment parallelism to 9
-    env = make("OfflineEnv", env_num=1, cfg=cfg, asynchronous=True)
+    # env = make("OfflineEnv", env_num=1, cfg=cfg, asynchronous=True)
+    env = make("OfflineEnv", env_num=1, cfg=cfg, asynchronous=False)
 
     for ep_index in range(10):
         done = False
         step = 0
         env.reset()
+
         while not np.all(done):
             obs, reward, done, info = env.step(env.random_action())
+
             step += 1
-        print(ep_index, step)
+            print(ep_index, step)
 
 
 if __name__ == "__main__":

@@ -1,19 +1,17 @@
 """"""
 
+import hydra
 import numpy as np
-
+from isaac2openrl import Isaac2OpenRLWrapper
+from omegaconf import DictConfig
+from omniisaacgymenvs.envs.vec_env_rlgames import VecEnvRLGames
 from omniisaacgymenvs.utils.hydra_cfg.hydra_utils import *
 from omniisaacgymenvs.utils.hydra_cfg.reformat import omegaconf_to_dict, print_dict
 from omniisaacgymenvs.utils.task_util import initialize_task
-from omniisaacgymenvs.envs.vec_env_rlgames import VecEnvRLGames
-import hydra
-from omegaconf import DictConfig
 
 from openrl.configs.config import create_config_parser
 from openrl.modules.common import PPONet as Net
 from openrl.runners.common import PPOAgent as Agent
-
-from isaac2openrl import Isaac2OpenRLWrapper
 
 
 @hydra.main(config_name="config", config_path="cfg")
