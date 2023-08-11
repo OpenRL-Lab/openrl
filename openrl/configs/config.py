@@ -480,7 +480,7 @@ def create_config_parser():
         "--activation_id",
         type=int,
         default=1,
-        help="choose 0 to use tanh, 1 to use relu, 2 to use leaky relu, 3 to use elu",
+        help="choose 0 to use tanh, 1 to use relu, 2 to use leaky relu, 3 to use selu",
     )
     parser.add_argument(
         "--use_popart",
