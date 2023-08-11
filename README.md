@@ -57,7 +57,7 @@ Currently, the features supported by OpenRL include:
 
 - Support [Arena](https://openrl-docs.readthedocs.io/en/latest/arena/index.html) , which allows convenient evaluation of various agents in a competitive environment.
 
-- Importing models and datasets from [Hugging F[README_zh.md](README_zh.md)ace](https://huggingface.co/)
+- Importing models and datasets from [Hugging Face](https://huggingface.co/)
 
 - Support for models such as LSTM, GRU, Transformer etc.
 
