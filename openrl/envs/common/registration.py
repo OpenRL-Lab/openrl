@@ -65,7 +65,13 @@ def make(
             id=id, env_num=env_num, render_mode=convert_render_mode, **kwargs
         )
     else:
-        if id in gym.envs.registry.keys():
+        if id.startswith("dm_control/"):
+            from openrl.envs.dmc import make_dmc_envs
+
+            env_fns = make_dmc_envs(
+                id=id, env_num=env_num, render_mode=convert_render_mode, **kwargs
+            )
+        elif id in gym.envs.registry.keys():
             from openrl.envs.gymnasium import make_gym_envs
 
             env_fns = make_gym_envs(
@@ -77,6 +83,7 @@ def make(
             env_fns = make_mpe_envs(
                 id=id, env_num=env_num, render_mode=convert_render_mode, **kwargs
             )
+
         elif id in openrl.envs.nlp_all_envs:
             from openrl.envs.nlp import make_nlp_envs
 
