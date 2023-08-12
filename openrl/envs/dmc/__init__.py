@@ -13,7 +13,7 @@ def make_dmc_envs(
     render_mode: Optional[Union[str, List[str]]] = None,
     **kwargs,
 ):
-    from openrl.envs.wrappers import (  # AutoReset,; DictWrapper,
+    from openrl.envs.wrappers import (
         RemoveTruncated,
         Single2MultiAgentWrapper,
     )

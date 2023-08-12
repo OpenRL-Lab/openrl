@@ -7,25 +7,7 @@ from openrl.envs.wrappers.base_wrapper import BaseWrapper
 from openrl.envs.wrappers.extra_wrappers import GIFWrapper
 from openrl.modules.common import PPONet as Net
 from openrl.runners.common import PPOAgent as Agent
-
-
-class FrameSkip(BaseWrapper):
-    def __init__(self, env, num_frames: int = 8):
-        super().__init__(env)
-        self.num_frames = num_frames
-
-    def step(self, action):
-        num_skips = self.num_frames
-        total_reward = 0.0
-
-        for x in range(num_skips):
-            obs, rew, term, trunc, info = super().step(action)
-            total_reward += rew
-            if term or trunc:
-                break
-
-        return obs, total_reward, term, trunc, info
-
+from openrl.envs.wrappers.extra_wrappers import FrameSkip
 
 env_name = "dm_control/cartpole-balance-v0"
 # env_name = "dm_control/walker-walk-v0"
@@ -36,7 +18,7 @@ def train():
     cfg_parser = create_config_parser()
     cfg = cfg_parser.parse_args(["--config", "ppo.yaml"])
 
-    # create environment, set environment parallelism to 9
+    # create environment, set environment parallelism to 64
     env = make(
         env_name,
         env_num=64,
@@ -50,34 +32,29 @@ def train():
     agent = Agent(
         net,
     )
-    # start training, set total number of training steps to 20000
+    # start training, set total number of training steps to 100000
     agent.train(total_time_steps=100000)
     agent.save("./ppo_agent")
     env.close()
     return agent
 
 
-
-
-
 def evaluation():
     cfg_parser = create_config_parser()
     cfg = cfg_parser.parse_args(["--config", "ppo.yaml"])
     # begin to test
-    # Create an environment for testing and set the number of environments to interact with to 9. Set rendering mode to group_human.
-    render_mode = "group_human"
+    # Create an environment for testing and set the number of environments to interact with to 4. Set rendering mode to group_rgb_array.
     render_mode = "group_rgb_array"
     env = make(
         env_name,
         render_mode=render_mode,
         env_num=4,
         asynchronous=True,
-        env_wrappers=[FrameSkip,FlattenObservation],
-        cfg=cfg
+        env_wrappers=[FrameSkip, FlattenObservation],
+        cfg=cfg,
     )
+    # Wrap the environment with GIFWrapper to record the GIF, and set the frame rate to 5.
     env = GIFWrapper(env, gif_path="./new.gif", fps=5)
-
-    
 
     net = Net(env, cfg=cfg, device="cuda")
     # initialize the trainer
@@ -103,8 +80,10 @@ def evaluation():
         total_reward += np.mean(r)
         if step % 50 == 0:
             print(f"{step}: reward:{np.mean(r)}")
-    print("total step:", step, total_reward)
+    print("total step:", step, "total reward:", total_reward)
     env.close()
 
-train()
-evaluation()
+
+if __name__ == "__main__":
+    train()
+    evaluation()

@@ -28,6 +28,24 @@ from openrl.envs.wrappers.base_wrapper import ActType, ArrayType, WrapperObsType
 from openrl.envs.wrappers.flatten import flatten
 
 
+class FrameSkip(BaseWrapper):
+    def __init__(self, env, num_frames: int = 8):
+        super().__init__(env)
+        self.num_frames = num_frames
+
+    def step(self, action):
+        num_skips = self.num_frames
+        total_reward = 0.0
+
+        for x in range(num_skips):
+            obs, rew, term, trunc, info = super().step(action)
+            total_reward += rew
+            if term or trunc:
+                break
+
+        return obs, total_reward, term, trunc, info
+
+
 class RemoveTruncated(StepAPICompatibility, BaseWrapper):
     def __init__(
         self,
