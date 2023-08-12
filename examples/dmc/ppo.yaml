@@ -1,0 +1,9 @@
+episode_length: 25
+lr: 5e-4
+critic_lr: 5e-4
+gamma: 0.99
+ppo_epoch: 5
+use_valuenorm: true
+entropy_coef: 0.0
+hidden_size: 128
+layer_N: 4

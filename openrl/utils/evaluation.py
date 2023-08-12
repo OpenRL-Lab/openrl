@@ -68,12 +68,10 @@ def evaluate_policy(
 
     if not is_monitor_wrapped and warn:
         warnings.warn(
-            (
-                "Evaluation environment is not wrapped with a ``Monitor`` wrapper. This"
-                " may result in reporting modified episode lengths and rewards, if"
-                " other wrappers happen to modify these. Consider wrapping environment"
-                " first with ``Monitor`` wrapper."
-            ),
+            "Evaluation environment is not wrapped with a ``Monitor`` wrapper. This"
+            " may result in reporting modified episode lengths and rewards, if"
+            " other wrappers happen to modify these. Consider wrapping environment"
+            " first with ``Monitor`` wrapper.",
             UserWarning,
         )
 

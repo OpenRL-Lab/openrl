@@ -1359,11 +1359,9 @@ class GenerationMixinWithRawScores:
         elif max_length is not None and max_new_tokens is not None:
             # Both are set, this is odd, raise a warning
             warnings.warn(
-                (
-                    "Both `max_length` and `max_new_tokens` have been set "
-                    f"but they serve the same purpose. `max_length` {max_length} "
-                    f"will take priority over `max_new_tokens` {max_new_tokens}."
-                ),
+                "Both `max_length` and `max_new_tokens` have been set "
+                f"but they serve the same purpose. `max_length` {max_length} "
+                f"will take priority over `max_new_tokens` {max_new_tokens}.",
                 UserWarning,
             )
         # default to config if still None
@@ -1849,11 +1847,9 @@ class GenerationMixinWithRawScores:
         )
         if max_length is not None:
             warnings.warn(
-                (
-                    "`max_length` is deprecated in this function, use"
-                    " `stopping_criteria=StoppingCriteriaList([MaxLengthCriteria(max_length=max_length)])`"
-                    " instead."
-                ),
+                "`max_length` is deprecated in this function, use"
+                " `stopping_criteria=StoppingCriteriaList([MaxLengthCriteria(max_length=max_length)])`"
+                " instead.",
                 UserWarning,
             )
             stopping_criteria = validate_stopping_criteria(
@@ -2151,11 +2147,9 @@ class GenerationMixinWithRawScores:
         )
         if max_length is not None:
             warnings.warn(
-                (
-                    "`max_length` is deprecated in this function, use"
-                    " `stopping_criteria=StoppingCriteriaList(MaxLengthCriteria(max_length=max_length))`"
-                    " instead."
-                ),
+                "`max_length` is deprecated in this function, use"
+                " `stopping_criteria=StoppingCriteriaList(MaxLengthCriteria(max_length=max_length))`"
+                " instead.",
                 UserWarning,
             )
             stopping_criteria = validate_stopping_criteria(
@@ -2459,11 +2453,9 @@ class GenerationMixinWithRawScores:
         )
         if max_length is not None:
             warnings.warn(
-                (
-                    "`max_length` is deprecated in this function, use"
-                    " `stopping_criteria=StoppingCriteriaList(MaxLengthCriteria(max_length=max_length))`"
-                    " instead."
-                ),
+                "`max_length` is deprecated in this function, use"
+                " `stopping_criteria=StoppingCriteriaList(MaxLengthCriteria(max_length=max_length))`"
+                " instead.",
                 UserWarning,
             )
             stopping_criteria = validate_stopping_criteria(
@@ -2471,10 +2463,8 @@ class GenerationMixinWithRawScores:
             )
         if len(stopping_criteria) == 0:
             warnings.warn(
-                (
-                    "You don't have defined any stopping_criteria, this will likely"
-                    " loop forever"
-                ),
+                "You don't have defined any stopping_criteria, this will likely"
+                " loop forever",
                 UserWarning,
             )
         pad_token_id = (
@@ -2867,11 +2857,9 @@ class GenerationMixinWithRawScores:
         )
         if max_length is not None:
             warnings.warn(
-                (
-                    "`max_length` is deprecated in this function, use"
-                    " `stopping_criteria=StoppingCriteriaList(MaxLengthCriteria(max_length=max_length))`"
-                    " instead."
-                ),
+                "`max_length` is deprecated in this function, use"
+                " `stopping_criteria=StoppingCriteriaList(MaxLengthCriteria(max_length=max_length))`"
+                " instead.",
                 UserWarning,
             )
             stopping_criteria = validate_stopping_criteria(
@@ -3252,11 +3240,9 @@ class GenerationMixinWithRawScores:
         )
         if max_length is not None:
             warnings.warn(
-                (
-                    "`max_length` is deprecated in this function, use"
-                    " `stopping_criteria=StoppingCriteriaList(MaxLengthCriteria(max_length=max_length))`"
-                    " instead."
-                ),
+                "`max_length` is deprecated in this function, use"
+                " `stopping_criteria=StoppingCriteriaList(MaxLengthCriteria(max_length=max_length))`"
+                " instead.",
                 UserWarning,
             )
             stopping_criteria = validate_stopping_criteria(
@@ -3700,11 +3686,9 @@ class GenerationMixinWithRawScores:
         )
         if max_length is not None:
             warnings.warn(
-                (
-                    "`max_length` is deprecated in this function, use"
-                    " `stopping_criteria=StoppingCriteriaList(MaxLengthCriteria(max_length=max_length))`"
-                    " instead."
-                ),
+                "`max_length` is deprecated in this function, use"
+                " `stopping_criteria=StoppingCriteriaList(MaxLengthCriteria(max_length=max_length))`"
+                " instead.",
                 UserWarning,
             )
             stopping_criteria = validate_stopping_criteria(
@@ -3712,10 +3696,8 @@ class GenerationMixinWithRawScores:
             )
         if len(stopping_criteria) == 0:
             warnings.warn(
-                (
-                    "You don't have defined any stopping_criteria, this will likely"
-                    " loop forever"
-                ),
+                "You don't have defined any stopping_criteria, this will likely"
+                " loop forever",
                 UserWarning,
             )
         pad_token_id = (
