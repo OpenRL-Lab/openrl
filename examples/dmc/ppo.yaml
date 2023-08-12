@@ -7,3 +7,4 @@ use_valuenorm: true
 entropy_coef: 0.0
 hidden_size: 128
 layer_N: 4
+data_chunk_length: 1

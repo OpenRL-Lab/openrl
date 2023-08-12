@@ -28,7 +28,7 @@ class FrameSkip(BaseWrapper):
 
 
 env_name = "dm_control/cartpole-balance-v0"
-env_name = "dm_control/walker-walk-v0"
+# env_name = "dm_control/walker-walk-v0"
 
 
 def train():
@@ -51,16 +51,18 @@ def train():
         net,
     )
     # start training, set total number of training steps to 20000
-    agent.train(total_time_steps=4000000)
-
+    agent.train(total_time_steps=100000)
+    agent.save("./ppo_agent")
     env.close()
     return agent
 
 
-agent = train()
 
 
-def evaluation(agent):
+
+def evaluation():
+    cfg_parser = create_config_parser()
+    cfg = cfg_parser.parse_args(["--config", "ppo.yaml"])
     # begin to test
     # Create an environment for testing and set the number of environments to interact with to 9. Set rendering mode to group_human.
     render_mode = "group_human"
@@ -70,9 +72,20 @@ def evaluation(agent):
         render_mode=render_mode,
         env_num=4,
         asynchronous=True,
-        env_wrappers=[FlattenObservation],
+        env_wrappers=[FrameSkip,FlattenObservation],
+        cfg=cfg
     )
-    env = GIFWrapper(env, gif_path="./new.gif", fps=50)
+    env = GIFWrapper(env, gif_path="./new.gif", fps=5)
+
+    
+
+    net = Net(env, cfg=cfg, device="cuda")
+    # initialize the trainer
+    agent = Agent(
+        net,
+    )
+    agent.load("./ppo_agent")
+
     # The trained agent sets up the interactive environment it needs.
     agent.set_env(env)
     # Initialize the environment and get initial observations and environmental information.
@@ -93,5 +106,5 @@ def evaluation(agent):
     print("total step:", step, total_reward)
     env.close()
 
-
-evaluation(agent)
+train()
+evaluation()
