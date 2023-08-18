@@ -12,3 +12,6 @@ Installation guide for Linux:
 Train SMAC with [MAPPO](https://arxiv.org/abs/2103.01955) algorithm:
 
 `python train_ppo.py --config smac_ppo.yaml`
+
+## Render replay on Mac
+

@@ -65,7 +65,14 @@ def make(
             id=id, env_num=env_num, render_mode=convert_render_mode, **kwargs
         )
     else:
-        if id.startswith("dm_control/"):
+        if id.startswith("snakes_"):
+            from openrl.envs.snake import make_snake_envs
+
+            env_fns = make_snake_envs(
+                id=id, env_num=env_num, render_mode=convert_render_mode, **kwargs
+            )
+
+        elif id.startswith("dm_control/"):
             from openrl.envs.dmc import make_dmc_envs
 
             env_fns = make_dmc_envs(

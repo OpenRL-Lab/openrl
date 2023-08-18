@@ -72,7 +72,9 @@ class CheckpointCallback(BaseCallback):
         """
         return os.path.join(
             self.save_path,
-            f"{self.name_prefix}_{checkpoint_type}{self.num_time_steps}_steps{'.' if extension else ''}{extension}",
+            (
+                f"{self.name_prefix}_{checkpoint_type}{self.num_time_steps}_steps{'.' if extension else ''}{extension}"
+            ),
         )
 
     def _on_step(self) -> bool:

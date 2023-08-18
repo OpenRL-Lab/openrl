@@ -233,8 +233,10 @@ class AsyncVectorEnv(BaseVecEnv):
 
         if self._state != AsyncState.DEFAULT:
             raise AlreadyPendingCallError(
-                "Calling `reset_send` while waiting for a pending call to"
-                f" `{self._state.value}` to complete",
+                (
+                    "Calling `reset_send` while waiting for a pending call to"
+                    f" `{self._state.value}` to complete"
+                ),
                 self._state.value,
             )
 
@@ -326,8 +328,10 @@ class AsyncVectorEnv(BaseVecEnv):
         self._assert_is_running()
         if self._state != AsyncState.DEFAULT:
             raise AlreadyPendingCallError(
-                "Calling `step_send` while waiting for a pending call to"
-                f" `{self._state.value}` to complete.",
+                (
+                    "Calling `step_send` while waiting for a pending call to"
+                    f" `{self._state.value}` to complete."
+                ),
                 self._state.value,
             )
 
@@ -571,8 +575,10 @@ class AsyncVectorEnv(BaseVecEnv):
         self._assert_is_running()
         if self._state != AsyncState.DEFAULT:
             raise AlreadyPendingCallError(
-                "Calling `call_send` while waiting "
-                f"for a pending call to `{self._state.value}` to complete.",
+                (
+                    "Calling `call_send` while waiting "
+                    f"for a pending call to `{self._state.value}` to complete."
+                ),
                 str(self._state.value),
             )
 
@@ -629,8 +635,10 @@ class AsyncVectorEnv(BaseVecEnv):
         self._assert_is_running()
         if self._state != AsyncState.DEFAULT:
             raise AlreadyPendingCallError(
-                "Calling `exec_func_send` while waiting "
-                f"for a pending call to `{self._state.value}` to complete.",
+                (
+                    "Calling `exec_func_send` while waiting "
+                    f"for a pending call to `{self._state.value}` to complete."
+                ),
                 str(self._state.value),
             )
 
@@ -707,8 +715,10 @@ class AsyncVectorEnv(BaseVecEnv):
 
         if self._state != AsyncState.DEFAULT:
             raise AlreadyPendingCallError(
-                "Calling `set_attr` while waiting "
-                f"for a pending call to `{self._state.value}` to complete.",
+                (
+                    "Calling `set_attr` while waiting "
+                    f"for a pending call to `{self._state.value}` to complete."
+                ),
                 str(self._state.value),
             )
 

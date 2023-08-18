@@ -58,7 +58,7 @@ class BaseMultiPlayerWrapper(BaseWrapper, ABC):
             if self.self_player is None:
                 self.env.reset()
                 self.self_player = self.np_random.choice(self.env.agents)
-            return self.env.action_spaces[self.self_player]
+            return self.env.action_space(self.self_player)
         return self._action_space
 
     @property
@@ -70,7 +70,9 @@ class BaseMultiPlayerWrapper(BaseWrapper, ABC):
             if self.self_player is None:
                 self.env.reset()
                 self.self_player = self.np_random.choice(self.env.agents)
+
             return self.env.observation_spaces[self.self_player]
+
         return self._observation_space
 
     @abstractmethod
