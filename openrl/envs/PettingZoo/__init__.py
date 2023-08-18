@@ -63,7 +63,8 @@ def make_PettingZoo_envs(
         Single2MultiAgentWrapper,
     )
 
-    env_wrappers = copy.copy(kwargs.pop("opponent_wrappers", [SeedEnv]))
+    env_wrappers = [SeedEnv]
+    env_wrappers += copy.copy(kwargs.pop("opponent_wrappers", []))
     env_wrappers += [
         Single2MultiAgentWrapper,
         RemoveTruncated,

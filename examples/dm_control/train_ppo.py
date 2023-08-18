@@ -4,10 +4,9 @@ from gymnasium.wrappers import FlattenObservation
 from openrl.configs.config import create_config_parser
 from openrl.envs.common import make
 from openrl.envs.wrappers.base_wrapper import BaseWrapper
-from openrl.envs.wrappers.extra_wrappers import GIFWrapper
+from openrl.envs.wrappers.extra_wrappers import FrameSkip, GIFWrapper
 from openrl.modules.common import PPONet as Net
 from openrl.runners.common import PPOAgent as Agent
-from openrl.envs.wrappers.extra_wrappers import FrameSkip
 
 env_name = "dm_control/cartpole-balance-v0"
 # env_name = "dm_control/walker-walk-v0"

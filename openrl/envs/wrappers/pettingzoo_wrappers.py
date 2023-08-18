@@ -24,11 +24,12 @@ from pettingzoo.utils.wrappers import BaseWrapper
 class SeedEnv(BaseWrapper):
     def reset(self, seed: Optional[int] = None, options: Optional[dict] = None):
         super().reset(seed=seed, options=options)
-
-        for i, space in enumerate(
-            list(self.action_spaces.values()) + list(self.observation_spaces.values())
-        ):
-            space.seed(seed + i * 7891)
+        if seed is not None:
+            for i, space in enumerate(
+                list(self.action_spaces.values())
+                + list(self.observation_spaces.values())
+            ):
+                space.seed(seed + i * 7891)
 
 
 class RecordWinner(BaseWrapper):

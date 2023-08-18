@@ -13,10 +13,7 @@ def make_dmc_envs(
     render_mode: Optional[Union[str, List[str]]] = None,
     **kwargs,
 ):
-    from openrl.envs.wrappers import (
-        RemoveTruncated,
-        Single2MultiAgentWrapper,
-    )
+    from openrl.envs.wrappers import RemoveTruncated, Single2MultiAgentWrapper
     from openrl.envs.wrappers.extra_wrappers import ConvertEmptyBoxWrapper
 
     env_wrappers = copy.copy(kwargs.pop("env_wrappers", []))

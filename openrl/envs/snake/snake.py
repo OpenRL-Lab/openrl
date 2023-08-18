@@ -2,20 +2,32 @@
 # 作者：zruizhi
 # 创建时间： 2020/7/30 17:24 下午
 # 描述：
-from .gridgame import GridGame
+import itertools
 import random
 from itertools import count
+from typing import Optional
+
+import matplotlib.pyplot as plt
 import numpy as np
-from PIL import ImageDraw, ImageFont
-from .observation import *
-from .discrete import Discrete
-import itertools
 from gym import Env, spaces
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
+
+from .discrete import Discrete
+from .gridgame import GridGame, generate_color
+from .observation import *
+
+
+def convert_to_onehot(joint_action):
+    new_joint_action = []
+    for action in joint_action:
+        onehot_action = np.zeros(4)
+        onehot_action[action] = 1
+        new_joint_action.append(onehot_action)
+    return new_joint_action
 
 
 class SnakeEatBeans(GridGame, GridObservation, DictObservation):
-    def __init__(self, env_id: int = 0, render: bool = False):
+    def __init__(self, render_mode: Optional[str] = None):
         conf = {
             "class_literal": "SnakeEatBeans",
             "n_player": 2,
@@ -73,15 +85,28 @@ class SnakeEatBeans(GridGame, GridObservation, DictObservation):
         self.save_internal = conf["save_interval"]
         self.save_path = conf["save_path"]
         self.episode = 0
-        self.render = render
-        self.img_list = []
-        self.env_id = env_id
+        self.fig, self.ax = None, None
+        if render_mode in ["human", "rgb_array"]:
+            self.need_render = True
+            if render_mode == "human":
+                plt.ion()
+                self.fig, self.ax = plt.subplots()
+        else:
+            self.need_render = False
+        self.render_mode = render_mode
+        self.img_list = None
+        self.render_img = None
+
+        self.init_colors = colors
+        self.colors = None
 
     def seed(self, seed=None):
         if seed is None:
-            np.random.seed(1)
+            np.random.seed(0)
+            random.seed(0)
         else:
             np.random.seed(seed)
+            random.seed(seed)
 
     def check_win(self):
         flg = self.won.index(max(self.won)) + 2
@@ -110,6 +135,16 @@ class SnakeEatBeans(GridGame, GridObservation, DictObservation):
         return action_space
 
     def reset(self):
+        if self.need_render:
+            self.img_list = []
+            self.render_img = None
+        if self.colors is None:
+            self.colors = (
+                self.init_colors
+                + generate_color(self.cell_size - len(self.init_colors) + 1)
+                if self.init_colors is not None
+                else generate_color(self.cell_size)
+            )
         self.step_cnt = 1
         self.snakes_position = (
             {}
@@ -120,7 +155,7 @@ class SnakeEatBeans(GridGame, GridObservation, DictObservation):
         self.current_state = self.init_state()
         self.all_observes = self.get_all_observes()
         self.terminate_flg = False
-        self.img_list = []
+
         self.episode += 1
 
         # available actions
@@ -128,16 +163,15 @@ class SnakeEatBeans(GridGame, GridObservation, DictObservation):
         right_avail_actions = np.ones([self.num_enemys, self.action_dim])
         avail_actions = np.concatenate([left_avail_actions, right_avail_actions], 0)
         # process obs
-        raw_obs = self.all_observes[0]
-        obs = self.raw2vec(raw_obs)
-        share_obs = obs.copy()
-        info = {"action_mask": avail_actions}
-        return raw_obs, info  # obs:(n_player, 288)
 
-        # return self.all_observes
+        info = {"action_mask": avail_actions}
+        self.inner_render()
+        return self.all_observes, info
 
     def step(self, joint_action):
-        info_before = self.step_before_info()
+        if np.array(joint_action).shape == (2,):
+            joint_action = convert_to_onehot(joint_action)
+
         joint_action = np.expand_dims(joint_action, 1)
         all_observes, info_after = self.get_next_state(joint_action)
         done = self.is_terminal()
@@ -149,33 +183,30 @@ class SnakeEatBeans(GridGame, GridObservation, DictObservation):
 
         raw_obs = all_observes[0]
         obs = self.raw2vec(raw_obs)
-        share_obs = obs.copy()
 
         rewards = np.expand_dims(np.array(reward), axis=1)
 
         dones = [done] * self.n_player
         infos = info_after
 
-        if self.render:
-            img = self.render_board()
-            img_pil = Image.fromarray(img)
-
-            self.img_list.append(img_pil)
-
-            if done and self.episode % self.save_internal == 0 and self.env_id == 0:
-                self.img_list[0].save(
-                    self.save_path.format(self.episode),
-                    save_all=True,
-                    append_images=self.img_list[1:],
-                    duration=500,
-                )
-                print("save replay gif to" + self.save_path.format(self.episode))
-
         infos.update({"action_mask": avail_actions})
-        return raw_obs, rewards, dones, infos
-        # return all_observes, reward, done, info_before, info_after
+        self.inner_render()
+        return self.all_observes, rewards, dones, infos
 
     # obs: 0-空白 1-豆子 2-我方蛇头 3-我方蛇身 4-敌方蛇头 5-敌方蛇身
+
+    def inner_render(self):
+        if not self.need_render:
+            return
+        img = self.render_board()
+        self.render_img = img
+        if self.render_mode == "human":
+            self.ax.imshow(img, cmap="gray")
+            plt.draw()
+            plt.pause(0.1)
+
+    def render(self):
+        return self.render_img
 
     def raw2vec(self, raw_obs):
         control_index = raw_obs["controlled_snake_index"]
@@ -617,6 +648,10 @@ class SnakeEatBeans(GridGame, GridObservation, DictObservation):
             d = data["snakes_position"]
 
         return [i[0] for i in d]
+
+    def close(self):
+        if self.render_mode == "human":
+            plt.close(self.fig)
 
 
 class Snake:

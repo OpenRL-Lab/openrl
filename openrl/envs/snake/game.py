@@ -1,12 +1,20 @@
 # -*- coding:utf-8  -*-
-# 作者：zruizhi   
-# 创建时间： 2020/7/10 10:24 上午   
+# 作者：zruizhi
+# 创建时间： 2020/7/10 10:24 上午
 # 描述：
 from abc import ABC, abstractmethod
 
 
 class Game(ABC):
-    def __init__(self, n_player, is_obs_continuous, is_act_continuous, game_name, agent_nums, obs_type):
+    def __init__(
+        self,
+        n_player,
+        is_obs_continuous,
+        is_act_continuous,
+        game_name,
+        agent_nums,
+        obs_type,
+    ):
         self.n_player = n_player
         self.current_state = None
         self.all_observes = None
