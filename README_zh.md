@@ -124,19 +124,19 @@ OpenRL-Lab将持续维护和更新OpenRL，欢迎大家加入我们的[开源社
 
 这里我们提供了一个表格，比较了OpenRL和其他常用的强化学习库。 OpenRL采用模块化设计和高层次的抽象，使得用户可以通过统一的简单易用的接口完成各种任务的训练。
 
-|                              强化学习库                               |    自然语言任务/RLHF     |        多智能体训练        |        自博弈训练         |       离线强化学习       |        双语文档        | 
-|:----------------------------------------------------------------:|:------------------:|:--------------------:|:--------------------:|:------------------:|:------------------:| 
-|         **OpenRL(https://github.com/OpenRL-Lab/openrl)**         | :heavy_check_mark: |  :heavy_check_mark:  |  :heavy_check_mark:  | :heavy_check_mark: | :heavy_check_mark: |
-|  Stable Baselines3(https://github.com/DLR-RM/stable-baselines3)  |        :x:         |         :x:          |         :x:          |        :x:         |        :x:         |
-| Ray/RLlib(https://github.com/ray-project/ray/tree/master/rllib/) |        :x:         |  :heavy_check_mark:  |  :heavy_check_mark:  | :heavy_check_mark: |        :x:         |
-|        DI-engine(https://github.com/opendilab/DI-engine/)        |        :x:         |  :heavy_check_mark:  | not fullly supported | :heavy_check_mark: | :heavy_check_mark: |
-|           Tianshou(https://github.com/thu-ml/tianshou)           |        :x:         | not fullly supported | not fullly supported | :heavy_check_mark: | :heavy_check_mark: |
-|       MARLlib(https://github.com/Replicable-MARL/MARLlib)        |        :x:         |  :heavy_check_mark:  | not fullly supported |        :x:         |        :x:         |
-|   MAPPO Benchmark(https://github.com/marlbenchmark/on-policy)    |        :x:         |  :heavy_check_mark:  |         :x:          |        :x:         |        :x:         |
-|            RL4LMs(https://github.com/allenai/RL4LMs)             | :heavy_check_mark: |         :x:          |         :x:          |        :x:         |        :x:         |
-|              trlx(https://github.com/CarperAI/trlx)              | :heavy_check_mark: |         :x:          |         :x:          |        :x:         |        :x:         |
-|             trl(https://github.com/huggingface/trl)              | :heavy_check_mark: |         :x:          |         :x:          |        :x:         |        :x:         |
-|       TimeChamber(https://github.com/inspirai/TimeChamber)       |        :x:         |         :x:          |  :heavy_check_mark:  |        :x:         |        :x:         |
+|                               强化学习库                                |    自然语言任务/RLHF     |        多智能体训练        |        自博弈训练         |       离线强化学习       |        双语文档        | 
+|:------------------------------------------------------------------:|:------------------:|:--------------------:|:--------------------:|:------------------:|:------------------:| 
+|         **[OpenRL](https://github.com/OpenRL-Lab/openrl)**         | :heavy_check_mark: |  :heavy_check_mark:  |  :heavy_check_mark:  | :heavy_check_mark: | :heavy_check_mark: |
+|  [Stable Baselines3](https://github.com/DLR-RM/stable-baselines3)  |        :x:         |         :x:          |         :x:          |        :x:         |        :x:         |
+| [Ray/RLlib](https://github.com/ray-project/ray/tree/master/rllib/) |        :x:         |  :heavy_check_mark:  |  :heavy_check_mark:  | :heavy_check_mark: |        :x:         |
+|        [DI-engine](https://github.com/opendilab/DI-engine/)        |        :x:         |  :heavy_check_mark:  | not fullly supported | :heavy_check_mark: | :heavy_check_mark: |
+|           [Tianshou](https://github.com/thu-ml/tianshou)           |        :x:         | not fullly supported | not fullly supported | :heavy_check_mark: | :heavy_check_mark: |
+|       [MARLlib](https://github.com/Replicable-MARL/MARLlib)        |        :x:         |  :heavy_check_mark:  | not fullly supported |        :x:         |        :x:         |
+|   [MAPPO Benchmark](https://github.com/marlbenchmark/on-policy)    |        :x:         |  :heavy_check_mark:  |         :x:          |        :x:         |        :x:         |
+|            [RL4LMs](https://github.com/allenai/RL4LMs)             | :heavy_check_mark: |         :x:          |         :x:          |        :x:         |        :x:         |
+|              [trlx](https://github.com/CarperAI/trlx)              | :heavy_check_mark: |         :x:          |         :x:          |        :x:         |        :x:         |
+|             [trl](https://github.com/huggingface/trl)              | :heavy_check_mark: |         :x:          |         :x:          |        :x:         |        :x:         |
+|       [TimeChamber](https://github.com/inspirai/TimeChamber)       |        :x:         |         :x:          |  :heavy_check_mark:  |        :x:         |        :x:         |
 
 ## 安装
 
