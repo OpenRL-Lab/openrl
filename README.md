@@ -10,7 +10,6 @@
 [![Anaconda-Server Badge](https://anaconda.org/openrl/openrl/badges/downloads.svg)](https://anaconda.org/openrl/openrl)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-
 [![Hits-of-Code](https://hitsofcode.com/github/OpenRL-Lab/openrl?branch=main)](https://hitsofcode.com/github/OpenRL-Lab/openrl/view?branch=main)
 [![codecov](https://codecov.io/gh/OpenRL-Lab/openrl_release/branch/main/graph/badge.svg?token=4FMEYMR83U)](https://codecov.io/gh/OpenRL-Lab/openrl_release)
 
@@ -31,7 +30,8 @@
 
 OpenRL-v0.1.3 is updated on Aug 18, 2023
 
-The main branch is the latest version of OpenRL, which is under active development. If you just want to have a try with OpenRL, you can switch to the stable branch.
+The main branch is the latest version of OpenRL, which is under active development. If you just want to have a try with
+OpenRL, you can switch to the stable branch.
 
 ## Welcome to OpenRL
 
@@ -41,13 +41,16 @@ The main branch is the latest version of OpenRL, which is under active developme
     Crafting Reinforcement Learning Frameworks with Passion, Your Valuable Insights Welcome.   <br><br>
 </div>
 
-OpenRL is an open-source general reinforcement learning research framework that supports training for various tasks 
-such as single-agent, multi-agent, offline RL, self-play, and natural language. 
-Developed based on PyTorch, the goal of OpenRL is to provide a simple-to-use, flexible, efficient and sustainable platform for the reinforcement learning research community.
+OpenRL is an open-source general reinforcement learning research framework that supports training for various tasks
+such as single-agent, multi-agent, offline RL, self-play, and natural language.
+Developed based on PyTorch, the goal of OpenRL is to provide a simple-to-use, flexible, efficient and sustainable
+platform for the reinforcement learning research community.
 
 Currently, the features supported by OpenRL include:
 
-- A simple-to-use universal interface that supports training for both single-agent and multi-agent
+- A **simple-to-use universal interface** that supports training for all tasks/environments
+
+- Support for both single-agent and multi-agent tasks
 
 - Support for offline RL training with expert dataset
 
@@ -55,23 +58,27 @@ Currently, the features supported by OpenRL include:
 
 - Reinforcement learning training support for natural language tasks (such as dialogue)
 
-- Support [Arena](https://openrl-docs.readthedocs.io/en/latest/arena/index.html) , which allows convenient evaluation of various agents in a competitive environment.
+- Support [Arena](https://openrl-docs.readthedocs.io/en/latest/arena/index.html) , which allows convenient evaluation of
+  various agents in a competitive environment.
 
 - Importing models and datasets from [Hugging Face](https://huggingface.co/)
 
 - Support for models such as LSTM, GRU, Transformer etc.
 
-- Multiple training acceleration methods including automatic mixed precision training and data collecting wth half precision policy network
+- Multiple training acceleration methods including automatic mixed precision training and data collecting wth half
+  precision policy network
 
 - User-defined training models, reward models, training data and environment support
 
 - Support for [gymnasium](https://gymnasium.farama.org/) environments
 
-- Support for [Callbacks](https://openrl-docs.readthedocs.io/en/latest/callbacks/index.html), which can be used to implement various functions such as logging, saving, and early stopping
+- Support for [Callbacks](https://openrl-docs.readthedocs.io/en/latest/callbacks/index.html), which can be used to
+  implement various functions such as logging, saving, and early stopping
 
 - Dictionary observation space support
 
-- Popular visualization tools such as [wandb](https://wandb.ai/),  [tensorboardX](https://tensorboardx.readthedocs.io/en/latest/index.html) are supported
+- Popular visualization tools such
+  as [wandb](https://wandb.ai/),  [tensorboardX](https://tensorboardx.readthedocs.io/en/latest/index.html) are supported
 
 - Serial or parallel environment training while ensuring consistent results in both modes
 
@@ -82,6 +89,7 @@ Currently, the features supported by OpenRL include:
 - Compliant with Black Code Style guidelines and type checking
 
 Algorithms currently supported by OpenRL (for more details, please refer to [Gallery](./Gallery.md)):
+
 - [Proximal Policy Optimization (PPO)](https://arxiv.org/abs/1707.06347)
 - [Dual-clip PPO](https://arxiv.org/abs/1912.09729)
 - [Multi-agent PPO (MAPPO)](https://arxiv.org/abs/2103.01955)
@@ -96,6 +104,7 @@ Algorithms currently supported by OpenRL (for more details, please refer to [Gal
 - [Deep Deterministic Policy Gradient (DDPG)](https://arxiv.org/abs/1509.02971)
 
 Environments currently supported by OpenRL (for more details, please refer to [Gallery](./Gallery.md)):
+
 - [Gymnasium](https://gymnasium.farama.org/)
 - [MuJoCo](https://github.com/deepmind/mujoco)
 - [PettingZoo](https://pettingzoo.farama.org/)
@@ -110,10 +119,12 @@ Environments currently supported by OpenRL (for more details, please refer to [G
 - [Super Mario Bros](https://github.com/Kautenja/gym-super-mario-bros)
 - [Gym Retro](https://github.com/openai/retro)
 
-This framework has undergone multiple iterations by the [OpenRL-Lab](https://github.com/OpenRL-Lab) team which has applied it in academic research. 
+This framework has undergone multiple iterations by the [OpenRL-Lab](https://github.com/OpenRL-Lab) team which has
+applied it in academic research.
 It has now become a mature reinforcement learning framework.
 
-OpenRL-Lab will continue to maintain and update OpenRL, and we welcome everyone to join our [open-source community](./CONTRIBUTING.md) 
+OpenRL-Lab will continue to maintain and update OpenRL, and we welcome everyone to join
+our [open-source community](./CONTRIBUTING.md)
 to contribute towards the development of reinforcement learning.
 
 For more information about OpenRL, please refer to the [documentation](https://openrl-docs.readthedocs.io/en/latest/).
@@ -122,6 +133,7 @@ For more information about OpenRL, please refer to the [documentation](https://o
 
 - [Welcome to OpenRL](#welcome-to-openrl)
 - [Outline](#outline)
+- [Why OpenRL?](#why-openrl)
 - [Installation](#installation)
 - [Use Docker](#use-docker)
 - [Quick Start](#quick-start)
@@ -130,12 +142,32 @@ For more information about OpenRL, please refer to the [documentation](https://o
 - [Feedback and Contribution](#feedback-and-contribution)
 - [Maintainers](#maintainers)
 - [Supporters](#supporters)
-  - [&#8627; Contributors](#-contributors) 
-  - [&#8627; Stargazers](#-stargazers)
-  - [&#8627; Forkers](#-forkers)
+    - [&#8627; Contributors](#-contributors)
+    - [&#8627; Stargazers](#-stargazers)
+    - [&#8627; Forkers](#-forkers)
 - [Citing OpenRL](#citing-openrl)
 - [License](#license)
 - [Acknowledgments](#acknowledgments)
+
+## Why OpenRL
+
+Here we provide a table for the comparison of OpenRL and existing popular RL libraries.
+OpenRL employs a modular design and high-level abstraction, allowing users to accomplish training for various tasks
+through a unified and user-friendly interface.
+
+|                              Library                               |      NLP/RLHF      |     Multi-agent      |  Self-Play Training  |     Offline RL     | Bilingual Document | 
+|:------------------------------------------------------------------:|:------------------:|:--------------------:|:--------------------:|:------------------:|:------------------:| 
+|         **[OpenRL](https://github.com/OpenRL-Lab/openrl)**         | :heavy_check_mark: |  :heavy_check_mark:  |  :heavy_check_mark:  | :heavy_check_mark: | :heavy_check_mark: |
+|  [Stable Baselines3](https://github.com/DLR-RM/stable-baselines3)  |        :x:         |         :x:          |         :x:          |        :x:         |        :x:         |
+| [Ray/RLlib](https://github.com/ray-project/ray/tree/master/rllib/) |        :x:         |  :heavy_check_mark:  |  :heavy_check_mark:  | :heavy_check_mark: |        :x:         |
+|        [DI-engine](https://github.com/opendilab/DI-engine/)        |        :x:         |  :heavy_check_mark:  | not fullly supported | :heavy_check_mark: | :heavy_check_mark: |
+|           [Tianshou](https://github.com/thu-ml/tianshou)           |        :x:         | not fullly supported | not fullly supported | :heavy_check_mark: | :heavy_check_mark: |
+|       [MARLlib](https://github.com/Replicable-MARL/MARLlib)        |        :x:         |  :heavy_check_mark:  | not fullly supported |        :x:         |        :x:         |
+|   [MAPPO Benchmark](https://github.com/marlbenchmark/on-policy)    |        :x:         |  :heavy_check_mark:  |         :x:          |        :x:         |        :x:         |
+|            [RL4LMs](https://github.com/allenai/RL4LMs)             | :heavy_check_mark: |         :x:          |         :x:          |        :x:         |        :x:         |
+|              [trlx](https://github.com/CarperAI/trlx)              | :heavy_check_mark: |         :x:          |         :x:          |        :x:         |        :x:         |
+|             [trl](https://github.com/huggingface/trl)              | :heavy_check_mark: |         :x:          |         :x:          |        :x:         |        :x:         |
+|       [TimeChamber](https://github.com/inspirai/TimeChamber)       |        :x:         |         :x:          |  :heavy_check_mark:  |        :x:         |        :x:         |
 
 ## Installation
 
@@ -164,22 +196,27 @@ After installation, users can check the version of OpenRL through command line:
 openrl --version
 ```
 
-**Tips**: No installation required, try OpenRL online through Colab: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/15VBA-B7AJF8dBazzRcWAxJxZI7Pl9m-g?usp=sharing)
+**Tips**: No installation required, try OpenRL online through
+Colab: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/15VBA-B7AJF8dBazzRcWAxJxZI7Pl9m-g?usp=sharing)
 
 ## Use Docker
 
-OpenRL currently provides Docker images with and without GPU support. 
-If the user's computer does not have an NVIDIA GPU, they can obtain an image without the GPU plugin using the following command:
+OpenRL currently provides Docker images with and without GPU support.
+If the user's computer does not have an NVIDIA GPU, they can obtain an image without the GPU plugin using the following
+command:
+
 ```bash
 sudo docker pull openrllab/openrl-cpu
 ```
 
 If the user wants to accelerate training with a GPU, they can obtain it using the following command:
+
 ```bash
 sudo docker pull openrllab/openrl
 ```
 
 After successfully pulling the image, users can run OpenRL's Docker image using the following commands:
+
 ```bash
 # Without GPU acceleration
 sudo docker run -it openrllab/openrl-cpu
@@ -187,7 +224,8 @@ sudo docker run -it openrllab/openrl-cpu
 sudo docker run -it --gpus all --net host openrllab/openrl
 ```
 
-Once inside the Docker container, users can check OpenRL's version and then run test cases using these commands: 
+Once inside the Docker container, users can check OpenRL's version and then run test cases using these commands:
+
 ```bash 
 # Check OpenRL version in Docker container  
 openrl --version  
@@ -197,40 +235,47 @@ openrl --mode train --env CartPole-v1
 
 ## Quick Start
 
-OpenRL provides a simple and easy-to-use interface for beginners in reinforcement learning. 
+OpenRL provides a simple and easy-to-use interface for beginners in reinforcement learning.
 Below is an example of using the PPO algorithm to train the `CartPole` environment:
+
 ```python
 # train_ppo.py
 from openrl.envs.common import make
 from openrl.modules.common import PPONet as Net
 from openrl.runners.common import PPOAgent as Agent
-env = make("CartPole-v1", env_num=9) # Create an environment and set the environment parallelism to 9.
-net = Net(env) # Create neural network.
-agent = Agent(net) # Initialize the agent.
-agent.train(total_time_steps=20000) # Start training and set the total number of steps to 20,000 for the running environment.
+
+env = make("CartPole-v1", env_num=9)  # Create an environment and set the environment parallelism to 9.
+net = Net(env)  # Create neural network.
+agent = Agent(net)  # Initialize the agent.
+agent.train(
+    total_time_steps=20000)  # Start training and set the total number of steps to 20,000 for the running environment.
 ```
-Training an agent using OpenRL only requires four simple steps: 
+
+Training an agent using OpenRL only requires four simple steps:
 **Create Environment** => **Initialize Model** => **Initialize Agent** => **Start Training**!
 
 For a well-trained agent, users can also easily test the agent:
+
 ```python
 # train_ppo.py
 from openrl.envs.common import make
 from openrl.modules.common import PPONet as Net
 from openrl.runners.common import PPOAgent as Agent
-agent = Agent(Net(make("CartPole-v1", env_num=9))) # Initialize trainer.
+
+agent = Agent(Net(make("CartPole-v1", env_num=9)))  # Initialize trainer.
 agent.train(total_time_steps=20000)
 # Create an environment for test, set the parallelism of the environment to 9, and set the rendering mode to group_human.
 env = make("CartPole-v1", env_num=9, render_mode="group_human")
-agent.set_env(env) # The agent requires an interactive environment.
-obs, info = env.reset() # Initialize the environment to obtain initial observations and environmental information.
+agent.set_env(env)  # The agent requires an interactive environment.
+obs, info = env.reset()  # Initialize the environment to obtain initial observations and environmental information.
 while True:
-    action, _ = agent.act(obs) # The agent predicts the next action based on environmental observations.
+    action, _ = agent.act(obs)  # The agent predicts the next action based on environmental observations.
     # The environment takes one step according to the action, obtains the next observation, reward, whether it ends and environmental information.
     obs, r, done, info = env.step(action)
     if any(done): break
-env.close() # Close test environment
+env.close()  # Close test environment
 ```
+
 Executing the above code on a regular laptop only takes **a few seconds**
 to complete the training. Below shows the visualization of the agent:
 
@@ -240,55 +285,69 @@ to complete the training. Below shows the visualization of the agent:
 
 
 **Tips:** Users can also quickly train the `CartPole` environment by executing a command line in the terminal.
+
 ```bash
 openrl --mode train --env CartPole-v1
 ```
 
-For training tasks such as multi-agent and natural language processing, OpenRL also provides a similarly simple and easy-to-use interface.
+For training tasks such as multi-agent and natural language processing, OpenRL also provides a similarly simple and
+easy-to-use interface.
 
-For information on how to perform multi-agent training, set hyperparameters for training, load training configurations, use wandb, save GIF animations, etc., please refer to:
+For information on how to perform multi-agent training, set hyperparameters for training, load training configurations,
+use wandb, save GIF animations, etc., please refer to:
+
 - [Multi-Agent Training Example](https://openrl-docs.readthedocs.io/en/latest/quick_start/multi_agent_RL.html)
 
-For information on natural language task training, loading models/datasets on Hugging Face, customizing training models/reward models, etc., please refer to:
+For information on natural language task training, loading models/datasets on Hugging Face, customizing training
+models/reward models, etc., please refer to:
+
 - [Dialogue Task Training Example](https://openrl-docs.readthedocs.io/en/latest/quick_start/train_nlp.html)
 
 For more information about OpenRL, please refer to the [documentation](https://openrl-docs.readthedocs.io/en/latest/).
 
 ## Gallery
 
-In order to facilitate users' familiarity with the framework, we provide more examples and demos of using OpenRL in [Gallery](./Gallery.md). 
+In order to facilitate users' familiarity with the framework, we provide more examples and demos of using OpenRL
+in [Gallery](./Gallery.md).
 Users are also welcome to contribute their own training examples and demos to the Gallery.
 
 ## Projects Using OpenRL
 
-We have listed research projects that use OpenRL in the [OpenRL Project](./Project.md). 
+We have listed research projects that use OpenRL in the [OpenRL Project](./Project.md).
 If you are using OpenRL in your research project, you are also welcome to join this list.
 
 ## Feedback and Contribution
-- If you have any questions or find bugs, you can check or ask in the [Issues](https://github.com/OpenRL-Lab/openrl/issues).
+
+- If you have any questions or find bugs, you can check or ask in
+  the [Issues](https://github.com/OpenRL-Lab/openrl/issues).
 - Join the QQ group: [OpenRL Official Communication Group](docs/images/qq.png)
+
 <div align="center">
 <a href="docs/images/qq.png"><img width="250px" height="auto" src="docs/images/qq.png"></a>
 </div>
 
-- Join the [slack](https://join.slack.com/t/openrlhq/shared_invite/zt-1tqwpvthd-Eeh0IxQ~DIaGqYXoW2IUQg) group to discuss OpenRL usage and development with us.
+- Join the [slack](https://join.slack.com/t/openrlhq/shared_invite/zt-1tqwpvthd-Eeh0IxQ~DIaGqYXoW2IUQg) group to discuss
+  OpenRL usage and development with us.
 - Join the [Discord](https://discord.gg/guvAS2up) group to discuss OpenRL usage and development with us.
 - Send an E-mail to: [huangshiyu@4paradigm.com](huangshiyu@4paradigm.com)
 - Join the [GitHub Discussion](https://github.com/orgs/OpenRL-Lab/discussions).
 
-The OpenRL framework is still under continuous development and documentation. 
+The OpenRL framework is still under continuous development and documentation.
 We welcome you to join us in making this project better:
+
 - How to contribute code: Read the [Contributors' Guide](./CONTRIBUTING.md)
 - [OpenRL Roadmap](https://github.com/OpenRL-Lab/openrl/issues/2)
 
 ## Maintainers
 
 At present, OpenRL is maintained by the following maintainers:
+
 - [Shiyu Huang](https://huangshiyu13.github.io/)([@huangshiyu13](https://github.com/huangshiyu13))
 - Wenze Chen([@Chen001117](https://github.com/Chen001117))
 - Yiwen Sun([@YiwenAI](https://github.com/YiwenAI))
 
-Welcome more contributors to join our maintenance team (send an E-mail to [huangshiyu@4paradigm.com](huangshiyu@4paradigm.com) 
+Welcome more contributors to join our maintenance team (send an E-mail
+to [huangshiyu@4paradigm.com](huangshiyu@4paradigm.com)
 to apply for joining the OpenRL team).
 
 ## Supporters
@@ -310,6 +369,7 @@ to apply for joining the OpenRL team).
 ## Citing OpenRL
 
 If our work has been helpful to you, please feel free to cite us:
+
 ```latex
 @misc{openrl2023,
     title={OpenRL},
@@ -325,9 +385,11 @@ If our work has been helpful to you, please feel free to cite us:
 [![Star History Chart](https://api.star-history.com/svg?repos=OpenRL-Lab/openrl&type=Date)](https://star-history.com/#OpenRL-Lab/openrl&Date)
 
 ## License
+
 OpenRL under the Apache 2.0 license.
 
 ## Acknowledgments
+
 The development of the OpenRL framework has drawn on the strengths of other reinforcement learning frameworks:
 
 - Stable-baselines3: https://github.com/DLR-RM/stable-baselines3
