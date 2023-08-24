@@ -19,11 +19,14 @@ import copy
 from typing import List, Optional, Union
 
 from openrl.envs.common import build_envs
+from openrl.envs.PettingZoo.registration import pettingzoo_env_dict
 from openrl.envs.wrappers.pettingzoo_wrappers import SeedEnv
 
 
 def PettingZoo_make(id, render_mode, disable_env_checker, **kwargs):
-    if id == "tictactoe_v3":
+    if id in pettingzoo_env_dict.keys():
+        env = pettingzoo_env_dict[id](render_mode=render_mode)
+    elif id == "tictactoe_v3":
         from pettingzoo.classic import tictactoe_v3
 
         env = tictactoe_v3.env(render_mode=render_mode)

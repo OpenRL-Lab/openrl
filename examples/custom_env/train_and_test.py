@@ -15,22 +15,33 @@
 # limitations under the License.
 
 """"""
-import copy
-from typing import Optional, Union
 
 import numpy as np
-from gymnasium import spaces
-from gymnasium.core import ActType, ObsType, WrapperActType, WrapperObsType
 
-from openrl.selfplay.wrappers.base_multiplayer_wrapper import BaseMultiPlayerWrapper
+from openrl.modules.common.ppo_net import PPONet as Net
+from openrl.runners.common.ppo_agent import PPOAgent as Agent
 
 
-class RandomOpponentWrapper(BaseMultiPlayerWrapper):
-    def get_opponent_action(
-        self, player_name, observation, reward, termination, truncation, info
-    ):
-        mask = None
-        if isinstance(observation, dict) and "action_mask" in observation:
-            mask = observation["action_mask"]
-        action = self.env.action_space(player_name).sample(mask)
-        return action
+def train(env):
+    agent = Agent(Net(env))
+    agent.train(5000)
+    return agent
+
+
+def test(env, agent):
+    obs, info = env.reset()
+    done = False
+    total_reward = 0
+    total_step = 0
+    while not np.any(done):
+        action, _ = agent.act(obs)
+        obs, r, done, info = env.step(action)
+        total_step += 1
+        total_reward += np.mean(r)
+    print("total test step: ", total_step)
+    print("total test reward: ", total_reward)
+
+
+def train_and_test(env):
+    agent = train(env)
+    test(env, agent)

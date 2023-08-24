@@ -78,6 +78,15 @@ def make(
             env_fns = make_dmc_envs(
                 id=id, env_num=env_num, render_mode=convert_render_mode, **kwargs
             )
+        elif id.startswith("GymV21Environment-v0:") or id.startswith(
+            "GymV26Environment-v0:"
+        ):
+            from openrl.envs.gymnasium import make_old_gym_envs
+
+            env_fns = make_old_gym_envs(
+                id=id, env_num=env_num, render_mode=convert_render_mode, **kwargs
+            )
+
         elif id in gym.envs.registry.keys():
             from openrl.envs.gymnasium import make_gym_envs
 
@@ -140,7 +149,10 @@ def make(
                 render_mode=convert_render_mode,
                 **kwargs,
             )
-        elif id in openrl.envs.pettingzoo_all_envs:
+        elif (
+            id in openrl.envs.pettingzoo_all_envs
+            or id in openrl.envs.PettingZoo.registration.pettingzoo_env_dict.keys()
+        ):
             from openrl.envs.PettingZoo import make_PettingZoo_envs
 
             env_fns = make_PettingZoo_envs(

@@ -52,3 +52,21 @@ def make_gym_envs(
         **kwargs,
     )
     return env_fns
+
+
+def make_old_gym_envs(
+    id: str,
+    env_num: int = 1,
+    render_mode: Optional[Union[str, List[str]]] = None,
+    **kwargs,
+):
+    ids_split = id.split(":")
+    assert len(ids_split) == 2, (
+        "id must be in the format of 'GymV21Environment-v0:env_id' or"
+        " 'GymV26Environment-v0:env_id'"
+    )
+    env_id = ids_split[1]
+    id = ids_split[0]
+    kwargs["env_id"] = env_id
+    env_fns = make_gym_envs(id=id, env_num=env_num, render_mode=render_mode, **kwargs)
+    return env_fns
