@@ -63,6 +63,8 @@ Currently, the features supported by OpenRL include:
 
 - Importing models and datasets from [Hugging Face](https://huggingface.co/)
 
+- [Tutorial](https://openrl-docs.readthedocs.io/en/latest/custom_env/index.html) on how to integrate user-defined environments into OpenRL.
+
 - Support for models such as LSTM, GRU, Transformer etc.
 
 - Multiple training acceleration methods including automatic mixed precision training and data collecting wth half
