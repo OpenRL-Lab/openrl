@@ -30,6 +30,5 @@ env = make(
     env_num=10,
     opponent_wrappers=[RandomOpponentWrapper],
 )
-obs, info = env.reset()
 
 train_and_test(env)
