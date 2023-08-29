@@ -19,13 +19,18 @@ import copy
 from typing import List, Optional, Union
 
 from openrl.envs.common import build_envs
-from openrl.envs.PettingZoo.registration import pettingzoo_env_dict
+from openrl.envs.PettingZoo.registration import pettingzoo_env_dict, register
 from openrl.envs.wrappers.pettingzoo_wrappers import SeedEnv
 
 
 def PettingZoo_make(id, render_mode, disable_env_checker, **kwargs):
+    if id.startswith("snakes_"):
+        from openrl.envs.snake.snake_pettingzoo import SnakeEatBeansAECEnv
+
+        kwargs.__setitem__("id", id)
+        register(id, SnakeEatBeansAECEnv)
     if id in pettingzoo_env_dict.keys():
-        env = pettingzoo_env_dict[id](render_mode=render_mode)
+        env = pettingzoo_env_dict[id](render_mode=render_mode, **kwargs)
     elif id == "tictactoe_v3":
         from pettingzoo.classic import tictactoe_v3
 

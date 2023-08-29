@@ -32,14 +32,27 @@ NONE = 4
 class SnakeEatBeansAECEnv(AECEnv):
     metadata = {"render.modes": ["human"], "name": "SnakeEatBeans"}
 
-    def __init__(self, render_mode: Optional[str] = None):
-        self.env = SnakeEatBeans(render_mode)
+    def __init__(self, render_mode: Optional[str] = None, id: str = None):
+        self.env = SnakeEatBeans(render_mode, id=id)
 
+        agent_num = len(self.possible_agents)
+        player_each_side = self.env.num_agents
+        self.agent_name_to_slice = dict(
+            zip(
+                self.possible_agents,
+                [
+                    slice(i * player_each_side, (i + 1) * player_each_side)
+                    for i in range(agent_num)
+                ],
+            )
+        )
         self.agent_name_mapping = dict(
             zip(self.possible_agents, list(range(len(self.possible_agents))))
         )
+
         self._action_spaces = {
-            agent: spaces.Discrete(4) for agent in self.possible_agents
+            agent: [spaces.Discrete(4) for _ in range(self.env.num_agents)]
+            for agent in self.possible_agents
         }
         self._observation_spaces = {
             agent: spaces.Box(low=-np.inf, high=np.inf, shape=(288,), dtype=np.float32)
@@ -65,7 +78,7 @@ class SnakeEatBeansAECEnv(AECEnv):
         return deepcopy(self._action_spaces[agent])
 
     def observe(self, agent):
-        return self.raw_obs[self.agent_name_mapping[agent]]
+        return self.raw_obs[self.agent_name_to_slice[agent]]
 
     def reset(
         self,
@@ -93,13 +106,17 @@ class SnakeEatBeansAECEnv(AECEnv):
         self._cumulative_rewards[agent] = 0
         self.state[self.agent_selection] = action
         if self._agent_selector.is_last():
-            joint_action = [self.state[agent] for agent in self.agents]
+            joint_action = []
+            for agent in self.agents:
+                joint_action += self.state[agent]
+
             self.raw_obs, self.raw_reward, self.raw_done, self.raw_info = self.env.step(
                 joint_action
             )
 
             self.rewards = {
-                agent: self.raw_reward[i] for i, agent in enumerate(self.agents)
+                agent: np.sum(self.raw_reward[self.agent_name_to_slice[agent]])
+                for agent in self.agents
             }
 
             if np.any(self.raw_done):
@@ -122,7 +139,7 @@ class SnakeEatBeansAECEnv(AECEnv):
 
     @property
     def possible_agents(self):
-        return ["player_" + str(i) for i in range(self.env.n_player)]
+        return ["player_" + str(i) for i in range(2)]
 
     @property
     def num_agents(self):

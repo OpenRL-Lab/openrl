@@ -26,4 +26,5 @@ def my_controller(observation, action_space, is_act_continuous):
     for i in range(len(action_space)):
         player = sample_single_dim(action_space[i], is_act_continuous)
         joint_action.append(player)
+
     return joint_action

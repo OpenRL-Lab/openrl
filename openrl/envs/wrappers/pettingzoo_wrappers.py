@@ -15,7 +15,8 @@
 # limitations under the License.
 
 """"""
-from typing import Optional
+from collections import defaultdict
+from typing import Dict, Optional
 
 from pettingzoo.utils.env import ActionType, AECEnv
 from pettingzoo.utils.wrappers import BaseWrapper
@@ -29,13 +30,21 @@ class SeedEnv(BaseWrapper):
                 list(self.action_spaces.values())
                 + list(self.observation_spaces.values())
             ):
-                space.seed(seed + i * 7891)
+                if isinstance(space, list):
+                    for j in range(len(space)):
+                        space[j].seed(seed + i * 7891 + j)
+                else:
+                    space.seed(seed + i * 7891)
 
 
 class RecordWinner(BaseWrapper):
     def __init__(self, env: AECEnv):
         super().__init__(env)
-        self.cumulative_rewards = {}
+        self.total_rewards = defaultdict(float)
+
+    def reset(self, seed: Optional[int] = None, options: Optional[Dict] = None):
+        self.total_rewards = defaultdict(float)
+        return super().reset(seed, options)
 
     def step(self, action: ActionType) -> None:
         super().step(action)
@@ -50,11 +59,20 @@ class RecordWinner(BaseWrapper):
                 self.infos[agent]["losers"] = losers
 
     def get_winners(self):
-        max_reward = max(self._cumulative_rewards.values())
+        max_reward = max(self.total_rewards.values())
 
         winners = [
             agent
-            for agent, reward in self._cumulative_rewards.items()
+            for agent, reward in self.total_rewards.items()
             if reward == max_reward
         ]
         return winners
+
+    def last(self, observe: bool = True):
+        """Returns observation, cumulative reward, terminated, truncated, info for the current agent (specified by self.agent_selection)."""
+        agent = self.agent_selection
+        # if self._cumulative_rewards[agent]!=0:
+        #     print("agent:",agent,self._cumulative_rewards[agent])
+        self.total_rewards[agent] += self._cumulative_rewards[agent]
+
+        return super().last(observe)
