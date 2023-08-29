@@ -12,7 +12,7 @@ test:
 lint:
 	$(call check_install, ruff)
 	ruff ${PYTHON_FILES} --select=E9,F63,F7,F82 --show-source
-	ruff ${PYTHON_FILES} --exit-zero | grep -v '501\|405\|401\|402\|403'
+	ruff ${PYTHON_FILES} --exit-zero | grep -v '501\|405\|401\|402\|403\|722'
 
 format:
 	$(call check_install, isort)

@@ -26,24 +26,42 @@ def convert_to_onehot(joint_action):
     return new_joint_action
 
 
+conf_dict = {
+    "snakes_1v1": {
+        "class_literal": "SnakeEatBeans",
+        "n_player": 2,
+        "board_width": 8,
+        "board_height": 6,
+        "cell_range": 4,
+        "n_beans": 5,
+        "max_step": 50,
+        "game_name": "snakes",
+        "is_obs_continuous": False,
+        "is_act_continuous": False,
+        "agent_nums": [1, 1],
+        "obs_type": ["dict", "dict"],
+    },
+    "snakes_3v3": {
+        "class_literal": "SnakeEatBeans",
+        "n_player": 6,
+        "board_width": 20,
+        "board_height": 10,
+        "cell_range": 8,
+        "n_beans": 5,
+        "max_step": 200,
+        "game_name": "snakes",
+        "is_obs_continuous": False,
+        "is_act_continuous": False,
+        "agent_nums": [3, 3],
+        "obs_type": ["dict", "dict"],
+    },
+}
+
+
 class SnakeEatBeans(GridGame, GridObservation, DictObservation):
-    def __init__(self, render_mode: Optional[str] = None):
-        conf = {
-            "class_literal": "SnakeEatBeans",
-            "n_player": 2,
-            "board_width": 8,
-            "board_height": 6,
-            "cell_range": 4,
-            "n_beans": 5,
-            "max_step": 50,
-            "game_name": "snakes",
-            "is_obs_continuous": False,
-            "is_act_continuous": False,
-            "agent_nums": [1, 1],
-            "obs_type": ["dict", "dict"],
-            "save_interval": 100,
-            "save_path": "../../replay_winrate_var/replay_{}.gif",
-        }
+    def __init__(self, render_mode: Optional[str] = None, id: Optional[str] = None):
+        assert id in conf_dict.keys(), "id must be in %s" % conf_dict.keys()
+        conf = conf_dict[id]
         self.terminate_flg = False
         colors = conf.get("colors", [(255, 255, 255), (255, 140, 0)])
         super(SnakeEatBeans, self).__init__(conf, colors)
@@ -82,8 +100,7 @@ class SnakeEatBeans(GridGame, GridObservation, DictObservation):
         ]
         # self.action_space = [Discrete(4) for _ in range(self.n_player)]
         self.action_space = Discrete(4)
-        self.save_internal = conf["save_interval"]
-        self.save_path = conf["save_path"]
+
         self.episode = 0
         self.fig, self.ax = None, None
         if render_mode in ["human", "rgb_array"]:
@@ -543,11 +560,13 @@ class SnakeEatBeans(GridGame, GridObservation, DictObservation):
     def is_not_valid_action(self, all_action):
         not_valid = 0
         if len(all_action) != self.n_player:
-            raise Exception("all action 维度不正确！", len(all_action))
+            raise Exception("all action dimension is wrong!", len(all_action))
 
         for i in range(self.n_player):
             if len(all_action[i][0]) != 4:
-                raise Exception("玩家%d joint action维度不正确！" % i, all_action[i])
+                raise Exception(
+                    "Player %d has wrong joint action dimension!" % i, all_action[i]
+                )
         return not_valid
 
     def get_reward(self, all_action):

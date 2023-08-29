@@ -21,15 +21,23 @@ from openrl.arena.two_player_arena import TwoPlayerArena
 from openrl.envs import pettingzoo_all_envs
 
 
-def make_arena(env_id: str, custom_build_env: Optional[Callable] = None, **kwargs):
+def make_arena(
+    env_id: str,
+    custom_build_env: Optional[Callable] = None,
+    render: Optional[bool] = False,
+    **kwargs,
+):
     if custom_build_env is None:
         if env_id in pettingzoo_all_envs:
             from openrl.envs.PettingZoo import make_PettingZoo_env
 
-            env_fn = make_PettingZoo_env(env_id, **kwargs)
+            render_mode = None
+            if render:
+                render_mode = "human"
+            env_fn = make_PettingZoo_env(env_id, render_mode=render_mode, **kwargs)
         else:
             raise ValueError(f"Unknown env_id: {env_id}")
     else:
-        env_fn = custom_build_env(env_id, **kwargs)
+        env_fn = custom_build_env(env_id, render, **kwargs)
 
     return TwoPlayerArena(env_fn)

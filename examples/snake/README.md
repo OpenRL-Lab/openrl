@@ -7,6 +7,11 @@ This is the example for the snake game.
 python train_selfplay.py
 ```
 
+## Evaluate JiDi submissions locally
+
+```bash
+python jidi_eval.py
+```
 
 ## Submit to JiDi
 

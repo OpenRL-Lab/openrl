@@ -29,4 +29,4 @@ gridworld_all_envs = ["GridWorldEnv", "GridWorldEnvRandomGoal"]
 
 offline_all_envs = ["OfflineEnv"]
 
-pettingzoo_all_envs = ["tictactoe_v3"]
+pettingzoo_all_envs = ["tictactoe_v3", "snakes_1v1", "snakes_3v3"]

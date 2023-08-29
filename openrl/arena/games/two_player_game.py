@@ -45,8 +45,9 @@ class TwoPlayerGame(BaseGame):
         player2agent, player2agent_name = self.dispatch_agent_to_player(
             env.agents, agents
         )
-        for agent in player2agent.values():
-            agent.reset(env)
+
+        for player, agent in player2agent.items():
+            agent.reset(env, player)
         result = {}
         while True:
             termination = False

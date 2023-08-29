@@ -19,10 +19,12 @@
 import json
 import sys
 import time
+import traceback
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Union
 
 from openrl.selfplay.opponents.base_opponent import BaseOpponent
+from openrl.selfplay.opponents.jidi_opponent import JiDiOpponent
 
 
 def check_opponent_template(opponent_template: Union[str, Path]):
@@ -83,6 +85,37 @@ def load_opponent_from_path(
         )
     except:
         print(f"Load opponent from {opponent_path} failed")
+
+    sys.path.remove(str(opponent_path.parent))
+    return opponent
+
+
+def load_opponent_from_jidi_path(
+    opponent_path: Union[str, Path],
+    opponent_info: Optional[Dict[str, str]] = None,
+    player_num: int = 1,
+) -> Optional[BaseOpponent]:
+    opponent = None
+    if isinstance(opponent_path, str):
+        opponent_path = Path(opponent_path)
+    assert opponent_path.exists()
+    try:
+        sys.path.append(str(opponent_path.parent))
+        submission_module = __import__(
+            "{}.submission".format(opponent_path.name), fromlist=["submission"]
+        )
+        opponent_id = get_opponent_id(opponent_info)
+        opponent = JiDiOpponent(
+            opponent_id=opponent_id,
+            opponent_path=opponent_path,
+            opponent_info=opponent_info,
+            jidi_controller=submission_module.my_controller,
+            player_num=player_num,
+        )
+    except Exception as e:
+        print(f"Load JiDi opponent from {opponent_path} failed")
+        traceback.print_exc()
+        exit()
 
     sys.path.remove(str(opponent_path.parent))
     return opponent
