@@ -6,7 +6,6 @@ import numpy as np
 import torch
 from torch import nn
 from torch.distributions import Categorical
-from pathlib import Path
 
 HIDDEN_SIZE = 256
 device = torch.device("cpu")
@@ -173,7 +172,10 @@ def logits2action(logits):
 
 agent = RLAgent(26, 4, 3)
 actor_net = os.path.dirname(os.path.abspath(__file__)) + "/actor_2000.pth"
-assert Path(actor_net).exists(), "actor_2000.pth not exists, please download from: https://github.com/CarlossShi/Competition_3v3snakes/tree/master/agent/rl"
+assert Path(actor_net).exists(), (
+    "actor_2000.pth not exists, please download from:"
+    " https://github.com/CarlossShi/Competition_3v3snakes/tree/master/agent/rl"
+)
 agent.load_model(actor_net)
 
 
