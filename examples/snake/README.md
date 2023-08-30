@@ -1,6 +1,12 @@
 
 This is the example for the snake game.
 
+## Installation
+
+```bash
+pip install "openrl[selfplay]"
+```
+
 ## Usage
 
 ```bash

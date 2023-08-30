@@ -17,6 +17,7 @@
 """"""
 from typing import Callable, Optional
 
+import openrl
 from openrl.arena.two_player_arena import TwoPlayerArena
 from openrl.envs import pettingzoo_all_envs
 
@@ -27,8 +28,12 @@ def make_arena(
     render: Optional[bool] = False,
     **kwargs,
 ):
+    print(openrl.envs.PettingZoo.registration.pettingzoo_env_dict.keys())
     if custom_build_env is None:
-        if env_id in pettingzoo_all_envs:
+        if (
+            env_id in pettingzoo_all_envs
+            or env_id in openrl.envs.PettingZoo.registration.pettingzoo_env_dict.keys()
+        ):
             from openrl.envs.PettingZoo import make_PettingZoo_env
 
             render_mode = None

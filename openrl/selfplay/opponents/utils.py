@@ -101,8 +101,10 @@ def load_opponent_from_jidi_path(
     assert opponent_path.exists()
     try:
         sys.path.append(str(opponent_path.parent))
+
+        module_name = ".".join(opponent_path.parts)
         submission_module = __import__(
-            "{}.submission".format(opponent_path.name), fromlist=["submission"]
+            f"{module_name}.submission", fromlist=["submission"]
         )
         opponent_id = get_opponent_id(opponent_info)
         opponent = JiDiOpponent(

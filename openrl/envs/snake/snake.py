@@ -677,7 +677,9 @@ class Snake:
     def __init__(self, player_id, board_width, board_height, init_len):
         self.actions = [-2, 2, -1, 1]
         self.actions_name = {-2: "up", 2: "down", -1: "left", 1: "right"}
-        self.direction = random.choice(self.actions)  # 方向[-2,2,-1,1]分别表示[上，下，左，右]
+        self.direction = random.choice(
+            self.actions
+        )  # 方向[-2,2,-1,1]分别表示[上，下，左，右]
         self.board_width = board_width
         self.board_height = board_height
         x = random.randrange(0, board_height)
