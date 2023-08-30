@@ -24,10 +24,10 @@ from openrl.envs.wrappers.pettingzoo_wrappers import SeedEnv
 
 
 def PettingZoo_make(id, render_mode, disable_env_checker, **kwargs):
+    kwargs.__setitem__("id", id)
     if id.startswith("snakes_"):
         from openrl.envs.snake.snake_pettingzoo import SnakeEatBeansAECEnv
 
-        kwargs.__setitem__("id", id)
         register(id, SnakeEatBeansAECEnv)
     if id in pettingzoo_env_dict.keys():
         env = pettingzoo_env_dict[id](render_mode=render_mode, **kwargs)
