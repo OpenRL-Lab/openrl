@@ -20,7 +20,7 @@ from typing import List, Optional, Union
 
 from openrl.envs.common import build_envs
 from openrl.envs.PettingZoo.registration import pettingzoo_env_dict, register
-from openrl.envs.wrappers.pettingzoo_wrappers import SeedEnv
+from openrl.envs.wrappers.pettingzoo_wrappers import CheckAgentNumber, SeedEnv
 
 
 def PettingZoo_make(id, render_mode, disable_env_checker, **kwargs):
@@ -46,8 +46,9 @@ def make_PettingZoo_env(
     **kwargs,
 ):
     env_num = 1
-    env_wrappers = [SeedEnv]
+    env_wrappers = [CheckAgentNumber, SeedEnv]
     env_wrappers += copy.copy(kwargs.pop("env_wrappers", []))
+
     env_fns = build_envs(
         make=PettingZoo_make,
         id=id,
@@ -65,16 +66,15 @@ def make_PettingZoo_envs(
     render_mode: Optional[Union[str, List[str]]] = None,
     **kwargs,
 ):
-    from openrl.envs.wrappers import (  # AutoReset,; DictWrapper,
+    from openrl.envs.wrappers import (  # AutoReset,; DictWrapper,; Single2MultiAgentWrapper,
         MoveActionMask2InfoWrapper,
         RemoveTruncated,
-        Single2MultiAgentWrapper,
     )
 
-    env_wrappers = [SeedEnv]
+    env_wrappers = [CheckAgentNumber, SeedEnv]
     env_wrappers += copy.copy(kwargs.pop("opponent_wrappers", []))
     env_wrappers += [
-        Single2MultiAgentWrapper,
+        # Single2MultiAgentWrapper,
         RemoveTruncated,
         MoveActionMask2InfoWrapper,
     ]

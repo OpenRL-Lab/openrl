@@ -15,7 +15,10 @@ def train():
 
     # Create environment
     env_num = 10
+
     render_model = None
+
+    # ConvertObs can only be used for snakes_1v1, if you want to train snakes_3v3, you need to write your own wrapper
     env = make(
         "snakes_1v1",
         render_mode=render_model,
@@ -32,6 +35,7 @@ def train():
     agent = Agent(net)
     # Begin training
     agent.train(total_time_steps=100000)
+
     env.close()
     agent.save("./selfplay_agent/")
     return agent
@@ -71,6 +75,7 @@ def evaluation():
         while not np.any(done):
             # predict next action based on the observation
             action, _ = agent.act(obs, info, deterministic=True)
+
             obs, r, done, info = env.step(action)
             step += 1
 

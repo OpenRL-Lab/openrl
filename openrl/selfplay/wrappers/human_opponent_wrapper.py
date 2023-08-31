@@ -28,4 +28,5 @@ class HumanOpponentWrapper(BaseMultiPlayerWrapper):
         action = self.env.get_human_action(
             player_name, observation, termination, truncation, info
         )
+        action = [action]
         return action

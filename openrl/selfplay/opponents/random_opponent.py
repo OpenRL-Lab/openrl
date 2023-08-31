@@ -40,7 +40,14 @@ class RandomOpponent(BaseOpponent):
         self, player_name, observation, reward, termination, truncation, info
     ):
         mask = observation["action_mask"]
-        action = self.env.action_space(player_name).sample(mask)
+        action_space = self.env.action_space(player_name)
+        if isinstance(action_space, list):
+            action = []
+            for space in action_space:
+                action.append(space.sample(mask))
+        else:
+            action = action_space.sample(mask)
+
         return action
 
     def _load(self, opponent_path: Union[str, Path]):

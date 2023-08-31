@@ -28,7 +28,6 @@ def make_arena(
     render: Optional[bool] = False,
     **kwargs,
 ):
-    print(openrl.envs.PettingZoo.registration.pettingzoo_env_dict.keys())
     if custom_build_env is None:
         if (
             env_id in pettingzoo_all_envs

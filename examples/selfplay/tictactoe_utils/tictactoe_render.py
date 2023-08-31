@@ -45,7 +45,7 @@ class TictactoeRender(BaseWrapper):
 
     def step(self, action: ActionType) -> None:
         result = super().step(action)
-        self.last_action = action
+        self.last_action = action[0]
         return result
 
     def observe(self, agent: str) -> Optional[ObsType]:

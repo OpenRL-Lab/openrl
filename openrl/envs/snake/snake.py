@@ -60,7 +60,7 @@ conf_dict = {
 
 class SnakeEatBeans(GridGame, GridObservation, DictObservation):
     def __init__(self, render_mode: Optional[str] = None, id: Optional[str] = None):
-        assert id in conf_dict.keys(), "id must be in %s" % conf_dict.keys()
+        assert id in conf_dict.keys(), f"id must be in {conf_dict.keys()}, but get {id}"
         conf = conf_dict[id]
         self.terminate_flg = False
         colors = conf.get("colors", [(255, 255, 255), (255, 140, 0)])
@@ -162,6 +162,7 @@ class SnakeEatBeans(GridGame, GridObservation, DictObservation):
                 if self.init_colors is not None
                 else generate_color(self.cell_size)
             )
+
         self.step_cnt = 1
         self.snakes_position = (
             {}
@@ -183,6 +184,7 @@ class SnakeEatBeans(GridGame, GridObservation, DictObservation):
 
         info = {"action_mask": avail_actions}
         self.inner_render()
+
         return self.all_observes, info
 
     def step(self, joint_action):
@@ -193,14 +195,9 @@ class SnakeEatBeans(GridGame, GridObservation, DictObservation):
         all_observes, info_after = self.get_next_state(joint_action)
         done = self.is_terminal()
         reward = self.get_reward(joint_action)
-
         left_avail_actions = np.ones([self.num_agents, self.action_dim])
         right_avail_actions = np.ones([self.num_enemys, self.action_dim])
         avail_actions = np.concatenate([left_avail_actions, right_avail_actions], 0)
-
-        raw_obs = all_observes[0]
-        obs = self.raw2vec(raw_obs)
-
         rewards = np.expand_dims(np.array(reward), axis=1)
 
         dones = [done] * self.n_player
@@ -208,7 +205,8 @@ class SnakeEatBeans(GridGame, GridObservation, DictObservation):
 
         infos.update({"action_mask": avail_actions})
         self.inner_render()
-        return self.all_observes, rewards, dones, infos
+
+        return all_observes, rewards, dones, infos
 
     # obs: 0-空白 1-豆子 2-我方蛇头 3-我方蛇身 4-敌方蛇头 5-敌方蛇身
 
@@ -677,9 +675,7 @@ class Snake:
     def __init__(self, player_id, board_width, board_height, init_len):
         self.actions = [-2, 2, -1, 1]
         self.actions_name = {-2: "up", 2: "down", -1: "left", 1: "right"}
-        self.direction = random.choice(
-            self.actions
-        )  # 方向[-2,2,-1,1]分别表示[上，下，左，右]
+        self.direction = random.choice(self.actions)  # 方向[-2,2,-1,1]分别表示[上，下，左，右]
         self.board_width = board_width
         self.board_height = board_height
         x = random.randrange(0, board_height)
