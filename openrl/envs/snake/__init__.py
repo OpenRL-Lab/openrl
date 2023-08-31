@@ -18,16 +18,18 @@
 import copy
 from typing import List, Optional, Union
 
-from pettingzoo.utils.wrappers import AssertOutOfBoundsWrapper, OrderEnforcingWrapper
-
 from openrl.envs.common import build_envs
 from openrl.envs.snake.snake_pettingzoo import SnakeEatBeansAECEnv
-from openrl.envs.wrappers.pettingzoo_wrappers import SeedEnv
+from openrl.envs.wrappers.pettingzoo_wrappers import (
+    OpenRLAssertOutOfBoundsWrapper,
+    OpenRLOrderEnforcingWrapper,
+    SeedEnv,
+)
 
 
-def snake_env_make(id, render_mode, disable_env_checker, **kwargs):
-    if id == "snakes_1v1":
-        env = SnakeEatBeansAECEnv(render_mode=render_mode)
+def snake_env_make(id: str, render_mode, disable_env_checker, **kwargs):
+    if id.startswith("snakes"):
+        env = SnakeEatBeansAECEnv(render_mode=render_mode, id=id)
     else:
         raise ValueError("Unknown env {}".format(id))
     return env
@@ -41,10 +43,13 @@ def make_snake_envs(
 ):
     from openrl.envs.wrappers import RemoveTruncated, Single2MultiAgentWrapper
 
-    env_wrappers = [AssertOutOfBoundsWrapper, OrderEnforcingWrapper, SeedEnv]
+    env_wrappers = [
+        OpenRLAssertOutOfBoundsWrapper,
+        OpenRLOrderEnforcingWrapper,
+        SeedEnv,
+    ]
     env_wrappers += copy.copy(kwargs.pop("opponent_wrappers", []))
     env_wrappers += [
-        Single2MultiAgentWrapper,
         RemoveTruncated,
     ]
     env_wrappers += copy.copy(kwargs.pop("env_wrappers", []))

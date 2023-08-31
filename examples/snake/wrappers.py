@@ -23,14 +23,14 @@ from openrl.envs.wrappers.base_wrapper import BaseObservationWrapper
 
 
 def raw2vec(raw_obs, n_player=2):
-    control_index = raw_obs["controlled_snake_index"][0]
+    control_index = raw_obs["controlled_snake_index"]
 
-    width = raw_obs["board_width"][0]
-    height = raw_obs["board_height"][0]
-    beans = raw_obs[1][0]
+    width = raw_obs["board_width"]
+    height = raw_obs["board_height"]
+    beans = raw_obs[1]
 
-    ally_pos = raw_obs[control_index][0]
-    enemy_pos = raw_obs[5 - control_index][0]
+    ally_pos = raw_obs[control_index]
+    enemy_pos = raw_obs[5 - control_index]
 
     obs = np.zeros(width * height * n_player, dtype=int)
 
@@ -59,7 +59,7 @@ def raw2vec(raw_obs, n_player=2):
     obs_ = np.array([])
     for i in obs:
         obs_ = np.concatenate([obs_, np.eye(6)[i]])
-    obs_ = obs_.reshape(-1, width * height * n_player * 6)
+    obs_ = obs_.reshape(width * height * n_player * 6)
 
     return obs_
 
@@ -87,4 +87,8 @@ class ConvertObs(BaseObservationWrapper):
             The flattened observation
         """
 
-        return raw2vec(observation)
+        new_obs = []
+        for obs in observation:
+            new_obs.append(raw2vec(obs))
+
+        return new_obs

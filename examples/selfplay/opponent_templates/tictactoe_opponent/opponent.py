@@ -47,7 +47,7 @@ class TicTacToeOpponentEnv(BaseOpponentEnv):
         return new_obs, termination, truncation, new_info
 
     def process_action(self, action):
-        return action[0][0][0]
+        return action[0][0]
 
 
 class Opponent(NetworkOpponent):

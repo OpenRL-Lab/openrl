@@ -32,11 +32,16 @@ NONE = 4
 class SnakeEatBeansAECEnv(AECEnv):
     metadata = {"render.modes": ["human"], "name": "SnakeEatBeans"}
 
+    @property
+    def agent_num(self):
+        return self.player_each_side
+
     def __init__(self, render_mode: Optional[str] = None, id: str = None):
         self.env = SnakeEatBeans(render_mode, id=id)
 
         agent_num = len(self.possible_agents)
         player_each_side = self.env.num_agents
+        self.player_each_side = player_each_side
         self.agent_name_to_slice = dict(
             zip(
                 self.possible_agents,
@@ -105,11 +110,12 @@ class SnakeEatBeansAECEnv(AECEnv):
         agent = self.agent_selection
         self._cumulative_rewards[agent] = 0
         self.state[self.agent_selection] = action
+
         if self._agent_selector.is_last():
             joint_action = []
             for agent in self.agents:
-                joint_action += self.state[agent]
-
+                joint_action.append(self.state[agent])
+            joint_action = np.concatenate(joint_action)
             self.raw_obs, self.raw_reward, self.raw_done, self.raw_info = self.env.step(
                 joint_action
             )

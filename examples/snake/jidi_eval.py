@@ -36,7 +36,10 @@ def run_arena(
     )
 
     agent1 = JiDiAgent("./submissions/rule_v1", player_num=player_num)
-    agent2 = JiDiAgent("./submissions/rl", player_num=player_num)
+    if player_num == 3:
+        agent2 = JiDiAgent("./submissions/rl", player_num=player_num)
+    else:
+        agent2 = JiDiAgent("./submissions/rule_v1", player_num=player_num)
 
     arena.reset(
         agents={"agent1": agent1, "agent2": agent2},
@@ -51,4 +54,4 @@ def run_arena(
 
 
 if __name__ == "__main__":
-    run_arena(render=False, parallel=True, seed=0, total_games=100, max_game_onetime=5)
+    run_arena(render=False, parallel=True, seed=0, total_games=10, max_game_onetime=5)
