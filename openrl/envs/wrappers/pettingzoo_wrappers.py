@@ -77,18 +77,6 @@ class RecordWinner(BaseWrapper, OpenRLBaseWrapper):
         self.total_rewards = defaultdict(float)
         return super().reset(seed, options)
 
-    def step(self, action: ActionType) -> None:
-        super().step(action)
-        winners = None
-        losers = None
-        for agent in self.terminations:
-            if self.terminations[agent]:
-                if winners is None:
-                    winners = self.get_winners()
-                    losers = [player for player in self.agents if player not in winners]
-                self.infos[agent]["winners"] = winners
-                self.infos[agent]["losers"] = losers
-
     def get_winners(self):
         max_reward = max(self.total_rewards.values())
 
@@ -101,10 +89,20 @@ class RecordWinner(BaseWrapper, OpenRLBaseWrapper):
 
     def last(self, observe: bool = True):
         """Returns observation, cumulative reward, terminated, truncated, info for the current agent (specified by self.agent_selection)."""
+
         agent = self.agent_selection
-        # if self._cumulative_rewards[agent]!=0:
-        #     print("agent:",agent,self._cumulative_rewards[agent])
+        # this may be miss the last reward for another agent
         self.total_rewards[agent] += self._cumulative_rewards[agent]
+
+        winners = None
+        losers = None
+        for agent in self.terminations:
+            if self.terminations[agent]:
+                if winners is None:
+                    winners = self.get_winners()
+                    losers = [player for player in self.agents if player not in winners]
+                self.infos[agent]["winners"] = winners
+                self.infos[agent]["losers"] = losers
 
         return super().last(observe)
 

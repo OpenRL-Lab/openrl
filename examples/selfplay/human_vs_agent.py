@@ -27,7 +27,7 @@ def get_human_env(env_num):
     env = make(
         "tictactoe_v3",
         env_num=env_num,
-        asynchronous=False,
+        asynchronous=True,
         opponent_wrappers=[TictactoeRender, HumanOpponentWrapper],
         env_wrappers=[FlattenObservation],
         auto_reset=False,

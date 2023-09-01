@@ -54,6 +54,7 @@ class TwoPlayerGame(BaseGame):
             info = {}
             for player_name in env.agent_iter():
                 observation, reward, termination, truncation, info = env.last()
+
                 if termination:
                     break
                 action = player2agent[player_name].act(
