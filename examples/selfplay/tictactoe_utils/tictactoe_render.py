@@ -48,16 +48,6 @@ class TictactoeRender(BaseWrapper):
         self.last_action = action[0]
         return result
 
-    def observe(self, agent: str) -> Optional[ObsType]:
-        obs = super().observe(agent)
-        if self.last_action is not None:
-            if self.render_mode == "game":
-                self.game.make_move(self.last_action // 3, self.last_action % 3)
-                pygame.display.update()
-            self.last_action = None
-            time.sleep(0.3)
-        return obs
-
     def close(self):
         super().close()
         self.game.close()
@@ -69,3 +59,12 @@ class TictactoeRender(BaseWrapper):
         return self.game.get_human_action(
             agent, observation, termination, truncation, info
         )
+
+    def last(self, observe: bool = True):
+        if self.last_action is not None:
+            if self.render_mode == "game":
+                self.game.make_move(self.last_action // 3, self.last_action % 3)
+                pygame.display.update()
+            self.last_action = None
+            time.sleep(0.3)
+        return self.env.last(observe)

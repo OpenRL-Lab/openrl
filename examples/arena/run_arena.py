@@ -52,3 +52,4 @@ def run_arena(
 
 if __name__ == "__main__":
     run_arena(render=False, parallel=True, seed=0, total_games=100, max_game_onetime=10)
+    # run_arena(render=True, parallel=True, seed=1, total_games=10, max_game_onetime=2)
