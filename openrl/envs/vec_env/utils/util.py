@@ -69,7 +69,14 @@ def prepare_action_masks(
                 action_mask = None
             else:
                 if "action_masks" in env_info:
-                    action_mask = env_info["action_masks"][agent_index]
+                    mask_dim = len(np.array(env_info["action_masks"]).shape)
+                    if mask_dim == 2:
+                        action_mask = env_info["action_masks"][agent_index]
+                    elif mask_dim == 1:
+                        action_mask = env_info["action_masks"]
+                    else:
+                        raise ValueError(mask_dim)
+
                 else:
                     # if there is no action_masks in env_info, then we assume all actions are available
                     return None

@@ -45,14 +45,16 @@ class TwoPlayerGame(BaseGame):
         player2agent, player2agent_name = self.dispatch_agent_to_player(
             env.agents, agents
         )
-        for agent in player2agent.values():
-            agent.reset(env)
+
+        for player, agent in player2agent.items():
+            agent.reset(env, player)
         result = {}
         while True:
             termination = False
             info = {}
             for player_name in env.agent_iter():
                 observation, reward, termination, truncation, info = env.last()
+
                 if termination:
                     break
                 action = player2agent[player_name].act(

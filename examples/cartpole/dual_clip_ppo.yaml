@@ -1,2 +1,5 @@
+seed: 0
+run_dir: ./run_results/
+wandb_entity: openrl-lab
 dual_clip_ppo: true
 dual_clip_coeff: 3.0

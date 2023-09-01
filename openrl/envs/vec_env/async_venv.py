@@ -193,7 +193,7 @@ class AsyncVectorEnv(BaseVecEnv):
         """Reset all parallel environments and return a batch of initial observations and info.
 
         Args:
-            seed: The environment reset seeds
+            seed: The environment eeds
             options: If to return the options
 
         Returns:
@@ -790,7 +790,7 @@ def _worker(
                         terminated,
                         info,
                     ) = result
-                    need_reset = _need_reset and all(terminated)
+                    need_reset = _need_reset and np.all(terminated)
                 elif result_len == 5:
                     (
                         observation,
@@ -799,7 +799,9 @@ def _worker(
                         truncated,
                         info,
                     ) = result
-                    need_reset = _need_reset and (all(terminated) or all(truncated))
+                    need_reset = _need_reset and (
+                        np.all(terminated) or np.all(truncated)
+                    )
                 else:
                     raise NotImplementedError(
                         "Step result length can not be {}.".format(result_len)

@@ -16,6 +16,7 @@
 
 """"""
 import copy
+import numbers
 from abc import ABC, abstractmethod
 from typing import Optional, Union
 
@@ -58,7 +59,11 @@ class BaseMultiPlayerWrapper(BaseWrapper, ABC):
             if self.self_player is None:
                 self.env.reset()
                 self.self_player = self.np_random.choice(self.env.agents)
-            return self.env.action_spaces[self.self_player]
+            action_sapce = self.env.action_space(self.self_player)
+            if isinstance(action_sapce, list):
+                return action_sapce[0]
+            else:
+                return action_sapce
         return self._action_space
 
     @property
@@ -70,7 +75,9 @@ class BaseMultiPlayerWrapper(BaseWrapper, ABC):
             if self.self_player is None:
                 self.env.reset()
                 self.self_player = self.np_random.choice(self.env.agents)
+
             return self.env.observation_spaces[self.self_player]
+
         return self._observation_space
 
     @abstractmethod
@@ -105,6 +112,19 @@ class BaseMultiPlayerWrapper(BaseWrapper, ABC):
         pass
 
     def step(self, action):
+        observation, reward, termination, truncation, info = self._step(action)
+        need_convert_termination = isinstance(termination, bool)
+        if need_convert_termination:
+            termination = [termination for _ in range(self.agent_num)]
+            truncation = [truncation for _ in range(self.agent_num)]
+
+        need_convert_reward = isinstance(reward, numbers.Real)
+        if need_convert_reward:
+            reward = [[reward] for _ in range(self.agent_num)]
+
+        return observation, reward, termination, truncation, info
+
+    def _step(self, action):
         self.env.step(action)
 
         while True:
@@ -115,8 +135,15 @@ class BaseMultiPlayerWrapper(BaseWrapper, ABC):
                     self.on_episode_end(
                         player_name, observation, reward, termination, truncation, info
                     )
+
                 if self.self_player == player_name:
-                    return copy.copy(observation), reward, termination, truncation, info
+                    return (
+                        copy.copy(observation),
+                        reward,
+                        termination,
+                        truncation,
+                        info,
+                    )
                 if termination or truncation:
                     return (
                         copy.copy(self.env.observe(self.self_player)),

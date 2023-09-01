@@ -158,3 +158,5 @@ api_docs
 opponent_pool
 !/examples/selfplay/opponent_templates/tictactoe_opponent/info.json
 wandb_run
+examples/dmc/new.gif
+/examples/snake/submissions/rl/actor_2000.pth

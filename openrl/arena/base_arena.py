@@ -47,6 +47,7 @@ class BaseArena(ABC):
         total_games: int,
         max_game_onetime: int = 5,
         seed: int = 0,
+        dispatch_func: Optional[Callable] = None,
     ):
         self.seed = seed
         if self.pbar:
@@ -57,6 +58,10 @@ class BaseArena(ABC):
         self.max_game_onetime = max_game_onetime
         self.agents = agents
         assert isinstance(self.game, BaseGame)
+
+        if dispatch_func is not None:
+            self.dispatch_func = dispatch_func
+
         self.game.reset(seed=seed, dispatch_func=self.dispatch_func)
 
     def close(self):
