@@ -59,7 +59,7 @@ Currently, the features supported by OpenRL include:
 - Reinforcement learning training support for natural language tasks (such as dialogue)
 
 - Support [Arena](https://openrl-docs.readthedocs.io/en/latest/arena/index.html) , which allows convenient evaluation of
-  various agents in a competitive environment.
+  various agents (even submissions for [JiDi](https://openrl-docs.readthedocs.io/en/latest/arena/index.html#performing-local-evaluation-of-agents-submitted-to-the-jidi-platform-using-openrl)) in a competitive environment.
 
 - Importing models and datasets from [Hugging Face](https://huggingface.co/)
 

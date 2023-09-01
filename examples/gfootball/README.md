@@ -8,7 +8,7 @@ This is the guidance for [Google Research Football](https://github.com/google-re
 
 ### Evaluate JiDi submissions locally
 
-If you want to evaluate your JiDi submissions locally, please try to use tizero as illustrated [here](https://github.com/OpenRL-Lab/TiZero#evaluate-jidi-submissions-locally).
+If you want to evaluate your JiDi submissions locally, please try to use tizero as illustrated [here](foothttps://github.com/OpenRL-Lab/TiZero#evaluate-jidi-submissions-locally).
 
 
 ### Convert dump file to video
