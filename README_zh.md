@@ -51,7 +51,7 @@ OpenRL基于PyTorch进行开发，目标是为强化学习研究社区提供一�
 - 支持通过专家数据进行离线强化学习训练
 - 支持自博弈训练
 - 支持自然语言任务（如对话任务）的强化学习训练
-- 支持[竞技场](https://openrl-docs.readthedocs.io/zh/latest/arena/index.html)功能，可以在多智能体对抗性环境中方便地对各种智能体进行评测。
+- 支持[竞技场](https://openrl-docs.readthedocs.io/zh/latest/arena/index.html)功能，可以在多智能体对抗性环境中方便地对各种智能体（甚至是[及第平台](https://openrl-docs.readthedocs.io/zh/latest/arena/index.html#openrl)上提交的智能体）进行评测。
 - 支持从[Hugging Face](https://huggingface.co/)上导入模型和数据
 - 提供用户自有环境接入OpenRL的[详细教程](https://openrl-docs.readthedocs.io/zh/latest/custom_env/index.html).
 - 支持LSTM，GRU，Transformer等模型
