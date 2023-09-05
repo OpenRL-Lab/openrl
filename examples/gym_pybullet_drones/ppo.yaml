@@ -1,0 +1,10 @@
+episode_length: 500
+lr: 1e-3
+critic_lr: 1e-3
+gamma: 0.1
+ppo_epoch: 5
+use_valuenorm: true
+entropy_coef: 0.0
+hidden_size: 128
+layer_N: 4
+use_recurrent_policy: true
