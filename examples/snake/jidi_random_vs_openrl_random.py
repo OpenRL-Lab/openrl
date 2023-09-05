@@ -15,7 +15,9 @@
 # limitations under the License.
 
 """"""
+
 from openrl.arena import make_arena
+from openrl.arena.agents.jidi_agent import JiDiAgent
 from openrl.arena.agents.local_agent import LocalAgent
 from openrl.envs.wrappers.pettingzoo_wrappers import RecordWinner
 
@@ -28,14 +30,16 @@ def run_arena(
     max_game_onetime: int = 5,
 ):
     env_wrappers = [RecordWinner]
-    if render:
-        from examples.selfplay.tictactoe_utils.tictactoe_render import TictactoeRender
 
-        env_wrappers.append(TictactoeRender)
+    player_num = 3
+    arena = make_arena(
+        f"snakes_{player_num}v{player_num}",
+        env_wrappers=env_wrappers,
+        render=render,
+        use_tqdm=True,
+    )
 
-    arena = make_arena("tictactoe_v3", env_wrappers=env_wrappers, use_tqdm=True)
-
-    agent1 = LocalAgent("../selfplay/opponent_templates/random_opponent")
+    agent1 = JiDiAgent("./submissions/random_agent", player_num=player_num)
     agent2 = LocalAgent("../selfplay/opponent_templates/random_opponent")
 
     arena.reset(
@@ -51,5 +55,4 @@ def run_arena(
 
 
 if __name__ == "__main__":
-    run_arena(render=False, parallel=True, seed=0, total_games=100, max_game_onetime=10)
-    # run_arena(render=True, parallel=True, seed=1, total_games=10, max_game_onetime=2)
+    run_arena(render=False, parallel=True, seed=0, total_games=100, max_game_onetime=5)
