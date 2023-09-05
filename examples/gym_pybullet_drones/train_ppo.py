@@ -56,7 +56,6 @@ def evaluation():
         record=False,
     )
 
-
     net = Net(env, cfg=cfg, device="cuda" if torch.cuda.is_available() else "cpu")
     # initialize the trainer
     agent = Agent(
@@ -74,7 +73,7 @@ def evaluation():
     while not np.any(done):
         # Based on environmental observation input, predict next action.
         action, _ = agent.act(obs, deterministic=True)
-        print("action:",action)
+        print("action:", action)
         obs, r, done, info = env.step(action)
         step += 1
         total_reward += np.mean(r)

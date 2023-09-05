@@ -24,24 +24,22 @@ from gymnasium import Env
 from openrl.envs.common import build_envs
 
 
-def make_single_agent_drone_env(id:str,
-                                render_mode,
-                                disable_env_checker,
-                                **kwargs):
+def make_single_agent_drone_env(id: str, render_mode, disable_env_checker, **kwargs):
     import gym_pybullet_drones
+
     prefix = "pybullet_drones/"
     assert id.startswith(prefix), "id must start with pybullet_drones/"
     kwargs.pop("cfg")
 
-    env = gym.envs.registration.make(id[len(prefix):],**kwargs)
+    env = gym.envs.registration.make(id[len(prefix) :], **kwargs)
     return env
 
 
 def make_single_agent_drone_envs(
-        id: str,
-        env_num: int = 1,
-        render_mode: Optional[Union[str, List[str]]] = None,
-        **kwargs,
+    id: str,
+    env_num: int = 1,
+    render_mode: Optional[Union[str, List[str]]] = None,
+    **kwargs,
 ) -> List[Callable[[], Env]]:
     from openrl.envs.wrappers import (  # AutoReset,; DictWrapper,
         RemoveTruncated,
