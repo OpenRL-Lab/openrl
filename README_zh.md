@@ -93,6 +93,7 @@ OpenRL目前支持的环境（更多详情请参考 [Gallery](Gallery.md)）：
 - [Omniverse Isaac Gym](https://github.com/NVIDIA-Omniverse/OmniIsaacGymEnvs)
 - [DeepMind Control](https://shimmy.farama.org/environments/dm_control/)
 - [Snake](http://www.jidiai.cn/env_detail?envid=1)
+- [gym-pybullet-drones](https://github.com/utiasDSL/gym-pybullet-drones)
 - [GridWorld](./examples/gridworld/)
 - [Super Mario Bros](https://github.com/Kautenja/gym-super-mario-bros)
 - [Gym Retro](https://github.com/openai/retro)
