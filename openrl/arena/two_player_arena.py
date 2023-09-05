@@ -23,8 +23,13 @@ from openrl.selfplay.selfplay_api.opponent_model import BattleResult
 
 
 class TwoPlayerArena(BaseArena):
-    def __init__(self, env_fn: Callable, dispatch_func: Optional[Callable] = None):
-        super().__init__(env_fn, dispatch_func)
+    def __init__(
+        self,
+        env_fn: Callable,
+        dispatch_func: Optional[Callable] = None,
+        use_tqdm: bool = True,
+    ):
+        super().__init__(env_fn, dispatch_func, use_tqdm=use_tqdm)
         self.game = TwoPlayerGame()
 
     def _deal_result(self, result: Any):

@@ -18,6 +18,9 @@
 from pathlib import Path
 from typing import Callable, Dict, Optional, Union
 
+import gymnasium
+import numpy as np
+
 from openrl.selfplay.opponents.base_opponent import BaseOpponent
 
 
@@ -45,7 +48,12 @@ class JiDiOpponent(BaseOpponent):
             action = self.jidi_controller(
                 observation[i], self.action_space_list[i], self.is_act_continuous
             )
-            joint_action.append(action[0])
+            if isinstance(self.action_space_list[i][0], gymnasium.spaces.Discrete):
+                action = np.argmax(action[0])
+            else:
+                action = action[0]
+
+            joint_action.append(action)
 
         return joint_action
 

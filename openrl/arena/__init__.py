@@ -26,6 +26,7 @@ def make_arena(
     env_id: str,
     custom_build_env: Optional[Callable] = None,
     render: Optional[bool] = False,
+    use_tqdm: Optional[bool] = True,
     **kwargs,
 ):
     if custom_build_env is None:
@@ -44,4 +45,4 @@ def make_arena(
     else:
         env_fn = custom_build_env(env_id, render, **kwargs)
 
-    return TwoPlayerArena(env_fn)
+    return TwoPlayerArena(env_fn, use_tqdm=use_tqdm)
