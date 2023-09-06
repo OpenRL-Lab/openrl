@@ -53,6 +53,7 @@ class PolicyNetwork(BasePolicyNetwork):
         self._influence_layer_N = cfg.influence_layer_N
         self._use_policy_vhead = cfg.use_policy_vhead
         self._recurrent_N = cfg.recurrent_N
+        self._use_fp16 = cfg.use_fp16 and cfg.use_deepspeed
         self.use_half = use_half
         self.tpdv = dict(dtype=torch.float32, device=device)
 
@@ -135,8 +136,9 @@ class PolicyNetwork(BasePolicyNetwork):
                     policy_obs[key].half()
         else:
             policy_obs = check(policy_obs, self.use_half, self.tpdv)
-            # if self.use_half:
-            #     obs = obs.half()
+            if self.use_half or self._use_fp16:
+                policy_obs = policy_obs.half()
+
         rnn_states = check(rnn_states, self.use_half, self.tpdv)
         masks = check(masks, self.use_half, self.tpdv)
 
@@ -165,6 +167,8 @@ class PolicyNetwork(BasePolicyNetwork):
                 obs[key] = check(obs[key], self.use_half, self.tpdv)
         else:
             obs = check(obs, self.use_half, self.tpdv)
+            if self._use_fp16:
+                obs = obs.half()
 
         rnn_states = check(rnn_states, self.use_half, self.tpdv)
         action = check(action, self.use_half, self.tpdv)
@@ -202,6 +206,8 @@ class PolicyNetwork(BasePolicyNetwork):
                 obs[key] = check(obs[key], self.use_half, self.tpdv)
         else:
             obs = check(obs).to(**self.tpdv)
+            if self.use_half or self._use_fp16:
+                obs = obs.half()
         rnn_states = check(rnn_states, self.use_half, self.tpdv)
         masks = check(masks, self.use_half, self.tpdv)
 

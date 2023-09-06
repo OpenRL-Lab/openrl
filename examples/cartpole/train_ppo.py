@@ -13,14 +13,15 @@ def train():
     cfg = cfg_parser.parse_args()
 
     # create environment, set environment parallelism to 9
-    env = make("CartPole-v1", env_num=9)
+    env = make("CartPole-v1", env_num=8)
 
     net = Net(
         env,
         cfg=cfg,
+        device="cuda"
     )
     # initialize the trainer
-    agent = Agent(net, use_wandb=True, project_name="CartPole-v1")
+    agent = Agent(net, use_wandb=False, project_name="CartPole-v1")
     # start training, set total number of training steps to 20000
     agent.train(total_time_steps=20000)
 
@@ -52,4 +53,4 @@ def evaluation(agent):
 
 if __name__ == "__main__":
     agent = train()
-    evaluation(agent)
+    # evaluation(agent)
