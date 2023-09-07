@@ -1,3 +1,4 @@
+from .a2c_net import A2CNet
 from .base_net import BaseNet
 from .bc_net import BCNet
 from .ddpg_net import DDPGNet
@@ -18,4 +19,5 @@ __all__ = [
     "GAILNet",
     "BCNet",
     "SACNet",
+    "A2CNet",
 ]
