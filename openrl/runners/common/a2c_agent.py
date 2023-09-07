@@ -20,10 +20,10 @@ from typing import Optional, Type, Union
 import gym
 import torch
 
+from openrl.algorithms.a2c import A2CAlgorithm
 from openrl.algorithms.base_algorithm import BaseAlgorithm
-from openrl.algorithms.behavior_cloning import BCAlgorithm
 from openrl.drivers.base_driver import BaseDriver
-from openrl.drivers.offline_driver import OfflineDriver as Driver
+from openrl.drivers.onpolicy_driver import OnPolicyDriver as Driver
 from openrl.modules.common import BaseNet
 from openrl.runners.common.base_agent import SelfAgent
 from openrl.runners.common.ppo_agent import PPOAgent
@@ -31,7 +31,7 @@ from openrl.utils.logger import Logger
 from openrl.utils.type_aliases import MaybeCallback
 
 
-class BCAgent(PPOAgent):
+class A2CAgent(PPOAgent):
     def __init__(
         self,
         net: Optional[Union[torch.nn.Module, BaseNet]] = None,
@@ -44,7 +44,7 @@ class BCAgent(PPOAgent):
         use_tensorboard: bool = False,
         project_name: str = "GAILAgent",
     ) -> None:
-        super(BCAgent, self).__init__(
+        super(A2CAgent, self).__init__(
             net,
             env,
             run_dir,
@@ -60,14 +60,10 @@ class BCAgent(PPOAgent):
         self: SelfAgent,
         total_time_steps: int,
         callback: MaybeCallback = None,
-        train_algo_class: Type[BaseAlgorithm] = BCAlgorithm,
+        train_algo_class: Type[BaseAlgorithm] = A2CAlgorithm,
         logger: Optional[Logger] = None,
         driver_class: Type[BaseDriver] = Driver,
     ) -> None:
         super().train(
-            total_time_steps,
-            callback,
-            train_algo_class,
-            logger,
-            driver_class=driver_class,
+            total_time_steps, callback, train_algo_class, logger, driver_class
         )

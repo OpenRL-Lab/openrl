@@ -98,6 +98,7 @@ Algorithms currently supported by OpenRL (for more details, please refer to [Gal
 - [Joint-ratio Policy Optimization (JRPO)](https://arxiv.org/abs/2302.07515)
 - [Generative Adversarial Imitation Learning (GAIL)](https://arxiv.org/abs/1606.03476)
 - [Behavior Cloning (BC)](http://www.cse.unsw.edu.au/~claude/papers/MI15.pdf)
+- [Advantage Actor-Critic (A2C)](https://arxiv.org/abs/1602.01783)
 - Self-Play
 - [Deep Q-Network (DQN)](https://arxiv.org/abs/1312.5602)
 - [Multi-Agent Transformer (MAT)](https://arxiv.org/abs/2205.14953)
