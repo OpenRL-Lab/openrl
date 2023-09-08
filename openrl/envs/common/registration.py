@@ -78,13 +78,6 @@ def make(
             env_fns = make_snake_envs(
                 id=id, env_num=env_num, render_mode=convert_render_mode, **kwargs
             )
-
-        elif id.startswith("dm_control/"):
-            from openrl.envs.dmc import make_dmc_envs
-
-            env_fns = make_dmc_envs(
-                id=id, env_num=env_num, render_mode=convert_render_mode, **kwargs
-            )
         elif id.startswith("GymV21Environment-v0:") or id.startswith(
             "GymV26Environment-v0:"
         ):
