@@ -6,3 +6,6 @@
 
 ### Train PPO
 
+```shell
+python train_ppo.py
+```
