@@ -36,11 +36,11 @@ docker-gpu:
 pypi:
 	./scripts/pypi_build.sh
 
-pypi-upload:
-	./scripts/pypi_upload.sh
-
 pypi-test-upload:
 	./scripts/pypi_upload.sh test
+
+pypi-upload:
+	./scripts/pypi_upload.sh
 
 conda-build:
 	./scripts/conda_build.sh
