@@ -1,14 +1,17 @@
 import numpy as np
-from gymnasium.wrappers import FlattenObservation
 import torch
+from gymnasium.wrappers import FlattenObservation
 
 from openrl.configs.config import create_config_parser
 from openrl.envs.common import make
 from openrl.envs.wrappers.base_wrapper import BaseWrapper
-from openrl.envs.wrappers.extra_wrappers import FrameSkip, GIFWrapper,ConvertEmptyBoxWrapper
+from openrl.envs.wrappers.extra_wrappers import (
+    ConvertEmptyBoxWrapper,
+    FrameSkip,
+    GIFWrapper,
+)
 from openrl.modules.common import PPONet as Net
 from openrl.runners.common import PPOAgent as Agent
-
 
 env_name = "dm_control/cartpole-balance-v0"
 # env_name = "dm_control/walker-walk-v0"
@@ -25,7 +28,7 @@ def train():
         env_name,
         env_num=env_num,
         asynchronous=True,
-        env_wrappers=[FrameSkip, FlattenObservation,ConvertEmptyBoxWrapper],
+        env_wrappers=[FrameSkip, FlattenObservation, ConvertEmptyBoxWrapper],
     )
 
     net = Net(env, cfg=cfg, device="cuda" if torch.cuda.is_available() else "cpu")
@@ -52,10 +55,10 @@ def evaluation():
         render_mode=render_mode,
         env_num=4,
         asynchronous=True,
-        env_wrappers=[FrameSkip, FlattenObservation,ConvertEmptyBoxWrapper],
+        env_wrappers=[FrameSkip, FlattenObservation, ConvertEmptyBoxWrapper],
     )
     # Wrap the environment with GIFWrapper to record the GIF, and set the frame rate to 5.
-    # env = GIFWrapper(env, gif_path="./new.gif", fps=5)
+    env = GIFWrapper(env, gif_path="./new.gif", fps=5)
 
     net = Net(env, cfg=cfg, device="cuda" if torch.cuda.is_available() else "cpu")
     # initialize the trainer
