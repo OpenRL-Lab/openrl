@@ -29,7 +29,7 @@
 [![Embark](https://img.shields.io/badge/discord-OpenRL-%237289da.svg?logo=discord)](https://discord.gg/guvAS2up)
 [![slack badge](https://img.shields.io/badge/Slack-join-blueviolet?logo=slack&amp)](https://join.slack.com/t/openrlhq/shared_invite/zt-1tqwpvthd-Eeh0IxQ~DIaGqYXoW2IUQg)
 
-OpenRL-v0.1.5 is updated on Sep 1, 2023
+OpenRL-v0.1.6 is updated on Sep 8, 2023
 
 The main branch is the latest version of OpenRL, which is under active development. If you just want to have a try with
 OpenRL, you can switch to the stable branch.
