@@ -19,10 +19,19 @@ import copy
 from typing import List, Optional, Union
 
 from openrl.envs.common import build_envs
+from openrl.envs.PettingZoo.registration import pettingzoo_env_dict, register
+from openrl.envs.wrappers.pettingzoo_wrappers import CheckAgentNumber, SeedEnv
 
 
 def PettingZoo_make(id, render_mode, disable_env_checker, **kwargs):
-    if id == "tictactoe_v3":
+    kwargs.__setitem__("id", id)
+    if id.startswith("snakes_"):
+        from openrl.envs.snake.snake_pettingzoo import SnakeEatBeansAECEnv
+
+        register(id, SnakeEatBeansAECEnv)
+    if id in pettingzoo_env_dict.keys():
+        env = pettingzoo_env_dict[id](render_mode=render_mode, **kwargs)
+    elif id == "tictactoe_v3":
         from pettingzoo.classic import tictactoe_v3
 
         env = tictactoe_v3.env(render_mode=render_mode)
@@ -31,21 +40,41 @@ def PettingZoo_make(id, render_mode, disable_env_checker, **kwargs):
     return env
 
 
+def make_PettingZoo_env(
+    id: str,
+    render_mode: Optional[Union[str, List[str]]] = None,
+    **kwargs,
+):
+    env_num = 1
+    env_wrappers = [CheckAgentNumber, SeedEnv]
+    env_wrappers += copy.copy(kwargs.pop("env_wrappers", []))
+
+    env_fns = build_envs(
+        make=PettingZoo_make,
+        id=id,
+        env_num=env_num,
+        render_mode=render_mode,
+        wrappers=env_wrappers,
+        **kwargs,
+    )
+    return env_fns[0]
+
+
 def make_PettingZoo_envs(
     id: str,
     env_num: int = 1,
     render_mode: Optional[Union[str, List[str]]] = None,
     **kwargs,
 ):
-    from openrl.envs.wrappers import (  # AutoReset,; DictWrapper,
+    from openrl.envs.wrappers import (  # AutoReset,; DictWrapper,; Single2MultiAgentWrapper,
         MoveActionMask2InfoWrapper,
         RemoveTruncated,
-        Single2MultiAgentWrapper,
     )
 
-    env_wrappers = copy.copy(kwargs.pop("opponent_wrappers", []))
+    env_wrappers = [CheckAgentNumber, SeedEnv]
+    env_wrappers += copy.copy(kwargs.pop("opponent_wrappers", []))
     env_wrappers += [
-        Single2MultiAgentWrapper,
+        # Single2MultiAgentWrapper,
         RemoveTruncated,
         MoveActionMask2InfoWrapper,
     ]

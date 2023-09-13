@@ -19,10 +19,12 @@
 import json
 import sys
 import time
+import traceback
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Union
 
 from openrl.selfplay.opponents.base_opponent import BaseOpponent
+from openrl.selfplay.opponents.jidi_opponent import JiDiOpponent
 
 
 def check_opponent_template(opponent_template: Union[str, Path]):
@@ -41,6 +43,25 @@ def check_opponent_template(opponent_template: Union[str, Path]):
     ), f"opponent_template {opponent_template} does not contain opponent.py"
 
 
+def get_opponent_info(
+    info_path: Optional[Union[str, Path]]
+) -> Optional[Dict[str, str]]:
+    if info_path is None:
+        return None
+    if isinstance(info_path, str):
+        info_path = Path(info_path)
+    if info_path.exists():
+        with open(info_path, "r") as f:
+            return json.load(f)
+    return None
+
+
+def get_opponent_id(opponent_info: Optional[Dict[str, str]]) -> Optional[str]:
+    if opponent_info is None:
+        return None
+    return opponent_info.get("opponent_id", None)
+
+
 def load_opponent_from_path(
     opponent_path: Union[str, Path], opponent_info: Optional[Dict[str, str]] = None
 ) -> Optional[BaseOpponent]:
@@ -52,13 +73,51 @@ def load_opponent_from_path(
         opponent_module = __import__(
             "{}.opponent".format(opponent_path.name), fromlist=["opponent"]
         )
+        if opponent_info is None:
+            opponent_info = get_opponent_info(opponent_path / "info.json")
+
+        opponent_id = get_opponent_id(opponent_info)
+
         opponent = opponent_module.Opponent(
-            opponent_id=opponent_info["opponent_id"],
+            opponent_id=opponent_id,
             opponent_path=opponent_path,
             opponent_info=opponent_info,
         )
     except:
         print(f"Load opponent from {opponent_path} failed")
+
+    sys.path.remove(str(opponent_path.parent))
+    return opponent
+
+
+def load_opponent_from_jidi_path(
+    opponent_path: Union[str, Path],
+    opponent_info: Optional[Dict[str, str]] = None,
+    player_num: int = 1,
+) -> Optional[BaseOpponent]:
+    opponent = None
+    if isinstance(opponent_path, str):
+        opponent_path = Path(opponent_path)
+    assert opponent_path.exists()
+    try:
+        sys.path.append(str(opponent_path.parent))
+
+        module_name = ".".join(opponent_path.parts)
+        submission_module = __import__(
+            f"{module_name}.submission", fromlist=["submission"]
+        )
+        opponent_id = get_opponent_id(opponent_info)
+        opponent = JiDiOpponent(
+            opponent_id=opponent_id,
+            opponent_path=opponent_path,
+            opponent_info=opponent_info,
+            jidi_controller=submission_module.my_controller,
+            player_num=player_num,
+        )
+    except Exception as e:
+        print(f"Load JiDi opponent from {opponent_path} failed")
+        traceback.print_exc()
+        exit()
 
     sys.path.remove(str(opponent_path.parent))
     return opponent
@@ -87,6 +146,7 @@ def get_opponent_from_path(
             opponent_info = json.load(f)
 
     opponent_type = opponent_info["opponent_type"]
+    opponent_id = opponent_info["opponent_id"]
 
     is_new_opponent = False
     if (
@@ -94,7 +154,10 @@ def get_opponent_from_path(
         and current_opponent.opponent_type == opponent_type
         and lazy_load_opponent
     ):
-        return current_opponent.load(opponent_path), is_new_opponent
+        return (
+            current_opponent.load(opponent_path, opponent_id=opponent_id),
+            is_new_opponent,
+        )
     else:
         is_new_opponent = True
         return load_opponent_from_path(opponent_path, opponent_info), is_new_opponent

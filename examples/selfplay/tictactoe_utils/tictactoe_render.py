@@ -21,7 +21,8 @@ from typing import Optional, Union
 import pygame
 from pettingzoo.utils.env import ActionType, AECEnv, ObsType
 from pettingzoo.utils.wrappers.base import BaseWrapper
-from tictactoe_utils.game import Game
+
+from .game import Game
 
 
 class TictactoeRender(BaseWrapper):
@@ -44,22 +45,12 @@ class TictactoeRender(BaseWrapper):
 
     def step(self, action: ActionType) -> None:
         result = super().step(action)
-        self.last_action = action
+        self.last_action = action[0]
         return result
 
-    def observe(self, agent: str) -> Optional[ObsType]:
-        obs = super().observe(agent)
-        if self.last_action is not None:
-            if self.render_mode == "game":
-                self.game.make_move(self.last_action // 3, self.last_action % 3)
-                pygame.display.update()
-            self.last_action = None
-            time.sleep(0.3)
-        return obs
-
     def close(self):
-        self.game.close()
         super().close()
+        self.game.close()
 
     def set_render_mode(self, render_mode: Union[None, str]):
         self.render_mode = render_mode
@@ -68,3 +59,12 @@ class TictactoeRender(BaseWrapper):
         return self.game.get_human_action(
             agent, observation, termination, truncation, info
         )
+
+    def last(self, observe: bool = True):
+        if self.last_action is not None:
+            if self.render_mode == "game":
+                self.game.make_move(self.last_action // 3, self.last_action % 3)
+                pygame.display.update()
+            self.last_action = None
+            time.sleep(0.3)
+        return self.env.last(observe)

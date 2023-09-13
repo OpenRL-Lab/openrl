@@ -34,10 +34,10 @@ class MIXBase(nn.Module):
                 if len(key_obs_shape) == 3:
                     self.cnn_keys.append(key)
                 else:
-                    if "orientation" in key:
-                        self.embed_keys.append(key)
-                    else:
-                        self.mlp_keys.append(key)
+                    # if "orientation" in key:
+                    #     self.embed_keys.append(key)
+                    # else:
+                    self.mlp_keys.append(key)
             else:
                 raise NotImplementedError
 
@@ -64,6 +64,7 @@ class MIXBase(nn.Module):
 
         if len(self.embed_keys) > 0:
             embed_input = self._build_embed_input(x)
+
             embed_x = self.embed(embed_input.long()).view(embed_input.size(0), -1)
             if out_x is not None:
                 out_x = torch.cat([out_x, embed_x], dim=1)
@@ -97,7 +98,7 @@ class MIXBase(nn.Module):
         active_func = [nn.Tanh(), nn.ReLU(), nn.LeakyReLU(), nn.ELU()][activation_id]
         init_method = [nn.init.xavier_uniform_, nn.init.orthogonal_][use_orthogonal]
         gain = nn.init.calculate_gain(
-            ["tanh", "relu", "leaky_relu", "leaky_relu"][activation_id]
+            ["tanh", "relu", "leaky_relu", "selu"][activation_id]
         )
 
         def init_(m):
@@ -189,7 +190,7 @@ class MIXBase(nn.Module):
         active_func = [nn.Tanh(), nn.ReLU(), nn.LeakyReLU(), nn.ELU()][activation_id]
         init_method = [nn.init.xavier_uniform_, nn.init.orthogonal_][use_orthogonal]
         gain = nn.init.calculate_gain(
-            ["tanh", "relu", "leaky_relu", "leaky_relu"][activation_id]
+            ["tanh", "relu", "leaky_relu", "selu"][activation_id]
         )
 
         def init_(m):
@@ -274,6 +275,7 @@ class MIXBase(nn.Module):
 
     def _build_embed_input(self, obs):
         embed_input = []
+
         for key in self.embed_keys:
             embed_input.append(obs[key].view(obs[key].size(0), -1))
 

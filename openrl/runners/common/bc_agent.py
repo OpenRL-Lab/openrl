@@ -62,12 +62,12 @@ class BCAgent(PPOAgent):
         callback: MaybeCallback = None,
         train_algo_class: Type[BaseAlgorithm] = BCAlgorithm,
         logger: Optional[Logger] = None,
-        DriverClass: Type[BaseDriver] = Driver,
+        driver_class: Type[BaseDriver] = Driver,
     ) -> None:
         super().train(
             total_time_steps,
             callback,
             train_algo_class,
             logger,
-            DriverClass=DriverClass,
+            driver_class=driver_class,
         )

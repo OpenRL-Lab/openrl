@@ -28,6 +28,24 @@ from openrl.envs.wrappers.base_wrapper import ActType, ArrayType, WrapperObsType
 from openrl.envs.wrappers.flatten import flatten
 
 
+class FrameSkip(BaseWrapper):
+    def __init__(self, env, num_frames: int = 8):
+        super().__init__(env)
+        self.num_frames = num_frames
+
+    def step(self, action):
+        num_skips = self.num_frames
+        total_reward = 0.0
+
+        for x in range(num_skips):
+            obs, rew, term, trunc, info = super().step(action)
+            total_reward += rew
+            if term or trunc:
+                break
+
+        return obs, total_reward, term, trunc, info
+
+
 class RemoveTruncated(StepAPICompatibility, BaseWrapper):
     def __init__(
         self,
@@ -118,9 +136,12 @@ class MoveActionMask2InfoWrapper(BaseWrapper):
     ):
         super().__init__(env)
         self.need_convert = False
-        if "action_mask" in self.env.observation_space.spaces.keys():
-            self.need_convert = True
-            self.observation_space = self.env.observation_space.spaces["observation"]
+        if hasattr(self.env.observation_space, "spaces"):
+            if "action_mask" in self.env.observation_space.spaces.keys():
+                self.need_convert = True
+                self.observation_space = self.env.observation_space.spaces[
+                    "observation"
+                ]
 
     def step(self, action):
         results = self.env.step(action)
@@ -177,13 +198,63 @@ class DictWrapper(BaseObservationWrapper):
         return {"policy": observation, "critic": deepcopy(observation)}
 
 
+class ConvertEmptyBoxWrapper(BaseObservationWrapper):
+    def __init__(self, env):
+        super().__init__(env)
+        self.need_convert = False
+        self.is_dict = "Dict" in self.env.observation_space.__class__.__name__
+        self.convert_keys = []
+        if self.is_dict:
+            for key in self.env.observation_space.spaces.keys():
+                if (
+                    isinstance(self.env.observation_space.spaces[key], gym.spaces.Box)
+                    and self.env.observation_space.spaces[key].shape == ()
+                ):
+                    self.need_convert = True
+                    self.convert_keys.append(key)
+                    old_space = self.env.observation_space.spaces[key]
+
+                    self.env.observation_space.spaces[key] = gym.spaces.Box(
+                        low=np.array([old_space.low]),
+                        high=np.array([old_space.high]),
+                        shape=(1,),
+                        dtype=old_space.dtype,
+                    )
+
+        else:
+            if (
+                isinstance(self.env.observation_space, gym.spaces.Box)
+                and self.env.observation_space.shape == ()
+            ):
+                self.need_convert = True
+                old_space = self.env.observation_space
+                self.env.observation_space = gym.spaces.Box(
+                    low=np.array([old_space.low]),
+                    high=np.array([old_space.high]),
+                    shape=(1,),
+                    dtype=old_space.dtype,
+                )
+
+    def observation(self, observation):
+        if self.need_convert:
+            if self.is_dict:
+                for key in self.convert_keys:
+                    observation[key] = np.array([observation[key]])
+            else:
+                observation = np.array([observation])
+
+        return observation
+
+
 class GIFWrapper(BaseWrapper):
-    def __init__(self, env, gif_path: str):
+    def __init__(self, env, gif_path: str, fps: int = 30):
         super().__init__(env)
         self.gif_path = gif_path
         import imageio
 
-        self.writter = imageio.get_writer(self.gif_path, mode="I")
+        self.writter = imageio.get_writer(
+            self.gif_path, mode="I", duration=int(1000 / fps)
+        )
 
     def reset(self, **kwargs):
         results = self.env.reset(**kwargs)

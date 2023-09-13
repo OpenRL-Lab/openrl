@@ -190,6 +190,7 @@ class EvalCallback(EventCallback):
 
         if self.eval_freq > 0 and self.n_calls % self.eval_freq == 0:
             # Reset success rate buffer
+            eval_info = {}
             self._is_success_buffer = []
 
             episode_rewards, episode_lengths = evaluate_policy(
@@ -228,6 +229,10 @@ class EvalCallback(EventCallback):
             )
             self.last_mean_reward = mean_reward
 
+            eval_info["Eval/episode_reward"] = mean_reward
+            eval_info["Eval/episode_reward_std"] = std_reward
+            eval_info["Eval/episode_length"] = mean_ep_length
+            eval_info["Eval/episode_length_std"] = std_ep_length
             if self.verbose >= 1:
                 print(
                     f"Eval num_timesteps={self.num_time_steps}, "
@@ -237,6 +242,7 @@ class EvalCallback(EventCallback):
 
             if len(self._is_success_buffer) > 0:
                 success_rate = np.mean(self._is_success_buffer)
+                eval_info["Eval/success_rate"] = success_rate
                 if self.verbose >= 1:
                     print(f"Success rate: {100 * success_rate:.2f}%")
 
@@ -261,7 +267,7 @@ class EvalCallback(EventCallback):
             # Trigger callback after every evaluation, if needed
             if self.callback is not None:
                 continue_training = continue_training and self._on_event()
-
+            self.agent.logger.log_info(eval_info, self.num_time_steps)
         return continue_training
 
     def update_child_locals(self, locals_: Dict[str, Any]) -> None:

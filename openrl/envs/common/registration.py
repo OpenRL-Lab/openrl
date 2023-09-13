@@ -65,7 +65,29 @@ def make(
             id=id, env_num=env_num, render_mode=convert_render_mode, **kwargs
         )
     else:
-        if id in gym.envs.registry.keys():
+        if id.startswith("pybullet_drones/"):
+            from openrl.envs.gym_pybullet_drones import make_single_agent_drone_envs
+
+            env_fns = make_single_agent_drone_envs(
+                id=id, env_num=env_num, render_mode=convert_render_mode, **kwargs
+            )
+
+        elif id.startswith("snakes_"):
+            from openrl.envs.snake import make_snake_envs
+
+            env_fns = make_snake_envs(
+                id=id, env_num=env_num, render_mode=convert_render_mode, **kwargs
+            )
+        elif id.startswith("GymV21Environment-v0:") or id.startswith(
+            "GymV26Environment-v0:"
+        ):
+            from openrl.envs.gymnasium import make_old_gym_envs
+
+            env_fns = make_old_gym_envs(
+                id=id, env_num=env_num, render_mode=convert_render_mode, **kwargs
+            )
+
+        elif id in gym.envs.registry.keys():
             from openrl.envs.gymnasium import make_gym_envs
 
             env_fns = make_gym_envs(
@@ -77,6 +99,7 @@ def make(
             env_fns = make_mpe_envs(
                 id=id, env_num=env_num, render_mode=convert_render_mode, **kwargs
             )
+
         elif id in openrl.envs.nlp_all_envs:
             from openrl.envs.nlp import make_nlp_envs
 
@@ -126,7 +149,10 @@ def make(
                 render_mode=convert_render_mode,
                 **kwargs,
             )
-        elif id in openrl.envs.pettingzoo_all_envs:
+        elif (
+            id in openrl.envs.pettingzoo_all_envs
+            or id in openrl.envs.PettingZoo.registration.pettingzoo_env_dict.keys()
+        ):
             from openrl.envs.PettingZoo import make_PettingZoo_envs
 
             env_fns = make_PettingZoo_envs(

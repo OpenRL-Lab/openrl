@@ -116,10 +116,13 @@ class Game:
         self.player = self.player % 2 + 1
 
     def close(self):
-        self.screen.fill((0, 0, 0, 0))
-        pygame.display.update()
-        del self.screen
-        pygame.quit()
+        try:
+            self.screen.fill((0, 0, 0, 0))
+            pygame.display.update()
+            del self.screen
+            pygame.quit()
+        except Exception:
+            pass
 
     def get_human_action(self, agent, observation, termination, truncation, info):
         action_mask = observation["action_mask"]

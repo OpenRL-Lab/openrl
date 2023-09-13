@@ -18,11 +18,13 @@
 
 import logging
 from abc import ABC
-from typing import Dict, Optional
+from typing import Any, Dict, Optional
 
-import trueskill
 from fastapi import FastAPI
 from pydantic import BaseModel
+
+from openrl.selfplay.selfplay_api.opponent_model import OpponentModel
+from openrl.utils.custom_data_structure import ListDict
 
 
 class OpponentData(BaseModel):
@@ -36,32 +38,12 @@ class SkillData(BaseModel):
     result: int
 
 
-class OpponentModel:
-    def __init__(
-        self,
-        opponent_id: str,
-        opponent_path: Optional[str] = None,
-        opponent_info: Optional[Dict[str, str]] = None,
-    ):
-        self.opponent_id = opponent_id
-        self.opponent_path = opponent_path
-        self.opponent_info = opponent_info
-        self.skill = trueskill.Rating()
-        self.num_games = 0
-        self.num_wins = 0
-        self.num_losses = 0
-        self.num_draws = 0
+class SampleStrategyData(BaseModel):
+    sample_strategy: str
 
-    @property
-    def opponent_type(self):
-        return self.opponent_info["opponent_type"]
 
-    def update_skill(self, other_opponent, result):
-        new_rating1, new_rating2 = trueskill.rate_1vs1(
-            self.skill, other_opponent.skill, result
-        )
-        self.skill = new_rating1
-        other_opponent.skill = new_rating2
+class BattleData(BaseModel):
+    battle_info: Dict[str, Any]
 
 
 app = FastAPI()
@@ -71,4 +53,6 @@ class BaseSelfplayAPIServer(ABC):
     def __init__(self):
         logger = logging.getLogger("ray.serve")
         logger.setLevel(logging.ERROR)
-        self.opponents = []
+        self.opponents = ListDict()
+        self.training_agent = OpponentModel("training_agent")
+        self.sample_strategy = None

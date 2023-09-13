@@ -47,7 +47,7 @@ class TicTacToeOpponentEnv(BaseOpponentEnv):
         return new_obs, termination, truncation, new_info
 
     def process_action(self, action):
-        return action[0][0][0]
+        return action[0][0]
 
 
 class Opponent(NetworkOpponent):
@@ -71,19 +71,17 @@ class Opponent(NetworkOpponent):
             self.agent.load(model_path)
 
 
-if __name__ == "__main__":
+def test_opponent():
     from pettingzoo.classic import tictactoe_v3
 
     opponent = Opponent(
         "1", "./", opponent_info={"opponent_type": "tictactoe_opponent"}
     )
     env = tictactoe_v3.env()
-    opponent.set_env(env, "player_1")
     opponent.load("./")
-    opponent.reset()
+    opponent.reset(env, "player_1")
 
     env.reset()
-
     for player_name in env.agent_iter():
         observation, reward, termination, truncation, info = env.last()
         if termination:
@@ -93,3 +91,7 @@ if __name__ == "__main__":
         )
         print(player_name, action, type(action))
         env.step(action)
+
+
+if __name__ == "__main__":
+    test_opponent()

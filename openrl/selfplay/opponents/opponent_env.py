@@ -34,7 +34,10 @@ class BaseOpponentEnv:
         self,
     ) -> Union[spaces.Space[ActType], spaces.Space[WrapperActType]]:
         if self._action_space is None:
-            return self.env.action_space(self.opponent_player)
+            action_space = self.env.action_space(self.opponent_player)
+            if isinstance(action_space, list):
+                action_space = action_space[0]
+            return action_space
         return self.env.action_space
 
     @action_space.setter

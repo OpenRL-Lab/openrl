@@ -6,13 +6,14 @@ seed: 0
 selfplay_api:
   host: {{ selfplay_api_host }}
   port: {{ selfplay_api_port }}
-lazy_load_opponent: true # if true, when the opponents are the same opponent_type, will only load the weight. Otherwise, will load the pythoon script.
+lazy_load_opponent: true # if true, when the opponents are the same opponent_type, will only load the weight. Otherwise, will load the python script.
 callbacks:
   - id: "ProgressBarCallback"
   - id: "SelfplayAPI"
     args: {
         host: {{ selfplay_api_host }},
-        port: {{ selfplay_api_port }}
+        port: {{ selfplay_api_port }},
+        sample_strategy: "RandomOpponent",
     }
   - id: "SelfplayCallback"
     args: {

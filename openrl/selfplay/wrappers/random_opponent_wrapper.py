@@ -29,6 +29,16 @@ class RandomOpponentWrapper(BaseMultiPlayerWrapper):
     def get_opponent_action(
         self, player_name, observation, reward, termination, truncation, info
     ):
-        mask = observation["action_mask"]
-        action = self.env.action_space(player_name).sample(mask)
+        mask = None
+        if isinstance(observation, dict) and "action_mask" in observation:
+            mask = observation["action_mask"]
+        action_space = self.env.action_space(player_name)
+
+        if isinstance(action_space, list):
+            action = []
+            for space in action_space:
+                action.append(space.sample(mask))
+        else:
+            action = action_space.sample(mask)
+
         return action

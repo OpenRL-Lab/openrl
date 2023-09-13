@@ -4,6 +4,7 @@ import torch
 from openrl.configs.config import create_config_parser
 from openrl.envs.common import make
 from openrl.envs.wrappers import FlattenObservation
+from openrl.envs.wrappers.pettingzoo_wrappers import RecordWinner
 from openrl.modules.common import PPONet as Net
 from openrl.runners.common import PPOAgent as Agent
 from openrl.selfplay.wrappers.opponent_pool_wrapper import OpponentPoolWrapper
@@ -22,7 +23,7 @@ def train():
         render_mode=render_model,
         env_num=env_num,
         asynchronous=True,
-        opponent_wrappers=[OpponentPoolWrapper],
+        opponent_wrappers=[RecordWinner, OpponentPoolWrapper],
         env_wrappers=[FlattenObservation],
         cfg=cfg,
     )
@@ -32,8 +33,7 @@ def train():
     # Create agent
     agent = Agent(net)
     # Begin training
-    agent.train(total_time_steps=300000)
-    # agent.train(total_time_steps=2000)
+    agent.train(total_time_steps=20000)
     env.close()
     agent.save("./selfplay_agent/")
     return agent

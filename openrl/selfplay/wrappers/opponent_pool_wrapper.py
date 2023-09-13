@@ -14,11 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""
-Play with self.
-"""
-import copy
-import time
+""""""
 from typing import List, Optional
 
 from openrl.selfplay.opponents.utils import get_opponent_from_info
@@ -36,12 +32,15 @@ class OpponentPoolWrapper(BaseMultiPlayerWrapper):
         self.opponent = None
         self.opponent_player = None
         self.lazy_load_opponent = cfg.lazy_load_opponent
+        self.player_ids = None
 
     def reset(self, *, seed: Optional[int] = None, **kwargs):
         results = super().reset(seed=seed, **kwargs)
         self.opponent = self.get_opponent(self.opponent_players)
+
         if self.opponent is not None:
             self.opponent.reset()
+
         return results
 
     def get_opponent(self, opponent_players: List[str]):
@@ -70,8 +69,19 @@ class OpponentPoolWrapper(BaseMultiPlayerWrapper):
         self, player_name, observation, reward, termination, truncation, info
     ):
         if self.opponent is None:
+            self.opponent = self.get_opponent(self.opponent_players)
+            if self.opponent is not None:
+                self.opponent.reset()
+
+        if self.opponent is None:
             mask = observation["action_mask"]
-            action = self.env.action_space(player_name).sample(mask)
+            action_space = self.env.action_space(player_name)
+            if isinstance(action_space, list):
+                action = []
+                for space in action_space:
+                    action.append(space.sample(mask))
+            else:
+                action = action_space.sample(mask)
         else:
             action = self.opponent.act(
                 player_name, observation, reward, termination, truncation, info
@@ -81,4 +91,29 @@ class OpponentPoolWrapper(BaseMultiPlayerWrapper):
     def on_episode_end(
         self, player_name, observation, reward, termination, truncation, info
     ):
-        pass
+        assert "winners" in info, "winners must be in info"
+        assert "losers" in info, "losers must be in info"
+        assert len(info["winners"]) >= 1, "winners must be at least 1"
+
+        winner_ids = []
+        loser_ids = []
+
+        for player in info["winners"]:
+            if player == self.self_player:
+                winner_id = "training_agent"
+            else:
+                winner_id = self.opponent.opponent_id
+            winner_ids.append(winner_id)
+
+        for player in info["losers"]:
+            if player == self.self_player:
+                loser_id = "training_agent"
+            else:
+                loser_id = self.opponent.opponent_id
+            loser_ids.append(loser_id)
+        assert set(winner_ids).isdisjoint(set(loser_ids)), (
+            "winners and losers must be disjoint, but get winners: {}, losers: {}"
+            .format(winner_ids, loser_ids)
+        )
+        battle_info = {"winner_ids": winner_ids, "loser_ids": loser_ids}
+        self.api_client.add_battle_result(battle_info)

@@ -15,15 +15,23 @@
 # limitations under the License.
 
 """"""
-import time
-from typing import List
+from typing import Any, Dict, List, Optional
 
 import requests
 
 
 class SelfPlayClient:
-    def __init__(self, address: str):
-        self.address = address
+    def __init__(
+        self,
+        address: Optional[str] = None,
+        host: Optional[str] = None,
+        port: Optional[int] = None,
+    ):
+        if address is not None:
+            self.address = address
+        else:
+            assert host is not None and port is not None
+            self.address = f"http://{host}:{port}/selfplay/"
 
     def add_opponent(self, opponent_id: str, opponent_info: dict):
         response = requests.post(
@@ -47,3 +55,39 @@ class SelfPlayClient:
             return results
         except:
             return None
+
+    def set_sample_strategy(self, sample_strategy: str) -> bool:
+        try:
+            response = requests.post(
+                f"{self.address}set_sample_strategy",
+                json={"sample_strategy": sample_strategy},
+            )
+            if response.status_code == 404:
+                return False
+            else:
+                r = response.json()
+                if r["success"]:
+                    return True
+                else:
+                    print(r["error"])
+                    return False
+        except:
+            return False
+
+    def add_battle_result(self, battle_info: Dict[str, Any]) -> bool:
+        try:
+            response = requests.post(
+                f"{self.address}add_battle_result",
+                json={"battle_info": battle_info},
+            )
+            if response.status_code == 404:
+                return False
+            else:
+                r = response.json()
+                if r["success"]:
+                    return True
+                else:
+                    print(r["error"])
+                    return False
+        except:
+            return False

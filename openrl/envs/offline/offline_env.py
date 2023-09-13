@@ -37,8 +37,11 @@ class OfflineEnv(gym.Env):
         self.agent_num = self.dataset.agent_num
         self.traj_num = len(self.dataset.trajectories["episode_lengths"])
         self.traj_index = None
+        self.epoch_index = None
         self.traj_length = None
         self.step_index = None
+        self.sample_indexes = None
+        self.seed(seed)
 
     def seed(self, seed=None):
         if seed is not None:
@@ -48,11 +51,19 @@ class OfflineEnv(gym.Env):
         if seed is not None:
             self.seed(seed)
 
-        if self.traj_index is None:
-            self.traj_index = 0
+        if self.epoch_index is None:
+            self.epoch_index = 0
         else:
-            self.traj_index += 1
-            self.traj_index %= self.traj_num
+            self.epoch_index += 1
+            self.epoch_index %= self.traj_num
+        if self.epoch_index == 0:
+            if self._np_random is None:
+                self.seed(0)
+            self.sample_indexes = self._np_random.permutation(self.traj_num)
+
+        assert self.sample_indexes is not None
+        self.traj_index = self.sample_indexes[self.epoch_index]
+
         self.traj_length = self.dataset.trajectories["episode_lengths"][self.traj_index]
         assert (
             self.traj_length

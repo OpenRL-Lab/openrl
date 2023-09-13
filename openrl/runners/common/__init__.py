@@ -1,3 +1,4 @@
+from openrl.runners.common.a2c_agent import A2CAgent
 from openrl.runners.common.bc_agent import BCAgent
 from openrl.runners.common.chat_agent import Chat6BAgent, ChatAgent
 from openrl.runners.common.ddpg_agent import DDPGAgent
@@ -19,4 +20,5 @@ __all__ = [
     "GAILAgent",
     "BCAgent",
     "SACAgent",
+    "A2CAgent",
 ]
