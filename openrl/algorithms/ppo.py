@@ -196,7 +196,8 @@ class PPOAlgorithm(BaseAlgorithm):
             ).sum() / active_masks_batch.sum()
         else:
             value_loss = value_loss.mean()
-
+        # print(value_loss)
+        # import pdb;pdb.set_trace()
         return value_loss
 
     def to_single_np(self, input):
@@ -209,8 +210,10 @@ class PPOAlgorithm(BaseAlgorithm):
             final_p_loss = policy_loss - dist_entropy * self.entropy_coef
 
             loss_list.append(final_p_loss)
+
         final_v_loss = value_loss * self.value_loss_coef
         loss_list.append(final_v_loss)
+
         return loss_list
 
     def prepare_loss(
