@@ -160,3 +160,4 @@ opponent_pool
 wandb_run
 examples/dmc/new.gif
 /examples/snake/submissions/rl/actor_2000.pth
+/examples/sb3/ppo-CartPole-v1/

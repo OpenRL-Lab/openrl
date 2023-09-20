@@ -40,6 +40,20 @@ def create_config_parser():
 
     parser.add_argument("--callbacks", type=List[dict])
 
+    # For Stable-baselines3
+    parser.add_argument(
+        "--sb3_model_path",
+        type=str,
+        default=None,
+        help="stable-baselines3 model path",
+    )
+    parser.add_argument(
+        "--sb3_algo",
+        type=str,
+        default=None,
+        help="stable-baselines3 algorithm",
+    )
+
     # For Hierarchical RL
     parser.add_argument(
         "--step_difference",
@@ -810,6 +824,12 @@ def create_config_parser():
         type=int,
         default=5,
         help="time duration between contiunous twice log printing.",
+    )
+    parser.add_argument(
+        "--log_each_episode",
+        type=bool,
+        default=True,
+        help="Whether to log each episode number.",
     )
     parser.add_argument(
         "--use_rich_handler",

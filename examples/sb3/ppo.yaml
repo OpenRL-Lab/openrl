@@ -1,0 +1,25 @@
+use_share_model: true
+sb3_model_path: ppo-CartPole-v1/ppo-CartPole-v1.zip
+sb3_algo: ppo
+entropy_coef: 0.0
+gae_lambda: 0.8
+gamma: 0.98
+lr: 0.001
+episode_length: 32
+ppo_epoch: 20
+log_interval: 20
+log_each_episode: False
+
+callbacks:
+  - id: "EvalCallback"
+    args: {
+      "eval_env": { "id": "CartPole-v1","env_num": 5 }, # how many envs to set up for evaluation
+      "n_eval_episodes": 20, # how many episodes to run for each evaluation
+      "eval_freq": 500, # how often to run evaluation
+      "log_path": "./results/eval_log_path", # where to save the evaluation results
+      "best_model_save_path": "./results/best_model/", # where to save the best model
+      "deterministic": True, # whether to use deterministic action
+      "render": False, # whether to render the env
+      "asynchronous": True, # whether to run evaluation asynchronously
+      "stop_logic": "OR", # the logic to stop training, OR means training stops when any one of the conditions is met, AND means training stops when all conditions are met
+    }
