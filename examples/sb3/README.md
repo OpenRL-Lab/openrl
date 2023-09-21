@@ -1,4 +1,4 @@
-Load and use stable-baseline3 models from huggingface.
+Load and use [stable-baseline3 models](https://huggingface.co/sb3) from huggingface.
 
 ## Installation
 
