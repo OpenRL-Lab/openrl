@@ -420,7 +420,7 @@ class MultiAgentTransformer(BaseValuePolicyNetwork):
     ):
         obs = obs.reshape(-1, self.n_agent, self.obs_dim)
         if action_masks is not None:
-            action_masks = action_masks.reshape(-1, self.num_agents, self.action_dim)
+            action_masks = action_masks.reshape(-1, self.n_agent, self.action_dim)
 
         # state unused
         ori_shape = np.shape(obs)
