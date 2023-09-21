@@ -32,7 +32,10 @@ def check_v2(input, use_half=False, tpdv=None):
 
 
 def _t2n(x):
-    return x.detach().cpu().numpy()
+    if isinstance(x, torch.Tensor):
+        return x.detach().cpu().numpy()
+    else:
+        return x
 
 
 def get_system_info() -> Dict[str, str]:
