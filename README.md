@@ -61,7 +61,7 @@ Currently, the features supported by OpenRL include:
 - Support [Arena](https://openrl-docs.readthedocs.io/en/latest/arena/index.html) , which allows convenient evaluation of
   various agents (even submissions for [JiDi](https://openrl-docs.readthedocs.io/en/latest/arena/index.html#performing-local-evaluation-of-agents-submitted-to-the-jidi-platform-using-openrl)) in a competitive environment.
 
-- Importing models and datasets from [Hugging Face](https://huggingface.co/)
+- Importing models and datasets from [Hugging Face](https://huggingface.co/). Supports loading [Stable-baselines3 models from Hugging Face](https://openrl-docs.readthedocs.io/en/latest/sb3/index.html) for testing and training.
 
 - [Tutorial](https://openrl-docs.readthedocs.io/en/latest/custom_env/index.html) on how to integrate user-defined environments into OpenRL.
 
