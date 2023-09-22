@@ -15,10 +15,10 @@ from openrl.modules.networks.utils.nlp.base_policy import (
     PolicyType,
     ValueOutput,
 )
-from openrl.modules.networks.utils.nlp.hf_generation_utils import (
-    override_generation_routines,
-    unwrap_generation_routines,
-)
+# from openrl.modules.networks.utils.nlp.hf_generation_utils import (
+#     override_generation_routines,
+#     unwrap_generation_routines,
+# )
 from openrl.modules.utils.valuenorm import ValueNorm
 
 
@@ -65,7 +65,7 @@ class CausalLMActorCriticPolicy(LMActorCriticPolicy):
     @property
     def policy(self):
         policy_model = self._policy_model
-        policy_model.__class__ = unwrap_generation_routines(type(policy_model))
+        # policy_model.__class__ = unwrap_generation_routines(type(policy_model))
         return policy_model
 
     def _build_model_heads(self, model_name: str, config: str, device: str):
@@ -81,9 +81,9 @@ class CausalLMActorCriticPolicy(LMActorCriticPolicy):
             model_name, config=config
         )
 
-        self._policy_model.__class__ = override_generation_routines(
-            type(self._policy_model)
-        )
+        # self._policy_model.__class__ = override_generation_routines(
+        #     type(self._policy_model)
+        # )
 
         self._value_model = AutoModelForCausalLM.from_pretrained(
             model_name, config=config
@@ -99,7 +99,13 @@ class CausalLMActorCriticPolicy(LMActorCriticPolicy):
         torch.multiprocessing.set_sharing_strategy("file_system")
         # apply model parallel
         if torch.cuda.is_available():
-            if self._apply_model_parallel and self._policy_model.is_parallelizable:
+            if self._use_deepspeed:
+                self._policy_model.to(device)
+                self._value_model.to(device)
+                self._value_head = self._value_head.to(device)
+                if self._use_valuenorm:
+                    self.value_normalizer.to(device)
+            elif self._apply_model_parallel and self._policy_model.is_parallelizable:
                 self._policy_model.parallelize()
                 self._value_model.parallelize()
                 self._value_head = self._value_head.to(self.device)

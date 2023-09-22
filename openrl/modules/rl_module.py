@@ -51,8 +51,8 @@ def get_train_ds_config(offload,
         "memory_efficient_linear": False
     }
     return {
-        "train_batch_size": 1600,
-        "train_micro_batch_size_per_gpu": 200,
+        "train_batch_size": 64,
+        "train_micro_batch_size_per_gpu": 8,
         "steps_per_print": 10,
         "zero_optimization": zero_opt_dict,
         "fp16": {
@@ -166,7 +166,7 @@ class RLModule(BaseModule):
                 from deepspeed.ops.adam import DeepSpeedCPUAdam
                 from transformers import get_constant_schedule
                 
-                self.offload = True
+                self.offload = False
                 ds_config = get_train_ds_config(
                     offload=self.offload,
                     use_fp16=cfg.use_fp16,

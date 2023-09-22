@@ -9,25 +9,58 @@ from openrl.supports.opendata.utils.opendata_utils import data_abs_path
 from openrl.supports.opengpu.manager import LocalGPUManager
 
 
+def get_eval_ds_config(offload, stage=0):
+    device = "cpu" if offload else "none"
+    zero_opt_dict = {
+        "stage": stage,
+        "stage3_param_persistence_threshold": 1e4,
+        "offload_param": {
+            "device": device
+        },
+        "memory_efficient_linear": False
+    }
+    return {
+        "train_batch_size": 64,
+        "train_micro_batch_size_per_gpu": 8,
+        "steps_per_print": 10,
+        "zero_optimization": zero_opt_dict,
+        "fp16": {
+            "enabled": True
+        },
+        "gradient_clipping": 1.0,
+        "prescale_gradients": False,
+        "wall_clock_breakdown": False
+    }
+
+
 class Intent:
     def __init__(self, intent_model: str, intent_coeff: float = 1.0) -> None:
         super().__init__()
 
         self._intent_coeff = intent_coeff
+        self.use_deepspeed = True
 
         model_path = data_abs_path(intent_model)
         self._tokenizer = AutoTokenizer.from_pretrained(intent_model)
         self._model = AutoModelForSequenceClassification.from_pretrained(model_path)
 
-        if torch.cuda.is_available():
-            manager = LocalGPUManager()
-            manager.log_info()
-            self._device = f"cuda:{manager.get_gpu()}"
+        if self.use_deepspeed:
+            import deepspeed
+            self._model = self._model.to('cuda')
+            ds_config = get_eval_ds_config(offload=True, stage=0)
+            self._model, *_ = deepspeed.initialize(model=self._model, config=ds_config)
+            self._device = "cuda"
         else:
-            self._device = "cpu"
-        print("Intent Model choose to use device:{}".format(self._device))
+            if torch.cuda.is_available():
+                manager = LocalGPUManager()
+                manager.log_info()
+                self._device = f"cuda:{manager.get_gpu()}"
+            else:
+                self._device = "cpu"
+            print("Intent Model choose to use device:{}".format(self._device))
 
-        self._model = self._model.to(self._device)
+            self._model = self._model.to(self._device)
+
 
     def __call__(
         self,

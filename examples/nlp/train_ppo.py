@@ -13,11 +13,11 @@ def train():
     cfg_parser = create_config_parser()
     cfg = cfg_parser.parse_args()
 
-    env_num = 10
+    env_num = 2
     env = make(
         "daily_dialog",
         env_num=env_num,
-        asynchronous=True,
+        asynchronous=False,
         cfg=cfg,
     )
 
@@ -26,7 +26,7 @@ def train():
     net = Net(env, device="cuda", cfg=cfg, model_dict=model_dict)
 
     # initialize the trainer
-    agent = Agent(net, use_wandb=True)
+    agent = Agent(net, use_wandb=False)
 
     # start training
     agent.train(total_time_steps=100000)

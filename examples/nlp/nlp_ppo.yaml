@@ -8,25 +8,25 @@ use_valuenorm: true
 use_adv_normalize: true
 wandb_entity: "openrl-lab"
 ppo_epoch: 5
-episode_length: 128
-num_mini_batch: 20
+episode_length: 16
+num_mini_batch: 2
 use_share_model: true
-use_amp: true
+# use_amp: true
 hidden_size: 1
 data_chunk_length: 1
 
-model_path: rajkumarrrk/gpt2-fine-tuned-on-daily-dialog
+model_path: /home/chenwenze/data_server/huggingface/models/rajkumarrrk/gpt2-fine-tuned-on-daily-dialog
 env:
   args: {
-    'tokenizer_path': 'gpt2',
-    'data_path': 'daily_dialog',
+    'tokenizer_path': '/home/chenwenze/data_server/huggingface/models/gpt2',
+    'data_path': '/home/chenwenze/data_server/huggingface/datasets/daily_dialog',
   }
 vec_info_class:
   id: "NLPVecInfo"
 reward_class: 
   id: "NLPReward"
   args: { 
-    "intent_model": "rajkumarrrk/roberta-daily-dialog-intent-classifier",
-    "ref_model": "rajkumarrrk/gpt2-fine-tuned-on-daily-dialog",
+    "intent_model": "/home/chenwenze/data_server/huggingface/models/rajkumarrrk/roberta-daily-dialog-intent-classifier",
+    "ref_model": "/home/chenwenze/data_server/huggingface/models/rajkumarrrk/gpt2-fine-tuned-on-daily-dialog",
   }
     

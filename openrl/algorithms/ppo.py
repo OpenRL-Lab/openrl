@@ -109,14 +109,18 @@ class PPOAlgorithm(BaseAlgorithm):
                 active_masks_batch,
                 turn_on,
             )
-            if not self.use_deepspeed:
+            if self.use_deepspeed:
+                if self._use_share_model:
+                    for loss in loss_list:
+                        self.algo_module.models["model"].backward(loss)
+                else:
+                    actor_loss = loss_list[0]
+                    critic_loss = loss_list[1]
+                    self.algo_module.models["policy"].backward(actor_loss)
+                    self.algo_module.models["critic"].backward(critic_loss)
+            else:
                 for loss in loss_list:
                     loss.backward()
-            else:
-                actor_loss = loss_list[0]
-                critic_loss = loss_list[1]
-                self.algo_module.models["policy"].backward(actor_loss)
-                self.algo_module.models["critic"].backward(critic_loss)
 
         # else:
         if self._use_share_model:
