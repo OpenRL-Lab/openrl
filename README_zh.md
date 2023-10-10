@@ -29,7 +29,7 @@
 [![Embark](https://img.shields.io/badge/discord-OpenRL-%237289da.svg?logo=discord)](https://discord.gg/guvAS2up)
 [![slack badge](https://img.shields.io/badge/Slack-join-blueviolet?logo=slack&amp)](https://join.slack.com/t/openrlhq/shared_invite/zt-1tqwpvthd-Eeh0IxQ~DIaGqYXoW2IUQg)
 
-OpenRL-v0.1.6 is updated on Sep 8, 2023
+OpenRL-v0.1.7 is updated on Sep 21, 2023
 
 The main branch is the latest version of OpenRL, which is under active development. If you just want to have a try with
 OpenRL, you can switch to the stable branch.
@@ -52,7 +52,7 @@ OpenRL基于PyTorch进行开发，目标是为强化学习研究社区提供一�
 - 支持自博弈训练
 - 支持自然语言任务（如对话任务）的强化学习训练
 - 支持[竞技场](https://openrl-docs.readthedocs.io/zh/latest/arena/index.html)功能，可以在多智能体对抗性环境中方便地对各种智能体（甚至是[及第平台](https://openrl-docs.readthedocs.io/zh/latest/arena/index.html#openrl)上提交的智能体）进行评测。
-- 支持从[Hugging Face](https://huggingface.co/)上导入模型和数据
+- 支持从[Hugging Face](https://huggingface.co/)上导入模型和数据。支持加载Hugging Face上[Stable-baselines3的模型](https://openrl-docs.readthedocs.io/zh/latest/sb3/index.html)来进行测试和训练。
 - 提供用户自有环境接入OpenRL的[详细教程](https://openrl-docs.readthedocs.io/zh/latest/custom_env/index.html).
 - 支持LSTM，GRU，Transformer等模型
 - 支持多种训练加速，例如：自动混合精度训练，半精度策略网络收集数据等

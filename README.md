@@ -28,7 +28,7 @@
 [![Embark](https://img.shields.io/badge/discord-OpenRL-%237289da.svg?logo=discord)](https://discord.gg/guvAS2up)
 [![slack badge](https://img.shields.io/badge/Slack-join-blueviolet?logo=slack&amp)](https://join.slack.com/t/openrlhq/shared_invite/zt-1tqwpvthd-Eeh0IxQ~DIaGqYXoW2IUQg)
 
-OpenRL-v0.1.6 is updated on Sep 8, 2023
+OpenRL-v0.1.7 is updated on Sep 21, 2023
 
 The main branch is the latest version of OpenRL, which is under active development. If you just want to have a try with
 OpenRL, you can switch to the stable branch.
@@ -61,7 +61,7 @@ Currently, the features supported by OpenRL include:
 - Support [Arena](https://openrl-docs.readthedocs.io/en/latest/arena/index.html) , which allows convenient evaluation of
   various agents (even submissions for [JiDi](https://openrl-docs.readthedocs.io/en/latest/arena/index.html#performing-local-evaluation-of-agents-submitted-to-the-jidi-platform-using-openrl)) in a competitive environment.
 
-- Importing models and datasets from [Hugging Face](https://huggingface.co/)
+- Importing models and datasets from [Hugging Face](https://huggingface.co/). Supports loading [Stable-baselines3 models from Hugging Face](https://openrl-docs.readthedocs.io/en/latest/sb3/index.html) for testing and training.
 
 - [Tutorial](https://openrl-docs.readthedocs.io/en/latest/custom_env/index.html) on how to integrate user-defined environments into OpenRL.
 
