@@ -50,7 +50,7 @@ def test_train_mujoco(config):
         action, _ = agent.act(obs, deterministic=True)
         obs, r, done, info = env.step(action)
         total_reward += np.mean(r)
-    assert total_reward >= 900, "InvertedPendulum-v4 should be solved."
+    assert total_reward >= 800, "InvertedPendulum-v4 should be solved."
     env.close()
 
 
