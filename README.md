@@ -115,6 +115,7 @@ Environments currently supported by OpenRL (for more details, please refer to [G
 - [Chat Bot](https://openrl-docs.readthedocs.io/en/latest/quick_start/train_nlp.html)
 - [Atari](https://gymnasium.farama.org/environments/atari/)
 - [StarCraft II](https://github.com/oxwhirl/smac)
+- [SMACv2](https://github.com/oxwhirl/smacv2)
 - [Omniverse Isaac Gym](https://github.com/NVIDIA-Omniverse/OmniIsaacGymEnvs)
 - [DeepMind Control](https://shimmy.farama.org/environments/dm_control/)
 - [Snake](http://www.jidiai.cn/env_detail?envid=1)
