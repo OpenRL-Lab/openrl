@@ -19,7 +19,7 @@ from io import StringIO
 from pathlib import Path
 from typing import Optional
 
-from datasets import load_from_disk
+
 
 
 def data_abs_path(path: str, data_server_dir: Optional[str] = None) -> str:
@@ -49,6 +49,7 @@ def data_server_wrapper(fp):
 
 
 def load_dataset(data_path: str, split: str):
+    from datasets import load_from_disk
     if Path(data_path).exists():
         dataset = load_from_disk("{}/{}".format(data_path, split))
     elif "data_server:" in data_path:
