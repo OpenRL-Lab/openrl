@@ -20,8 +20,6 @@ from pathlib import Path
 from typing import Optional
 
 
-
-
 def data_abs_path(path: str, data_server_dir: Optional[str] = None) -> str:
     if "data_server://" in path:
         if data_server_dir is None:

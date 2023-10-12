@@ -22,7 +22,7 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel
       - name: Install dependencies
         run: |
-          python -m pip install .
+          python -m pip install -e .
           python -m pip install ".[test]" --upgrade
       - name: do_unittest
         timeout-minutes: 40
