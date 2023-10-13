@@ -41,7 +41,11 @@ class RandomOpponent(BaseOpponent):
     ):
         action_space = self.env.action_space(player_name)
         if isinstance(action_space, list):
+            if not isinstance(observation, list):
+                observation = [observation]
+
             action = []
+
             for obs, space in zip(observation, action_space):
                 mask = obs.get("action_mask", None)
                 action.append(space.sample(mask))

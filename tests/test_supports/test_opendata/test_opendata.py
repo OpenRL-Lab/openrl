@@ -30,7 +30,5 @@ def test_data_abs_path():
     assert data_abs_path(data_path) == data_path
 
 
-
-
 if __name__ == "__main__":
     sys.exit(pytest.main(["-sv", os.path.basename(__file__)]))

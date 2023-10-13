@@ -15,9 +15,12 @@
 # limitations under the License.
 
 """"""
+import os
+import sys
+
+import pytest
 
 from openrl.arena import make_arena
-from openrl.arena.agents.jidi_agent import JiDiAgent
 from openrl.arena.agents.local_agent import LocalAgent
 from openrl.envs.wrappers.pettingzoo_wrappers import RecordWinner
 
@@ -28,20 +31,17 @@ def run_arena(
     seed=0,
     total_games: int = 10,
     max_game_onetime: int = 5,
-    use_tqdm: bool = True,
 ):
     env_wrappers = [RecordWinner]
+    if render:
+        from examples.selfplay.tictactoe_utils.tictactoe_render import TictactoeRender
 
-    player_num = 3
-    arena = make_arena(
-        f"snakes_{player_num}v{player_num}",
-        env_wrappers=env_wrappers,
-        render=render,
-        use_tqdm=use_tqdm,
-    )
+        env_wrappers.append(TictactoeRender)
 
-    agent1 = JiDiAgent("./submissions/random_agent", player_num=player_num)
-    agent2 = LocalAgent("../selfplay/opponent_templates/random_opponent")
+    arena = make_arena("tictactoe_v3", env_wrappers=env_wrappers, use_tqdm=False)
+
+    agent1 = LocalAgent("./examples/selfplay/opponent_templates/random_opponent")
+    agent2 = LocalAgent("./examples/selfplay/opponent_templates/random_opponent")
 
     arena.reset(
         agents={"agent1": agent1, "agent2": agent2},
@@ -55,13 +55,18 @@ def run_arena(
     return result
 
 
+@pytest.mark.unittest
+def test_seed():
+    seed = 0
+    test_time = 3
+    pre_result = None
+    for parallel in [False, True]:
+        for i in range(test_time):
+            result = run_arena(seed=seed, parallel=parallel, total_games=20)
+            if pre_result is not None:
+                assert pre_result == result, f"parallel={parallel}, seed={seed}"
+            pre_result = result
+
+
 if __name__ == "__main__":
-    # run_arena(render=False, parallel=True, seed=0, total_games=100, max_game_onetime=5)
-    run_arena(
-        render=False,
-        parallel=False,
-        seed=0,
-        total_games=1,
-        max_game_onetime=1,
-        use_tqdm=False,
-    )
+    sys.exit(pytest.main(["-sv", os.path.basename(__file__)]))

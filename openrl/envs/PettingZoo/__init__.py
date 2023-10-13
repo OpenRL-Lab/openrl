@@ -35,6 +35,7 @@ def PettingZoo_make(id, render_mode, disable_env_checker, **kwargs):
         from pettingzoo.classic import tictactoe_v3
 
         env = tictactoe_v3.env(render_mode=render_mode)
+
     else:
         raise NotImplementedError
     return env
