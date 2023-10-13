@@ -11,7 +11,7 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 [![Hits-of-Code](https://hitsofcode.com/github/OpenRL-Lab/openrl?branch=main)](https://hitsofcode.com/github/OpenRL-Lab/openrl/view?branch=main)
-[![codecov](https://codecov.io/gh/OpenRL-Lab/openrl_release/branch/main/graph/badge.svg?token=4FMEYMR83U)](https://codecov.io/gh/OpenRL-Lab/openrl_release)
+[![codecov](https://codecov.io/gh/OpenRL-Lab/openrl/graph/badge.svg?token=T6BqaTiT0l)](https://codecov.io/gh/OpenRL-Lab/openrl)
 
 [![Documentation Status](https://readthedocs.org/projects/openrl-docs/badge/?version=latest)](https://openrl-docs.readthedocs.io/en/latest/?badge=latest)
 [![Read the Docs](https://img.shields.io/readthedocs/openrl-docs-zh?label=%E4%B8%AD%E6%96%87%E6%96%87%E6%A1%A3)](https://openrl-docs.readthedocs.io/zh/latest/)
@@ -28,7 +28,7 @@
 [![Embark](https://img.shields.io/badge/discord-OpenRL-%237289da.svg?logo=discord)](https://discord.gg/guvAS2up)
 [![slack badge](https://img.shields.io/badge/Slack-join-blueviolet?logo=slack&amp)](https://join.slack.com/t/openrlhq/shared_invite/zt-1tqwpvthd-Eeh0IxQ~DIaGqYXoW2IUQg)
 
-OpenRL-v0.1.4 is updated on Aug 25, 2023
+OpenRL-v0.1.7 is updated on Sep 21, 2023
 
 The main branch is the latest version of OpenRL, which is under active development. If you just want to have a try with
 OpenRL, you can switch to the stable branch.
@@ -61,7 +61,7 @@ Currently, the features supported by OpenRL include:
 - Support [Arena](https://openrl-docs.readthedocs.io/en/latest/arena/index.html) , which allows convenient evaluation of
   various agents (even submissions for [JiDi](https://openrl-docs.readthedocs.io/en/latest/arena/index.html#performing-local-evaluation-of-agents-submitted-to-the-jidi-platform-using-openrl)) in a competitive environment.
 
-- Importing models and datasets from [Hugging Face](https://huggingface.co/)
+- Importing models and datasets from [Hugging Face](https://huggingface.co/). Supports loading [Stable-baselines3 models from Hugging Face](https://openrl-docs.readthedocs.io/en/latest/sb3/index.html) for testing and training.
 
 - [Tutorial](https://openrl-docs.readthedocs.io/en/latest/custom_env/index.html) on how to integrate user-defined environments into OpenRL.
 
@@ -98,6 +98,7 @@ Algorithms currently supported by OpenRL (for more details, please refer to [Gal
 - [Joint-ratio Policy Optimization (JRPO)](https://arxiv.org/abs/2302.07515)
 - [Generative Adversarial Imitation Learning (GAIL)](https://arxiv.org/abs/1606.03476)
 - [Behavior Cloning (BC)](http://www.cse.unsw.edu.au/~claude/papers/MI15.pdf)
+- [Advantage Actor-Critic (A2C)](https://arxiv.org/abs/1602.01783)
 - Self-Play
 - [Deep Q-Network (DQN)](https://arxiv.org/abs/1312.5602)
 - [Multi-Agent Transformer (MAT)](https://arxiv.org/abs/2205.14953)
@@ -114,9 +115,11 @@ Environments currently supported by OpenRL (for more details, please refer to [G
 - [Chat Bot](https://openrl-docs.readthedocs.io/en/latest/quick_start/train_nlp.html)
 - [Atari](https://gymnasium.farama.org/environments/atari/)
 - [StarCraft II](https://github.com/oxwhirl/smac)
+- [SMACv2](https://github.com/oxwhirl/smacv2)
 - [Omniverse Isaac Gym](https://github.com/NVIDIA-Omniverse/OmniIsaacGymEnvs)
 - [DeepMind Control](https://shimmy.farama.org/environments/dm_control/)
 - [Snake](http://www.jidiai.cn/env_detail?envid=1)
+- [gym-pybullet-drones](https://github.com/utiasDSL/gym-pybullet-drones)
 - [GridWorld](./examples/gridworld/)
 - [Super Mario Bros](https://github.com/Kautenja/gym-super-mario-bros)
 - [Gym Retro](https://github.com/openai/retro)

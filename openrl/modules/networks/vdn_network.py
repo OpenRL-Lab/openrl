@@ -193,7 +193,8 @@ class VDNNetwork(BaseValuePolicyNetwork):
             for key in obs.keys():
                 obs[key] = check(obs[key]).to(**self.tpdv)
         else:
-            obs = obs["policy"]
+            if isinstance(obs, dict):
+                obs = obs["policy"]
             obs = check(obs).to(**self.tpdv)
         rnn_states = check(rnn_states).to(**self.tpdv)
         masks = check(masks).to(**self.tpdv)

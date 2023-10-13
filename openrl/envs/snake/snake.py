@@ -188,8 +188,7 @@ class SnakeEatBeans(GridGame, GridObservation, DictObservation):
         return self.all_observes, info
 
     def step(self, joint_action):
-        if np.array(joint_action).shape == (2,):
-            joint_action = convert_to_onehot(joint_action)
+        joint_action = convert_to_onehot(joint_action)
 
         joint_action = np.expand_dims(joint_action, 1)
         all_observes, info_after = self.get_next_state(joint_action)

@@ -65,17 +65,17 @@ def make(
             id=id, env_num=env_num, render_mode=convert_render_mode, **kwargs
         )
     else:
-        if id.startswith("snakes_"):
-            from openrl.envs.snake import make_snake_envs
+        if id.startswith("pybullet_drones/"):
+            from openrl.envs.gym_pybullet_drones import make_single_agent_drone_envs
 
-            env_fns = make_snake_envs(
+            env_fns = make_single_agent_drone_envs(
                 id=id, env_num=env_num, render_mode=convert_render_mode, **kwargs
             )
 
-        elif id.startswith("dm_control/"):
-            from openrl.envs.dmc import make_dmc_envs
+        elif id.startswith("snakes_"):
+            from openrl.envs.snake import make_snake_envs
 
-            env_fns = make_dmc_envs(
+            env_fns = make_snake_envs(
                 id=id, env_num=env_num, render_mode=convert_render_mode, **kwargs
             )
         elif id.startswith("GymV21Environment-v0:") or id.startswith(

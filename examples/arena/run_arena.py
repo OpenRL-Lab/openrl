@@ -26,6 +26,7 @@ def run_arena(
     seed=0,
     total_games: int = 10,
     max_game_onetime: int = 5,
+    use_tqdm: bool = True,
 ):
     env_wrappers = [RecordWinner]
     if render:
@@ -33,7 +34,7 @@ def run_arena(
 
         env_wrappers.append(TictactoeRender)
 
-    arena = make_arena("tictactoe_v3", env_wrappers=env_wrappers)
+    arena = make_arena("tictactoe_v3", env_wrappers=env_wrappers, use_tqdm=use_tqdm)
 
     agent1 = LocalAgent("../selfplay/opponent_templates/random_opponent")
     agent2 = LocalAgent("../selfplay/opponent_templates/random_opponent")
@@ -52,4 +53,4 @@ def run_arena(
 
 if __name__ == "__main__":
     run_arena(render=False, parallel=True, seed=0, total_games=100, max_game_onetime=10)
-    # run_arena(render=True, parallel=True, seed=1, total_games=10, max_game_onetime=2)
+    # run_arena(render=False, parallel=False, seed=1, total_games=1, max_game_onetime=1,use_tqdm=False)

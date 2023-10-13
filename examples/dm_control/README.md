@@ -1,6 +1,6 @@
 ## Installation
 ```bash
-pip install shimmy[dm-control]
+pip install "shimmy[dm-control]"
 ```
 
 ## Usage

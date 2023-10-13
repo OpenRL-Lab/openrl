@@ -69,6 +69,7 @@ def get_extra_requires() -> dict:
         "retro": ["gym-retro"],
         "super_mario": ["gym-super-mario-bros"],
     }
+    req["test"].extend(req["selfplay"])
     return req
 
 

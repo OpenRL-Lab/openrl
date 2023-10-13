@@ -29,7 +29,12 @@ from openrl.arena.games.base_game import BaseGame
 
 
 class BaseArena(ABC):
-    def __init__(self, env_fn: Callable, dispatch_func: Optional[Callable] = None):
+    def __init__(
+        self,
+        env_fn: Callable,
+        dispatch_func: Optional[Callable] = None,
+        use_tqdm: bool = True,
+    ):
         self.env_fn = env_fn
         self.pbar = None
 
@@ -40,6 +45,7 @@ class BaseArena(ABC):
         self.agents = None
         self.game: Optional[BaseGame] = None
         self.seed = None
+        self.use_tqdm = use_tqdm
 
     def reset(
         self,
@@ -53,7 +59,8 @@ class BaseArena(ABC):
         if self.pbar:
             self.pbar.refresh()
             self.pbar.close()
-        self.pbar = tqdm(total=total_games, desc="Processing")
+        if self.use_tqdm:
+            self.pbar = tqdm(total=total_games, desc="Processing")
         self.total_games = total_games
         self.max_game_onetime = max_game_onetime
         self.agents = agents
@@ -85,13 +92,15 @@ class BaseArena(ABC):
             for future in as_completed(futures):
                 result = future.result()
                 self._deal_result(result)
-                self.pbar.update(1)
+                if self.pbar:
+                    self.pbar.update(1)
 
     def _run_serial(self):
         for run_index in range(self.total_games):
             result = self.game.run(self.seed + run_index, self.env_fn, self.agents)
             self._deal_result(result)
-            self.pbar.update(1)
+            if self.pbar:
+                self.pbar.update(1)
 
     def run(self, parallel: bool = True) -> Dict[str, Any]:
         assert self.seed is not None, "Please call reset() to set seed first."

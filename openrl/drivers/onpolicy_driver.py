@@ -258,6 +258,7 @@ class OnPolicyDriver(RLDriver):
             values = np.zeros([self.n_rollout_threads, self.num_agents, 1])
         else:
             values = np.array(np.split(_t2n(value), self.n_rollout_threads))
+
         actions = np.array(np.split(_t2n(action), self.n_rollout_threads))
         action_log_probs = np.array(
             np.split(_t2n(action_log_prob), self.n_rollout_threads)

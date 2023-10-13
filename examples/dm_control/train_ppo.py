@@ -1,10 +1,15 @@
 import numpy as np
+import torch
 from gymnasium.wrappers import FlattenObservation
 
 from openrl.configs.config import create_config_parser
 from openrl.envs.common import make
 from openrl.envs.wrappers.base_wrapper import BaseWrapper
-from openrl.envs.wrappers.extra_wrappers import FrameSkip, GIFWrapper
+from openrl.envs.wrappers.extra_wrappers import (
+    ConvertEmptyBoxWrapper,
+    FrameSkip,
+    GIFWrapper,
+)
 from openrl.modules.common import PPONet as Net
 from openrl.runners.common import PPOAgent as Agent
 
@@ -18,15 +23,15 @@ def train():
     cfg = cfg_parser.parse_args(["--config", "ppo.yaml"])
 
     # create environment, set environment parallelism to 64
+    env_num = 64
     env = make(
         env_name,
-        env_num=64,
-        cfg=cfg,
+        env_num=env_num,
         asynchronous=True,
-        env_wrappers=[FrameSkip, FlattenObservation],
+        env_wrappers=[FrameSkip, FlattenObservation, ConvertEmptyBoxWrapper],
     )
 
-    net = Net(env, cfg=cfg, device="cuda")
+    net = Net(env, cfg=cfg, device="cuda" if torch.cuda.is_available() else "cpu")
     # initialize the trainer
     agent = Agent(
         net,
@@ -44,18 +49,18 @@ def evaluation():
     # begin to test
     # Create an environment for testing and set the number of environments to interact with to 4. Set rendering mode to group_rgb_array.
     render_mode = "group_rgb_array"
+
     env = make(
         env_name,
         render_mode=render_mode,
         env_num=4,
         asynchronous=True,
-        env_wrappers=[FrameSkip, FlattenObservation],
-        cfg=cfg,
+        env_wrappers=[FrameSkip, FlattenObservation, ConvertEmptyBoxWrapper],
     )
     # Wrap the environment with GIFWrapper to record the GIF, and set the frame rate to 5.
     env = GIFWrapper(env, gif_path="./new.gif", fps=5)
 
-    net = Net(env, cfg=cfg, device="cuda")
+    net = Net(env, cfg=cfg, device="cuda" if torch.cuda.is_available() else "cpu")
     # initialize the trainer
     agent = Agent(
         net,

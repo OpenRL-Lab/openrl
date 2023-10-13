@@ -39,15 +39,19 @@ class RandomOpponent(BaseOpponent):
     def _sample_random_action(
         self, player_name, observation, reward, termination, truncation, info
     ):
-        mask = observation["action_mask"]
         action_space = self.env.action_space(player_name)
         if isinstance(action_space, list):
+            if not isinstance(observation, list):
+                observation = [observation]
+
             action = []
-            for space in action_space:
+
+            for obs, space in zip(observation, action_space):
+                mask = obs.get("action_mask", None)
                 action.append(space.sample(mask))
         else:
+            mask = observation.get("action_mask", None)
             action = action_space.sample(mask)
-
         return action
 
     def _load(self, opponent_path: Union[str, Path]):

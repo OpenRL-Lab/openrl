@@ -83,7 +83,8 @@ class SnakeEatBeansAECEnv(AECEnv):
         return deepcopy(self._action_spaces[agent])
 
     def observe(self, agent):
-        return self.raw_obs[self.agent_name_to_slice[agent]]
+        obs = self.raw_obs[self.agent_name_to_slice[agent]]
+        return obs
 
     def reset(
         self,
@@ -115,7 +116,9 @@ class SnakeEatBeansAECEnv(AECEnv):
             joint_action = []
             for agent in self.agents:
                 joint_action.append(self.state[agent])
+
             joint_action = np.concatenate(joint_action)
+
             self.raw_obs, self.raw_reward, self.raw_done, self.raw_info = self.env.step(
                 joint_action
             )

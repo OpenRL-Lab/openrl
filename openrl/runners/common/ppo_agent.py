@@ -67,7 +67,7 @@ class PPOAgent(RLAgent):
         callback: MaybeCallback = None,
         train_algo_class: Type[BaseAlgorithm] = PPOAlgorithm,
         logger: Optional[Logger] = None,
-        DriverClass: Type[BaseDriver] = Driver,
+        driver_class: Type[BaseDriver] = Driver,
     ) -> None:
         self._cfg.num_env_steps = total_time_steps
 
@@ -113,7 +113,7 @@ class PPOAgent(RLAgent):
             progress_bar=False,
         )
 
-        driver = DriverClass(
+        driver = driver_class(
             config=self.config,
             trainer=trainer,
             buffer=buffer,
