@@ -83,7 +83,8 @@ class SnakeEatBeansAECEnv(AECEnv):
         return deepcopy(self._action_spaces[agent])
 
     def observe(self, agent):
-        return self.raw_obs[self.agent_name_to_slice[agent]]
+        obs = self.raw_obs[self.agent_name_to_slice[agent]]
+        return obs
 
     def reset(
         self,

@@ -50,3 +50,6 @@ conda-upload:
 
 doc:
 	./scripts/gen_api_docs.sh
+
+upload-codecov:
+	codecov --file coverage.xml -t $(CODECOV_TOKEN)
