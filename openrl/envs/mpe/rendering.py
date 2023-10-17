@@ -26,6 +26,7 @@ except ImportError:
 
 try:
     from pyglet.gl import *
+
 except ImportError:
     print(
         "Error occured while running `from pyglet.gl import *`",
