@@ -16,13 +16,16 @@
 
 """"""
 import os
+import pickle
 import sys
 
 import numpy as np
 import pytest
 
 from openrl.envs.common import make
+from openrl.envs.vec_env.wrappers.gen_data import GenDataWrapper, GenDataWrapper_v1
 from openrl.envs.vec_env.wrappers.zero_reward_wrapper import ZeroRewardWrapper
+from openrl.envs.wrappers.monitor import Monitor
 
 
 @pytest.mark.unittest
@@ -36,6 +39,48 @@ def test_zero_reward_wrapper():
         if done:
             break
     env.close()
+
+
+@pytest.mark.unittest
+def test_gen_data(tmp_path):
+    total_episode = 4
+    env = make("IdentityEnv", env_wrappers=[Monitor], env_num=1)
+    data_save_path = tmp_path / "data.pkl"
+    env = GenDataWrapper(
+        env, data_save_path=str(data_save_path), total_episode=total_episode
+    )
+    obs, info = env.reset(seed=0)
+    done = False
+    while not done:
+        obs, r, done, info = env.step(env.random_action())
+    env.close()
+
+    save_data = pickle.load(open(data_save_path, "rb"))
+    assert len(save_data["episode_lengths"]) == total_episode, (
+        f"episode_lengths {len(save_data['episode_lengths'])} "
+        f"should be equal to total_episode {total_episode}"
+    )
+
+
+@pytest.mark.unittest
+def test_gen_data_old(tmp_path):
+    total_episode = 4
+    env = make("IdentityEnv", env_wrappers=[Monitor], env_num=1)
+    data_save_path = tmp_path / "data.pkl"
+    env = GenDataWrapper_v1(
+        env, data_save_path=str(data_save_path), total_episode=total_episode
+    )
+    obs, info = env.reset(seed=0)
+    done = False
+    while not done:
+        obs, r, done, info = env.step(env.random_action())
+    env.close()
+
+    save_data = pickle.load(open(data_save_path, "rb"))
+    assert save_data["total_episode"] == total_episode, (
+        f"episode_lengths {save_data['total_episode']} "
+        f"should be equal to total_episode {total_episode}"
+    )
 
 
 if __name__ == "__main__":
