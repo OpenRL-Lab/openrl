@@ -13,9 +13,7 @@ from openrl.utils.callbacks import callbacks
 
 GymEnv = Union[gym.Env, vec_env.BaseVecEnv]
 GymObs = Union[Tuple, Dict[str, Any], np.ndarray, int]
-GymStepReturn = Union[
-    Tuple[GymObs, float, bool, Dict], Tuple[GymObs, float, bool, bool, Dict]
-]
+
 TensorDict = Dict[Union[str, int], th.Tensor]
 OptimizerStateDict = Dict[str, Any]
 MaybeCallback = Union[

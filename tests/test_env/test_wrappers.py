@@ -18,42 +18,28 @@
 import os
 import sys
 
-import numpy as np
 import pytest
 
-from openrl.envs.common import make
-
 
 @pytest.mark.unittest
-def test_mpe():
-    env_num = 3
-    env = make("simple_spread", env_num=env_num)
-    obs, info = env.reset()
-    obs, reward, done, info = env.step(env.random_action())
-    assert env.agent_num == 3
-    assert env.parallel_env_num == env_num
-    env.close()
+def test_atari_wrappers():
+    import gymnasium
 
-
-@pytest.mark.unittest
-def test_mpe_render():
-    render_model = "human"
-    env_num = 2
-    env = make(
-        "simple_spread", render_mode=render_model, env_num=env_num, asynchronous=False
+    from openrl.envs.wrappers.atari_wrappers import (
+        ClipRewardEnv,
+        EpisodicLifeEnv,
+        FireResetEnv,
+        NoopResetEnv,
+        WarpFrame,
     )
 
+    env = gymnasium.make("ALE/Breakout-v5")
+    env = FireResetEnv(EpisodicLifeEnv(ClipRewardEnv(WarpFrame(NoopResetEnv(env)))))
     env.reset(seed=0)
-    done = False
-    step = 0
-    total_reward = 0
-    while not np.any(done):
-        # Based on environmental observation input, predict next action.
-
-        obs, r, done, info = env.step(env.random_action())
-        step += 1
-        total_reward += np.mean(r)
-
+    while True:
+        obs, reward, done, truncated, info = env.step(0)
+        if done:
+            break
     env.close()
 
 
