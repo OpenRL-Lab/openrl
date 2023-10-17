@@ -6,8 +6,6 @@ from gymnasium import spaces
 from gymnasium.envs.registration import EnvSpec
 from gymnasium.utils import seeding
 
-from openrl.utils.type_aliases import GymStepReturn
-
 T = TypeVar("T", int, np.ndarray)
 
 
@@ -256,7 +254,7 @@ class FakeImageEnv(gym.Env):
         self.current_step = 0
         return self.observation_space.sample()
 
-    def step(self, action: Union[np.ndarray, int]) -> GymStepReturn:
+    def step(self, action: Union[np.ndarray, int]):
         reward = 0.0
         self.current_step += 1
         done = self.current_step >= self.ep_length

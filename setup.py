@@ -68,8 +68,10 @@ def get_extra_requires() -> dict:
         "selfplay": ["ray[default]", "ray[serve]", "pettingzoo[classic]", "trueskill"],
         "retro": ["gym-retro"],
         "super_mario": ["gym-super-mario-bros"],
+        "atari": ["gymnasium[atari]", "gymnasium[accept-rom-license]"],
     }
     req["test"].extend(req["selfplay"])
+    req["test"].extend(req["atari"])
     return req
 
 

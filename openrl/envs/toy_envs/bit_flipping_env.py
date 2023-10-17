@@ -5,8 +5,6 @@ import numpy as np
 from gymnasium import Env, spaces
 from gymnasium.envs.registration import EnvSpec
 
-from openrl.utils.type_aliases import GymStepReturn
-
 
 class BitFlippingEnv(Env):
     """
@@ -175,7 +173,7 @@ class BitFlippingEnv(Env):
         self.state = self.obs_space.sample()
         return self._get_obs(), {}
 
-    def step(self, action: Union[np.ndarray, int]) -> GymStepReturn:
+    def step(self, action: Union[np.ndarray, int]):
         if self.continuous:
             self.state[action > 0] = 1 - self.state[action > 0]
         else:
