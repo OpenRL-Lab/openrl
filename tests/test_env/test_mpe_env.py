@@ -18,19 +18,42 @@
 import os
 import sys
 
+import numpy as np
 import pytest
+
+from openrl.envs.common import make
 
 
 @pytest.mark.unittest
 def test_mpe():
-    from openrl.envs.common import make
-
-    env_num = 6
-    env = make("simple_spread", env_num=6)
+    env_num = 3
+    env = make("simple_spread", env_num=env_num)
     obs, info = env.reset()
     obs, reward, done, info = env.step(env.random_action())
     assert env.agent_num == 3
     assert env.parallel_env_num == env_num
+    env.close()
+
+
+@pytest.mark.unittest
+def test_mpe_render():
+    render_model = "human"
+    env_num = 2
+    env = make(
+        "simple_spread", render_mode=render_model, env_num=env_num, asynchronous=False
+    )
+
+    env.reset(seed=0)
+    done = False
+    step = 0
+    total_reward = 0
+    while not np.any(done):
+        # Based on environmental observation input, predict next action.
+
+        obs, r, done, info = env.step(env.random_action())
+        step += 1
+        total_reward += np.mean(r)
+
     env.close()
 
 
