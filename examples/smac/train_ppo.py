@@ -25,7 +25,8 @@ def train():
     # create environment
     env_num = 8
     env = make(
-        "2s_vs_1sc",
+        "3m",
+        # "2s_vs_1sc",
         env_num=env_num,
         asynchronous=True,
         cfg=cfg,

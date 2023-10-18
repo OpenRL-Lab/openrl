@@ -33,21 +33,21 @@ class SMACInfo(EPS_RewardInfo):
     def statistics(self, buffer: Any) -> Dict[str, Any]:
         info_dict = super().statistics(buffer)
 
-        """for step_info in self.infos:
+        for step_info in self.infos:
             for singe_env_info in step_info:
                 assert isinstance(singe_env_info, dict), "singe_env_info must be dict"
 
                 if "final_info" in singe_env_info.keys():
                     assert (
                         "game_state" in singe_env_info["final_info"].keys()
-                    ), "game_state must be in info"
-                    assert singe_env_info["final_info"]["game_state"] in [
-                        "win",
-                        "lose",
-                    ], "game_state in the final_info must be win or lose"
+                    ), "win_state must be in info"
+                    # assert singe_env_info["final_info"]["game_state"] in [
+                    #     "win",
+                    #     "lose",
+                    # ], "win_state in the final_info must be win or lose"
                     self.win_history.append(
                         singe_env_info["final_info"]["game_state"] == "win"
-                    )"""
+                    )
 
         if len(self.win_history) > 0:
             info_dict["win_rate"] = np.mean(self.win_history)
