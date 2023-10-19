@@ -40,7 +40,7 @@ class DailyDialogEnv(Env):
 
         self.env_name = "daily_dialog"
         tokenizer_name = cfg.env.args["tokenizer_path"]
-        self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name, use_fast=True)
+        self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
         if self.tokenizer.pad_token is None:
             self.tokenizer.pad_token = self.tokenizer.eos_token
         self.tokenizer.padding_side = "left"

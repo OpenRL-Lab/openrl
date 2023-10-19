@@ -13,7 +13,7 @@ def train():
     cfg_parser = create_config_parser()
     cfg = cfg_parser.parse_args()
 
-    env_num = 10
+    env_num = 5
     env = make(
         "daily_dialog",
         env_num=env_num,

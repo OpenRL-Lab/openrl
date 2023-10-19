@@ -41,6 +41,7 @@ class PPOAlgorithm(BaseAlgorithm):
         self.use_joint_action_loss = cfg.use_joint_action_loss
         super(PPOAlgorithm, self).__init__(cfg, init_module, agent_num, device)
         self.train_list = [self.train_ppo]
+        self.use_deepspeed = cfg.use_deepspeed
 
     def ppo_update(self, sample, turn_on=True):
         for optimizer in self.algo_module.optimizers.values():
@@ -108,8 +109,18 @@ class PPOAlgorithm(BaseAlgorithm):
                 active_masks_batch,
                 turn_on,
             )
-            for loss in loss_list:
-                loss.backward()
+            if self.use_deepspeed:
+                if self._use_share_model:
+                    for loss in loss_list:
+                        self.algo_module.models["model"].backward(loss)
+                else:
+                    actor_loss = loss_list[0]
+                    critic_loss = loss_list[1]
+                    self.algo_module.models["policy"].backward(actor_loss)
+                    self.algo_module.models["critic"].backward(critic_loss)
+            else:
+                for loss in loss_list:
+                    loss.backward()
 
         # else:
         if self._use_share_model:

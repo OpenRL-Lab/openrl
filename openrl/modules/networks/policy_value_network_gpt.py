@@ -43,6 +43,7 @@ class PolicyValueNetworkGPT(CausalLMActorCriticPolicy):
             device=device,
         )
         self.use_half = use_half
+        self._use_fp16 = cfg.use_fp16 and cfg.use_deepspeed
         self.tpdv = dict(dtype=torch.float32, device=device)
 
     def get_actor_para(self):
@@ -66,6 +67,8 @@ class PolicyValueNetworkGPT(CausalLMActorCriticPolicy):
     ):
         for key in obs.keys():
             obs[key] = check(obs[key], self.use_half, self.tpdv)
+            if self._use_fp16:
+                obs[key] = obs[key].half()
         rnn_states = check(rnn_states, self.use_half, self.tpdv)
 
         past_model_kwargs = None
@@ -83,6 +86,8 @@ class PolicyValueNetworkGPT(CausalLMActorCriticPolicy):
     ):
         for key in obs.keys():
             obs[key] = check(obs[key], self.use_half, self.tpdv)
+            if self._use_fp16:
+                obs[key] = obs[key].half()
         action = check(action, self.use_half, self.tpdv).squeeze()
 
         eval_output = super().evaluate_actions(obs, action)
@@ -95,20 +100,11 @@ class PolicyValueNetworkGPT(CausalLMActorCriticPolicy):
     def get_values(self, obs, rnn_states, masks):
         for key in obs.keys():
             obs[key] = check(obs[key], self.use_half, self.tpdv)
+            if self._use_fp16:
+                obs[key] = obs[key].half()
         rnn_states = check(rnn_states, self.use_half, self.tpdv)
 
         value_output = super().forward_value(obs)
         values = value_output.values
 
         return values, rnn_states
-
-    def get_log_probs_ref_model(self, obs, action):
-        for key in obs.keys():
-            obs[key] = check(obs[key], self.use_half, self.tpdv)
-        action = check(action, self.use_half, self.tpdv)
-        action = action.squeeze(-1)
-
-        policy_output = super().get_log_probs_ref_model(obs, action)
-        action_log_probs = policy_output.log_probs
-
-        return action_log_probs.detach().cpu().numpy()

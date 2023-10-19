@@ -107,7 +107,6 @@ def make(
                 id=id,
                 env_num=env_num,
                 render_mode=convert_render_mode,
-                cfg=cfg,
                 **kwargs,
             )
         elif id in openrl.envs.toy_all_envs:
