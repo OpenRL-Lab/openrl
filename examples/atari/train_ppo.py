@@ -59,7 +59,6 @@ def train():
     agent = Agent(net, use_wandb=True)
     # start training, set total number of training steps to 20000
 
-    # agent.train(total_time_steps=1000)
     agent.train(total_time_steps=5000000)
     env.close()
     agent.save("./ppo_agent/")
