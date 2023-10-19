@@ -15,10 +15,6 @@ from openrl.modules.networks.utils.nlp.base_policy import (
     PolicyType,
     ValueOutput,
 )
-from openrl.modules.networks.utils.nlp.hf_generation_utils import (
-    override_generation_routines,
-    unwrap_generation_routines,
-)
 from openrl.modules.utils.valuenorm import ValueNorm
 
 
@@ -65,7 +61,6 @@ class CausalLMActorCriticPolicy(LMActorCriticPolicy):
     @property
     def policy(self):
         policy_model = self._policy_model
-        policy_model.__class__ = unwrap_generation_routines(type(policy_model))
         return policy_model
 
     def _build_model_heads(self, model_name: str, config: str, device: str):
@@ -79,10 +74,6 @@ class CausalLMActorCriticPolicy(LMActorCriticPolicy):
 
         self._policy_model = AutoModelForCausalLM.from_pretrained(
             model_name, config=config
-        )
-
-        self._policy_model.__class__ = override_generation_routines(
-            type(self._policy_model)
         )
 
         self._value_model = AutoModelForCausalLM.from_pretrained(
@@ -99,7 +90,16 @@ class CausalLMActorCriticPolicy(LMActorCriticPolicy):
         torch.multiprocessing.set_sharing_strategy("file_system")
         # apply model parallel
         if torch.cuda.is_available():
-            if self._apply_model_parallel and self._policy_model.is_parallelizable:
+            if self._use_deepspeed:
+                if self.value_normalizer is not None:
+                    import deepspeed
+                    para = self.value_normalizer.running_mean
+                    deepspeed.zero.register_external_parameter(self, para)
+                    para = self.value_normalizer.running_mean_sq
+                    deepspeed.zero.register_external_parameter(self, para)
+                    para = self.value_normalizer.debiasing_term
+                    deepspeed.zero.register_external_parameter(self, para)
+            elif self._apply_model_parallel and self._policy_model.is_parallelizable:
                 self._policy_model.parallelize()
                 self._value_model.parallelize()
                 self._value_head = self._value_head.to(self.device)
@@ -126,17 +126,18 @@ class CausalLMActorCriticPolicy(LMActorCriticPolicy):
             input_ids, **model_kwargs
         )
 
-        if self._apply_model_parallel and unwrap_model(model).is_parallelizable:
-            # if model is in parallel mode, move the tensors to the first device
-            model_inputs = {
-                key: (
-                    value.to(model.transformer.first_device)
-                    if isinstance(value, torch.Tensor)
-                    and hasattr(model.transformer, "first_device")
-                    else value
-                )
-                for key, value in model_inputs.items()
-            }
+        if not self._use_deepspeed:
+            if self._apply_model_parallel and unwrap_model(model).is_parallelizable:
+                # if model is in parallel mode, move the tensors to the first device
+                model_inputs = {
+                    key: (
+                        value.to(model.transformer.first_device)
+                        if isinstance(value, torch.Tensor)
+                        and hasattr(model.transformer, "first_device")
+                        else value
+                    )
+                    for key, value in model_inputs.items()
+                }
         return model_inputs
 
     def forward_policy(

@@ -49,6 +49,7 @@ class ValueNetwork(BaseValueNetwork):
         self._use_recurrent_policy = cfg.use_recurrent_policy
         self._use_influence_policy = cfg.use_influence_policy
         self._use_popart = cfg.use_popart
+        self._use_fp16 = cfg.use_fp16 and cfg.use_deepspeed
         self._influence_layer_N = cfg.influence_layer_N
         self._recurrent_N = cfg.recurrent_N
         self.tpdv = dict(dtype=torch.float32, device=device)
@@ -117,6 +118,9 @@ class ValueNetwork(BaseValueNetwork):
             critic_obs = check(critic_obs).to(**self.tpdv)
         rnn_states = check(rnn_states).to(**self.tpdv)
         masks = check(masks).to(**self.tpdv)
+
+        if self._use_fp16:
+            critic_obs = critic_obs.half()
 
         critic_features = self.base(critic_obs)
 

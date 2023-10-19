@@ -10,6 +10,25 @@ from transformers.modeling_utils import unwrap_model
 from openrl.envs.nlp.utils.distribution import CategoricalDistribution
 
 
+def get_eval_ds_config(offload, stage=0):
+    device = "cpu" if offload else "none"
+    zero_opt_dict = {
+        "stage": stage,
+        "offload_param": {
+            "device": device
+        },
+    }
+    return {
+        "train_batch_size": 28, #
+        "train_micro_batch_size_per_gpu": 7,
+        "steps_per_print": 10,
+        "zero_optimization": zero_opt_dict,
+        "fp16": {
+            "enabled": True
+        },
+    }
+
+
 class KLPenalty(nn.Module):
     def __init__(
         self,
@@ -18,16 +37,23 @@ class KLPenalty(nn.Module):
         apply_model_parallel: bool = True,
     ):
         super().__init__()
+        self.use_deepspeed = True
+        self.use_fp16 = True
 
         # reference model
         self._apply_model_parallel = apply_model_parallel
         self._ref_net = AutoModelForCausalLM.from_pretrained(ref_model)
         self._ref_net = self._ref_net.eval()
-        if torch.cuda.is_available():
+        if self.use_deepspeed:
+            import deepspeed
+            ds_config = get_eval_ds_config(offload=True, stage=0)
+            self._ref_engine, *_ = deepspeed.initialize(model=self, config=ds_config)
+        elif torch.cuda.is_available():
             if self._apply_model_parallel and self._ref_net.is_parallelizable:
                 self._ref_net.parallelize()
             else:  # else defaults to data parallel
                 self._ref_net = torch.nn.DataParallel(self._ref_net)
+                
 
         # alpha adjustment
         self._alpha = 0.2
@@ -61,10 +87,15 @@ class KLPenalty(nn.Module):
             past_model_kwargs = {
                 "attention_mask": attention_mask,
             }
-
         model_inputs = self._prepare_inputs_for_model(
             self._ref_net, input_ids, past_model_kwargs
         )
+
+        if self.use_fp16:
+            for key in ["input_ids", "position_ids"]:
+                model_inputs[key] = model_inputs[key].half().int()
+            for key in ["attention_mask"]:
+                model_inputs[key] = model_inputs[key].half()
 
         with torch.no_grad():
             output = self._ref_net(output_hidden_states=True, **model_inputs)
@@ -108,4 +139,16 @@ class KLPenalty(nn.Module):
                 )
                 for key, value in model_inputs.items()
             }
+            
+        if self.use_deepspeed:
+            model_inputs = {
+                key: (
+                    value.to('cuda')
+                    if isinstance(value, torch.Tensor)
+                    else value
+                )
+                for key, value in model_inputs.items()
+            }
+
+
         return model_inputs
