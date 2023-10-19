@@ -21,8 +21,8 @@ def get_eval_ds_config(offload, stage=0):
         "memory_efficient_linear": False
     }
     return {
-        "train_batch_size": 64,
-        "train_micro_batch_size_per_gpu": 8,
+        "train_batch_size": 28, #
+        "train_micro_batch_size_per_gpu": 7,
         "steps_per_print": 10,
         "zero_optimization": zero_opt_dict,
         "fp16": {
@@ -44,6 +44,7 @@ class KLPenalty(nn.Module):
         super().__init__()
 
         self.use_deepspeed = True
+        self.use_fp16 = True
 
         # reference model
         self._apply_model_parallel = apply_model_parallel
@@ -95,6 +96,12 @@ class KLPenalty(nn.Module):
         model_inputs = self._prepare_inputs_for_model(
             self._ref_net, input_ids, past_model_kwargs
         )
+        
+        if self.use_fp16:
+            for key in ["input_ids", "position_ids"]:
+                model_inputs[key] = model_inputs[key].half().int()
+            for key in ["attention_mask"]:
+                model_inputs[key] = model_inputs[key].half()
 
         with torch.no_grad():
             output = self._ref_net(output_hidden_states=True, **model_inputs)

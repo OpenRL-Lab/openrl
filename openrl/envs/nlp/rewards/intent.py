@@ -20,8 +20,8 @@ def get_eval_ds_config(offload, stage=0):
         "memory_efficient_linear": False
     }
     return {
-        "train_batch_size": 64,
-        "train_micro_batch_size_per_gpu": 8,
+        "train_batch_size": 28, #
+        "train_micro_batch_size_per_gpu": 7,
         "steps_per_print": 10,
         "zero_optimization": zero_opt_dict,
         "fp16": {
