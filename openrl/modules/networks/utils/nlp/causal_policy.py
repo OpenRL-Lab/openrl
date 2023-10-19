@@ -93,6 +93,7 @@ class CausalLMActorCriticPolicy(LMActorCriticPolicy):
             if self._use_deepspeed:
                 if self.value_normalizer is not None:
                     import deepspeed
+
                     para = self.value_normalizer.running_mean
                     deepspeed.zero.register_external_parameter(self, para)
                     para = self.value_normalizer.running_mean_sq

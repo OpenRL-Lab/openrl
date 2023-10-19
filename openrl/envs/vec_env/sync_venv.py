@@ -281,7 +281,9 @@ class SyncVectorEnv(BaseVecEnv):
         else:
             return self.envs[0].unwrapped.spec.id
 
-    def exec_func(self, func: Callable, indices: List[int], *args, **kwargs) -> tuple:
+    def exec_func(
+        self, func: Callable, indices: Optional[List[int]] = None, *args, **kwargs
+    ) -> tuple:
         """Calls the method with name and applies args and kwargs.
 
         Args:
@@ -294,7 +296,7 @@ class SyncVectorEnv(BaseVecEnv):
         """
         results = []
         for i, env in enumerate(self.envs):
-            if i in indices:
+            if indices is None or i in indices:
                 if callable(func):
                     results.append(func(env, *args, **kwargs))
                 else:

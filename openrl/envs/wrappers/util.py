@@ -41,7 +41,9 @@ def nest_expand_dim(input: Any) -> Any:
     elif input is None:
         return [input]
     else:
-        raise NotImplementedError("Not support type: {}".format(type(input)))
+        raise NotImplementedError(
+            "Not support type: {}, value={}".format(type(input), input)
+        )
 
 
 def unwrap_wrapper(

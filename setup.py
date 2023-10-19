@@ -72,6 +72,7 @@ def get_extra_requires() -> dict:
     }
     req["test"].extend(req["selfplay"])
     req["test"].extend(req["atari"])
+    req["test"].extend(req["nlp"])
     return req
 
 

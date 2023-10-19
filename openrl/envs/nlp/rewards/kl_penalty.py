@@ -14,18 +14,14 @@ def get_eval_ds_config(offload, stage=0):
     device = "cpu" if offload else "none"
     zero_opt_dict = {
         "stage": stage,
-        "offload_param": {
-            "device": device
-        },
+        "offload_param": {"device": device},
     }
     return {
-        "train_batch_size": 28, #
+        "train_batch_size": 28,  #
         "train_micro_batch_size_per_gpu": 7,
         "steps_per_print": 10,
         "zero_optimization": zero_opt_dict,
-        "fp16": {
-            "enabled": True
-        },
+        "fp16": {"enabled": True},
     }
 
 
@@ -46,6 +42,7 @@ class KLPenalty(nn.Module):
         self._ref_net = self._ref_net.eval()
         if self.use_deepspeed:
             import deepspeed
+
             ds_config = get_eval_ds_config(offload=True, stage=0)
             self._ref_engine, *_ = deepspeed.initialize(model=self, config=ds_config)
         elif torch.cuda.is_available():
@@ -53,7 +50,6 @@ class KLPenalty(nn.Module):
                 self._ref_net.parallelize()
             else:  # else defaults to data parallel
                 self._ref_net = torch.nn.DataParallel(self._ref_net)
-                
 
         # alpha adjustment
         self._alpha = 0.2
@@ -139,16 +135,11 @@ class KLPenalty(nn.Module):
                 )
                 for key, value in model_inputs.items()
             }
-            
+
         if self.use_deepspeed:
             model_inputs = {
-                key: (
-                    value.to('cuda')
-                    if isinstance(value, torch.Tensor)
-                    else value
-                )
+                key: value.to("cuda") if isinstance(value, torch.Tensor) else value
                 for key, value in model_inputs.items()
             }
-
 
         return model_inputs

@@ -13,18 +13,14 @@ def get_eval_ds_config(offload, stage=0):
     device = "cpu" if offload else "none"
     zero_opt_dict = {
         "stage": stage,
-        "offload_param": {
-            "device": device
-        },
+        "offload_param": {"device": device},
     }
     return {
         "train_batch_size": 28,
         "train_micro_batch_size_per_gpu": 7,
         "steps_per_print": 10,
         "zero_optimization": zero_opt_dict,
-        "fp16": {
-            "enabled": True
-        },
+        "fp16": {"enabled": True},
     }
 
 
@@ -33,7 +29,7 @@ class Intent:
         super().__init__()
 
         self._intent_coeff = intent_coeff
-        self.use_deepspeed = True # TODO
+        self.use_deepspeed = True  # TODO
 
         model_path = data_abs_path(intent_model)
         self._tokenizer = AutoTokenizer.from_pretrained(intent_model)
@@ -41,7 +37,8 @@ class Intent:
 
         if self.use_deepspeed:
             import deepspeed
-            self._model = self._model.to('cuda')
+
+            self._model = self._model.to("cuda")
             ds_config = get_eval_ds_config(offload=True, stage=0)
             self._model, *_ = deepspeed.initialize(model=self._model, config=ds_config)
             self._device = "cuda"
