@@ -65,6 +65,11 @@ def get_extra_requires() -> dict:
             "evaluate",
             "icetk",
         ],
+        "nlp_test": [
+            "transformers",
+            "datasets",
+            "evaluate",
+        ],
         "selfplay": ["ray[default]", "ray[serve]", "pettingzoo[classic]", "trueskill"],
         "retro": ["gym-retro"],
         "super_mario": ["gym-super-mario-bros"],
@@ -72,7 +77,7 @@ def get_extra_requires() -> dict:
     }
     req["test"].extend(req["selfplay"])
     req["test"].extend(req["atari"])
-    req["test"].extend(req["nlp"])
+    req["test"].extend(req["nlp_test"])
     return req
 
 

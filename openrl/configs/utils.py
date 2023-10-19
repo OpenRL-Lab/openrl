@@ -92,7 +92,7 @@ class ProcessYamlAction(ActionConfigFile):
 
         # Write the result to a temporary file. This works on all platforms.
         temp_fd, temp_filename = tempfile.mkstemp(suffix=".yaml")
-        with os.fdopen(temp_fd, 'w') as temp_file:
+        with os.fdopen(temp_fd, "w") as temp_file:
             yaml.dump(data, temp_file)
         try:
             # Use the default behavior of ActionConfigFile to handle the temporary file
