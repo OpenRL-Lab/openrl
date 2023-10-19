@@ -33,6 +33,8 @@ def build_envs(
             if need_env_id:
                 new_kwargs["env_id"] = env_id
                 new_kwargs["env_num"] = env_num
+            if id.startswith("ALE/"):
+                new_kwargs.pop("cfg", None)
 
             env = make(
                 id,
