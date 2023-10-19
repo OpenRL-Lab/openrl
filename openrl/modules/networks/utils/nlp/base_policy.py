@@ -130,7 +130,7 @@ class LMActorCriticPolicy(nn.Module):
         optimizer_kwargs: Dict[str, Any] = {},
         weight_decay: float = 1e-6,
         use_sde: bool = None,
-        apply_model_parallel: bool = False, # TODO
+        apply_model_parallel: bool = False,  # TODO
         optimizer_class: torch.optim.Optimizer = torch.optim.AdamW,
         generation_kwargs: Dict[str, Any] = {},
         prompt_truncation_side: str = "left",
@@ -152,7 +152,7 @@ class LMActorCriticPolicy(nn.Module):
             prompt_truncation_side (str, optional): truncation side for prompt text. Defaults to "left".
         """
         super().__init__()
-        self._use_deepspeed = True # TODO
+        self._use_deepspeed = True  # TODO
         self._action_space = action_space
         self._apply_model_parallel = apply_model_parallel
         self._build_model_heads(model_name, config, device)

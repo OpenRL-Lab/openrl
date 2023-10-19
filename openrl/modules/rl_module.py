@@ -27,7 +27,6 @@ from openrl.modules.model_config import ModelTrainConfig
 
 
 def get_train_ds_config(offload, use_fp16=False, stage=2):
-    
     return {
         "train_batch_size": 28,
         "train_micro_batch_size_per_gpu": 7,
@@ -37,11 +36,9 @@ def get_train_ds_config(offload, use_fp16=False, stage=2):
             "reduce_bucket_size": 5e7,
             "allgather_bucket_size": 5e7,
         },
-        "fp16": {
-            "enabled": use_fp16,
-            "loss_scale_window": 100
-        },
+        "fp16": {"enabled": use_fp16, "loss_scale_window": 100},
     }
+
 
 class RLModule(BaseModule):
     def __init__(
@@ -104,10 +101,9 @@ class RLModule(BaseModule):
                 self.optimizers.update({model_key: optimizer})
             else:
                 import deepspeed
-                from deepspeed.ops.adam import FusedAdam
-                from deepspeed.ops.adam import DeepSpeedCPUAdam
+                from deepspeed.ops.adam import DeepSpeedCPUAdam, FusedAdam
                 from transformers import get_constant_schedule
-                
+
                 self.offload = False
                 ds_config = get_train_ds_config(
                     offload=self.offload,
@@ -117,23 +113,20 @@ class RLModule(BaseModule):
                 AdamOptimizer = DeepSpeedCPUAdam if self.offload else FusedAdam
                 optim_params = filter(lambda p: p.requires_grad, model.parameters())
                 optim = AdamOptimizer(
-                    optim_params,
-                    lr=model_cg["lr"],
-                    betas=(0.9, 0.95)
+                    optim_params, lr=model_cg["lr"], betas=(0.9, 0.95)
                 )
-                
+
                 # LR Scheduler
                 lr_scheduler = get_constant_schedule(
                     optimizer=optim,
                 )
-                
-                engine, *_ = \
-                    deepspeed.initialize(
-                        model=model,
-                        optimizer=optim,
-                        lr_scheduler=lr_scheduler,
-                        config=ds_config
-                    )
+
+                engine, *_ = deepspeed.initialize(
+                    model=model,
+                    optimizer=optim,
+                    lr_scheduler=lr_scheduler,
+                    config=ds_config,
+                )
                 self.models.update({model_key: engine})
                 self.optimizers.update({model_key: engine})
 

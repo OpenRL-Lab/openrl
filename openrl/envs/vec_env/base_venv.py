@@ -272,7 +272,7 @@ class BaseVecEnv(
         """
 
     def exec_func(
-        self, func: Callable, indices: List[int], *args, **kwargs
+        self, func: Callable, indices: Optional[List[int]] = None, *args, **kwargs
     ) -> List[Any]:
         """Call a method, or get a property, from each parallel environment.
 

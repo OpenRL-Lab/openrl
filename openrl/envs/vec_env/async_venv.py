@@ -674,6 +674,7 @@ class AsyncVectorEnv(BaseVecEnv):
             )
 
         results, successes = zip(*[pipe.recv() for pipe in self.parent_pipes])
+
         self._raise_if_errors(successes)
         self._state = AsyncState.DEFAULT
 
@@ -837,7 +838,7 @@ def _worker(
                 )
             elif command == "_func_exec":
                 function, indices, args, kwargs = data
-                if index in indices:
+                if indices is None or index in indices:
                     if callable(function):
                         pipe.send((function(env, *args, **kwargs), True))
                     else:

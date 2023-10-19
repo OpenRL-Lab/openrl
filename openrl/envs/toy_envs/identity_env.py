@@ -28,6 +28,7 @@ class IdentityEnv(gym.Env, Generic[T]):
             ``dim`` and ``space``.
         :param ep_length: the length of each episode in time_steps
         """
+
         if space is None:
             if dim is None:
                 dim = 2
@@ -36,12 +37,14 @@ class IdentityEnv(gym.Env, Generic[T]):
             assert (
                 dim is None
             ), "arguments for both 'dim' and 'space' provided: at most one allowed"
+
         self.dim = dim
         self.observation_space = spaces.Discrete(1)
         self.action_space = space
         self.ep_length = ep_length
         self.current_step = 0
         self.num_resets = -1  # Becomes 0 after __init__ exits.
+        self.metadata.update({"name": IdentityEnv})
 
     def reset(
         self,
@@ -51,6 +54,8 @@ class IdentityEnv(gym.Env, Generic[T]):
     ) -> T:
         if seed is not None:
             self.seed(seed)
+        if self._np_random is None:
+            self.seed(0)
         self.current_step = 0
         self.num_resets += 1
         self._choose_next_state()
@@ -65,6 +70,7 @@ class IdentityEnv(gym.Env, Generic[T]):
 
     def _choose_next_state(self) -> None:
         # self.state = [self.action_space.sample()]
+        assert self.dim is not None
         self.state = [self._np_random.integers(0, self.dim)]
 
     def _get_reward(self, action: T) -> float:

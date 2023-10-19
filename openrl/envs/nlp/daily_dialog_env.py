@@ -36,11 +36,24 @@ class DailyDialogEnv(Env):
             prompt_truncation_side (str): truncation side for prompt text (Defaults to "left")
         """
 
-        self.debug = cfg.env.args["data_path"] is None
+        self.debug = (
+            cfg.env.args["data_path"] is None or cfg.env.args["data_path"] == "None"
+        )
 
         self.env_name = "daily_dialog"
         tokenizer_name = cfg.env.args["tokenizer_path"]
-        self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
+        if tokenizer_name == "builtin_BPE":
+            from tokenizers import AddedToken, Tokenizer, models
+
+            self.tokenizer = Tokenizer(models.BPE())
+
+            self.tokenizer.pad_token = "<pad>"
+            self.tokenizer.eos_token = "<eos>"
+            self.tokenizer.vocab_size = 2
+            self.tokenizer.name_or_path = "builtin_BPE"
+
+        else:
+            self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
         if self.tokenizer.pad_token is None:
             self.tokenizer.pad_token = self.tokenizer.eos_token
         self.tokenizer.padding_side = "left"
