@@ -83,14 +83,14 @@ class ProcessYamlAction(ActionConfigFile):
         # Load the rendered content as a dictionary
         data = yaml.safe_load(rendered_content)
 
-        # Write the result to a temporary file
+        # Write the result to a temporary file. Not work on Windows.
         # with tempfile.NamedTemporaryFile("w", delete=True, suffix=".yaml") as temp_file:
         #     yaml.dump(data, temp_file)
         #     temp_file.seek(0)  # Move to the beginning of the file
         #     # Use the default behavior of ActionConfigFile to handle the temporary file
         #     super().__call__(parser, cfg, temp_file.name, option_string)
 
-        # Write the result to a temporary file
+        # Write the result to a temporary file. This works on all platforms.
         temp_fd, temp_filename = tempfile.mkstemp(suffix=".yaml")
         with os.fdopen(temp_fd, 'w') as temp_file:
             yaml.dump(data, temp_file)
