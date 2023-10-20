@@ -65,20 +65,33 @@ class CausalLMActorCriticPolicy(LMActorCriticPolicy):
 
     def _build_model_heads(self, model_name: str, config: str, device: str):
         if self.disable_drop_out:
-            config = AutoConfig.from_pretrained(model_name)
+            if model_name == "test_gpt2":
+                from transformers import GPT2Config
+
+                config = GPT2Config()
+
+            else:
+                config = AutoConfig.from_pretrained(model_name)
             config_dict = config.to_dict()
             for key in config_dict:
                 if "drop" in key:
                     config_dict[key] = 0.0
             config = config.from_dict(config_dict)
 
-        self._policy_model = AutoModelForCausalLM.from_pretrained(
-            model_name, config=config
-        )
+        if model_name == "test_gpt2":
+            from transformers import GPT2LMHeadModel
 
-        self._value_model = AutoModelForCausalLM.from_pretrained(
-            model_name, config=config
-        )
+            self._policy_model = GPT2LMHeadModel(config)
+            self._value_model = GPT2LMHeadModel(config)
+
+        else:
+            self._policy_model = AutoModelForCausalLM.from_pretrained(
+                model_name, config=config
+            )
+
+            self._value_model = AutoModelForCausalLM.from_pretrained(
+                model_name, config=config
+            )
 
         self._value_head = nn.Linear(
             self._value_model.config.hidden_size, 1, bias=False
