@@ -49,18 +49,18 @@ def assert_env_name(env, env_name):
         assert env.metadata["name"].__name__ == env_name
 
 
-# @pytest.mark.unittest
-# def test_async_env():
-#     env_name = "IdentityEnv"
-#     env = AsyncVectorEnv(init_envs(), shared_memory=True)
-#     assert (
-#         env._env_name == env_name
-#     ), "AsyncVectorEnv should have the same metadata as the wrapped env"
-#     env.exec_func(assert_env_name, indices=None, env_name=env_name)
-#     env.call("render")
-#     env_name_new = "IdentityEnvNew"
-#     env.set_attr("metadata", {"name": env_name_new})
-#     env.exec_func(assert_env_name, indices=None, env_name=env_name_new)
+@pytest.mark.unittest
+def test_async_env():
+    env_name = "IdentityEnv"
+    env = AsyncVectorEnv(init_envs(), shared_memory=True)
+    assert (
+        env._env_name == env_name
+    ), "AsyncVectorEnv should have the same metadata as the wrapped env"
+    env.exec_func(assert_env_name, indices=None, env_name=env_name)
+    env.call("render")
+    env_name_new = "IdentityEnvNew"
+    env.set_attr("metadata", {"name": env_name_new})
+    env.exec_func(assert_env_name, indices=None, env_name=env_name_new)
 
 
 def main_control(parent_pipe, child_pipe):
