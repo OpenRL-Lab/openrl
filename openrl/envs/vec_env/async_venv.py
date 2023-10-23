@@ -734,7 +734,7 @@ def _worker(
     index: int,
     env_fn: callable,
     pipe: Connection,
-    parent_pipe: Connection,
+    parent_pipe: Optional[Connection],
     shared_memory: bool,
     error_queue: Queue,
     auto_reset: bool = True,
@@ -758,10 +758,12 @@ def _worker(
             observation = None
         return observation
 
-    parent_pipe.close()
+    if parent_pipe is not None:
+        parent_pipe.close()
     try:
         while True:
             command, data = pipe.recv()
+            print(command)
 
             if command == "reset":
                 result = env.reset(**data)
