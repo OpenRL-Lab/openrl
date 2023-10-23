@@ -30,9 +30,11 @@ def make_arena(
     **kwargs,
 ):
     if custom_build_env is None:
+        from openrl.envs import PettingZoo
+
         if (
             env_id in pettingzoo_all_envs
-            or env_id in openrl.envs.PettingZoo.registration.pettingzoo_env_dict.keys()
+            or env_id in PettingZoo.registration.pettingzoo_env_dict.keys()
         ):
             from openrl.envs.PettingZoo import make_PettingZoo_env
 
