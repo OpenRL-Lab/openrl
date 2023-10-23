@@ -757,14 +757,13 @@ def _worker(
             )
             observation = None
         return observation
+
     if parent_pipe is not None:
         parent_pipe.close()
     try:
         while True:
             command, data = pipe.recv()
             print(command)
-
-
 
             if command == "reset":
                 result = env.reset(**data)

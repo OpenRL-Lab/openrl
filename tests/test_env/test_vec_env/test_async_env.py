@@ -16,6 +16,7 @@
 
 """"""
 
+import multiprocessing as mp
 import os
 import sys
 
@@ -23,9 +24,8 @@ import pytest
 from gymnasium.wrappers import EnvCompatibility
 
 from openrl.envs.toy_envs import make_toy_envs
-from openrl.envs.vec_env.async_venv import AsyncVectorEnv
-from openrl.envs.vec_env.async_venv import _worker
-import multiprocessing as mp
+from openrl.envs.vec_env.async_venv import AsyncVectorEnv, _worker
+
 
 class CustomEnvCompatibility(EnvCompatibility):
     def reset(self, **kwargs):
@@ -62,10 +62,11 @@ def assert_env_name(env, env_name):
 #     env.set_attr("metadata", {"name": env_name_new})
 #     env.exec_func(assert_env_name, indices=None, env_name=env_name_new)
 
-def main_control(parent_pipe,child_pipe):
+
+def main_control(parent_pipe, child_pipe):
     child_pipe.close()
 
-    parent_pipe.send(("reset", {"seed":0}))
+    parent_pipe.send(("reset", {"seed": 0}))
     result, success = parent_pipe.recv()
     assert success, result
 
@@ -73,7 +74,7 @@ def main_control(parent_pipe,child_pipe):
     result, success = parent_pipe.recv()
     assert success, result
 
-    parent_pipe.send(("_call", ("render",[],{})))
+    parent_pipe.send(("_call", ("render", [], {})))
     result, success = parent_pipe.recv()
     assert success, result
 
@@ -81,18 +82,20 @@ def main_control(parent_pipe,child_pipe):
     result, success = parent_pipe.recv()
     assert success, result
 
-    parent_pipe.send(("_func_exec",(assert_env_name,None,[],{"env_name":"IdentityEnvNew"})))
+    parent_pipe.send(
+        ("_func_exec", (assert_env_name, None, [], {"env_name": "IdentityEnvNew"}))
+    )
     result, success = parent_pipe.recv()
     assert success, result
 
-    parent_pipe.send(("close",None))
+    parent_pipe.send(("close", None))
     result, success = parent_pipe.recv()
     assert success, result
 
 
 @pytest.mark.unittest
 def test_worker():
-    for auto_reset in [True,False]:
+    for auto_reset in [True, False]:
         ctx = mp.get_context(None)
         parent_pipe, child_pipe = ctx.Pipe()
 
@@ -101,16 +104,11 @@ def test_worker():
         process = ctx.Process(
             target=main_control,
             name="test",
-            args=(
-                parent_pipe,
-                child_pipe
-            ),
+            args=(parent_pipe, child_pipe),
         )
         process.daemon = True
         process.start()
         _worker(0, init_envs()[0], child_pipe, None, False, error_queue, auto_reset)
-
-
 
 
 if __name__ == "__main__":
