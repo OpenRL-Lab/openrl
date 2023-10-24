@@ -17,10 +17,10 @@
 """"""
 
 from pettingzoo.butterfly import cooperative_pong_v5
-from pettingzoo.classic import connect_four_v3, go_v5, texas_holdem_no_limit_v6
+from pettingzoo.classic import connect_four_v3, go_v5, texas_holdem_no_limit_v6,rps_v2
 from pettingzoo.mpe import simple_push_v3
 
-from examples.custom_env.rock_paper_scissors import RockPaperScissors
+
 from openrl.arena import make_arena
 from openrl.arena.agents.local_agent import LocalAgent
 from openrl.envs.PettingZoo.registration import register
@@ -32,7 +32,7 @@ def ConnectFourEnv(render_mode, **kwargs):
 
 
 def RockPaperScissorsEnv(render_mode, **kwargs):
-    return RockPaperScissors(render_mode)
+    return rps_v2.env(num_actions=3, max_cycles=15)
 
 
 def GoEnv(render_mode, **kwargs):
