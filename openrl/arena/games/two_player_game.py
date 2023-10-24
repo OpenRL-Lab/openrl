@@ -31,9 +31,10 @@ class TwoPlayerGame(BaseGame):
         players: List[str],
         agent_names: List[str],
     ) -> Dict[str, str]:
-        assert len(players) == len(
-            agent_names
-        ), "The number of players must be equal to the number of agents."
+        assert len(players) == len(agent_names), (
+            f"The number of players {len(players)} must be equal to the number of"
+            f" agents: {len(agent_names)}."
+        )
         assert len(players) == 2, "The number of players must be equal to 2."
         np_random.shuffle(agent_names)
         return dict(zip(players, agent_names))
@@ -49,20 +50,21 @@ class TwoPlayerGame(BaseGame):
         for player, agent in player2agent.items():
             agent.reset(env, player)
         result = {}
+        truncation_dict = {}
         while True:
             termination = False
             info = {}
             for player_name in env.agent_iter():
                 observation, reward, termination, truncation, info = env.last()
-
-                if termination:
+                truncation_dict[player_name] = truncation
+                if termination or all(truncation_dict.values()):
                     break
                 action = player2agent[player_name].act(
                     player_name, observation, reward, termination, truncation, info
                 )
                 env.step(action)
 
-            if termination:
+            if termination or all(truncation_dict.values()):
                 assert "winners" in info, "The game is terminated but no winners."
                 assert "losers" in info, "The game is terminated but no losers."
 

@@ -182,6 +182,7 @@ class RockPaperScissors(AECEnv):
             # handles stepping an agent which is already dead
             # accepts a None action for the one agent, and moves the agent_selection to
             # the next dead agent,  or if there are no more dead agents, to the next live agent
+            action = None
             self._was_dead_step(action)
             return
 

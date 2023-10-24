@@ -96,8 +96,9 @@ class RecordWinner(BaseWrapper, OpenRLBaseWrapper):
 
         winners = None
         losers = None
+
         for agent in self.terminations:
-            if self.terminations[agent]:
+            if self.terminations[agent] or all(self.truncations):
                 if winners is None:
                     winners = self.get_winners()
                     losers = [player for player in self.agents if player not in winners]
