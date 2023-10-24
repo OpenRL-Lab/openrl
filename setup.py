@@ -71,11 +71,13 @@ def get_extra_requires() -> dict:
             "evaluate",
         ],
         "selfplay": ["ray[default]", "ray[serve]", "pettingzoo[classic]", "trueskill"],
+        "selfplay_test": ["pettingzoo[mpe]", "pettingzoo[butterfly]"],
         "retro": ["gym-retro"],
         "super_mario": ["gym-super-mario-bros"],
         "atari": ["gymnasium[atari]", "gymnasium[accept-rom-license]"],
     }
     req["test"].extend(req["selfplay"])
+    req["test"].extend(req["selfplay_test"])
     req["test"].extend(req["atari"])
     req["test"].extend(req["nlp_test"])
     return req
