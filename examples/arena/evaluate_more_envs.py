@@ -17,12 +17,12 @@
 """"""
 
 from pettingzoo.butterfly import cooperative_pong_v5
-from pettingzoo.classic import connect_four_v3, go_v5, texas_holdem_no_limit_v6,rps_v2
+from pettingzoo.classic import connect_four_v3, go_v5, rps_v2, texas_holdem_no_limit_v6
 from pettingzoo.mpe import simple_push_v3
-
 
 from openrl.arena import make_arena
 from openrl.arena.agents.local_agent import LocalAgent
+from openrl.arena.agents.random_agent import RandomAgent
 from openrl.envs.PettingZoo.registration import register
 from openrl.envs.wrappers.pettingzoo_wrappers import RecordWinner
 
@@ -79,7 +79,7 @@ def run_arena(
     arena = make_arena(env_id, env_wrappers=env_wrappers, use_tqdm=False)
 
     agent1 = LocalAgent("../selfplay/opponent_templates/random_opponent")
-    agent2 = LocalAgent("../selfplay/opponent_templates/random_opponent")
+    agent2 = RandomAgent()
 
     arena.reset(
         agents={"agent1": agent1, "agent2": agent2},
