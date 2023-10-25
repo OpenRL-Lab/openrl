@@ -618,7 +618,7 @@ def create_config_parser():
     )
     parser.add_argument(
         "--use_average_pool",
-        action="store_false",
+        type=bool,
         default=True,
         help="by default True, use average pooling for attn model.",
     )
