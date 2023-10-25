@@ -22,6 +22,7 @@ import pytest
 
 from openrl.arena import make_arena
 from openrl.arena.agents.local_agent import LocalAgent
+from openrl.arena.agents.random_agent import RandomAgent
 from openrl.envs.wrappers.pettingzoo_wrappers import RecordWinner
 
 
@@ -41,7 +42,7 @@ def run_arena(
     arena = make_arena("tictactoe_v3", env_wrappers=env_wrappers, use_tqdm=False)
 
     agent1 = LocalAgent("./examples/selfplay/opponent_templates/random_opponent")
-    agent2 = LocalAgent("./examples/selfplay/opponent_templates/random_opponent")
+    agent2 = RandomAgent()
 
     arena.reset(
         agents={"agent1": agent1, "agent2": agent2},
