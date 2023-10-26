@@ -70,10 +70,6 @@ def get_extra_requires() -> dict:
             "datasets==2.13",
             "evaluate",
         ],
-        "deep_speed_test": [
-            "deepspeed",
-            "mpi4py",
-        ],
         "selfplay": ["ray[default]", "ray[serve]", "pettingzoo[classic]", "trueskill"],
         "selfplay_test": ["pettingzoo[mpe]", "pettingzoo[butterfly]"],
         "retro": ["gym-retro"],
@@ -84,7 +80,6 @@ def get_extra_requires() -> dict:
     req["test"].extend(req["selfplay_test"])
     req["test"].extend(req["atari"])
     req["test"].extend(req["nlp_test"])
-    req["test"].extend(req["deep_speed_test"])
     return req
 
 
