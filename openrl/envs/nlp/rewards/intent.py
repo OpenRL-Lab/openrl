@@ -25,15 +25,42 @@ def get_eval_ds_config(offload, stage=0):
 
 
 class Intent:
-    def __init__(self, intent_model: str, intent_coeff: float = 1.0) -> None:
+    def __init__(
+        self, intent_model: str, intent_coeff: float = 1.0, use_deepspeed: bool = True
+    ) -> None:
         super().__init__()
 
         self._intent_coeff = intent_coeff
-        self.use_deepspeed = True  # TODO
+        self.use_deepspeed = use_deepspeed
+        if intent_model == "builtin_intent":
+            from transformers import GPT2Config, GPT2LMHeadModel
 
-        model_path = data_abs_path(intent_model)
-        self._tokenizer = AutoTokenizer.from_pretrained(intent_model)
-        self._model = AutoModelForSequenceClassification.from_pretrained(model_path)
+            class TestTokenizer:
+                def __call__(
+                    self,
+                    input_texts,
+                    return_tensors="pt",
+                    truncation=True,
+                    padding=True,
+                    max_length=None,
+                ):
+                    class EncodedOutput:
+                        def __init__(self, input_ids, attention_mask):
+                            self.input_ids = input_ids
+                            self.attention_mask = attention_mask
+
+                    input_ids = torch.zeros((32), dtype=torch.long)
+                    attention_masks = torch.zeros((32), dtype=torch.long)
+                    return EncodedOutput(input_ids, attention_masks)
+
+            self._tokenizer = TestTokenizer()
+            config = GPT2Config()
+            self._model = GPT2LMHeadModel(config)
+
+        else:
+            model_path = data_abs_path(intent_model)
+            self._tokenizer = AutoTokenizer.from_pretrained(intent_model)
+            self._model = AutoModelForSequenceClassification.from_pretrained(model_path)
 
         if self.use_deepspeed:
             import deepspeed
@@ -87,6 +114,7 @@ class Intent:
                 input_ids=encoded.input_ids.to(self._device),
                 attention_mask=encoded.attention_mask.to(self._device),
             )
+
             pred_labels = torch.argmax(outputs.logits, dim=1).tolist()
 
         score = (np.array(pred_labels) == np.array(target_intents)) * 1.0

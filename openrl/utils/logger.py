@@ -32,9 +32,9 @@ class Logger:
     def __init__(
         self,
         cfg,
-        project_name: str,
-        scenario_name: str,
-        wandb_entity: str,
+        project_name: str = "openrl",
+        scenario_name: str = "openrl",
+        wandb_entity: str = "openrl",
         exp_name: Optional[str] = None,
         log_path: Optional[str] = None,
         use_wandb: bool = False,

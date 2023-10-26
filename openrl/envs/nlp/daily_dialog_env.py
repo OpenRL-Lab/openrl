@@ -43,7 +43,7 @@ class DailyDialogEnv(Env):
         self.env_name = "daily_dialog"
         tokenizer_name = cfg.env.args["tokenizer_path"]
         if tokenizer_name == "builtin_BPE":
-            from tokenizers import AddedToken, Tokenizer, models
+            from tokenizers import Tokenizer, models
 
             self.tokenizer = Tokenizer(models.BPE())
 

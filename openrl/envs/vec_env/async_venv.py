@@ -751,7 +751,6 @@ def _worker(
     try:
         while True:
             command, data = pipe.recv()
-            print(command)
 
             if command == "reset":
                 result = env.reset(**data)

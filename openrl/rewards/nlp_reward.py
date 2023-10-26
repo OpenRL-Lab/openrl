@@ -10,12 +10,15 @@ from openrl.rewards.base_reward import BaseReward
 
 
 class NLPReward(BaseReward):
-    def __init__(self, env: Env, ref_model: str, intent_model: str):
+    def __init__(
+        self, env: Env, ref_model: str, intent_model: str, use_deepspeed: bool = True
+    ):
         self.rew_infos = []
         self.env_infos = []
 
         meteor_config = {
             "meteor_coeff": 0.5,
+            "test": ref_model == "builtin_ref",
         }
         self.inner_rew_funcs = {
             "meteor": Meteor(**meteor_config),
@@ -24,6 +27,7 @@ class NLPReward(BaseReward):
         kl_config = {
             "action_space": env.action_space,
             "ref_model": ref_model,
+            "use_deepspeed": use_deepspeed,
         }
         self.step_rew_funcs = {
             "kl_pen": KLPenalty(**kl_config),
@@ -32,6 +36,7 @@ class NLPReward(BaseReward):
         intent_config = {
             "intent_model": intent_model,
             "intent_coeff": 0.5,
+            "use_deepspeed": use_deepspeed,
         }
         self.batch_rew_funcs = {
             "intent_acc": Intent(**intent_config),

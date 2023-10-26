@@ -31,14 +31,21 @@ class KLPenalty(nn.Module):
         action_space: gym.Space,
         ref_model: str,
         apply_model_parallel: bool = True,
+        use_deepspeed: bool = True,
     ):
         super().__init__()
-        self.use_deepspeed = True
+        self.use_deepspeed = use_deepspeed
         self.use_fp16 = True
 
         # reference model
         self._apply_model_parallel = apply_model_parallel
-        self._ref_net = AutoModelForCausalLM.from_pretrained(ref_model)
+        if ref_model == "builtin_ref":
+            from transformers import GPT2Config, GPT2LMHeadModel
+
+            config = GPT2Config()
+            self._ref_net = GPT2LMHeadModel(config)
+        else:
+            self._ref_net = AutoModelForCausalLM.from_pretrained(ref_model)
         self._ref_net = self._ref_net.eval()
         if self.use_deepspeed:
             import deepspeed
