@@ -60,14 +60,14 @@ def get_extra_requires() -> dict:
         "mpe": ["pyglet==1.5.27"],
         "nlp": [
             "transformers==4.18.0",
-            "datasets",
+            "datasets==2.13",
             "nltk",
             "evaluate",
             "icetk",
         ],
         "nlp_test": [
             "transformers",
-            "datasets",
+            "datasets==2.13",
             "evaluate",
         ],
         "selfplay": ["ray[default]", "ray[serve]", "pettingzoo[classic]", "trueskill"],

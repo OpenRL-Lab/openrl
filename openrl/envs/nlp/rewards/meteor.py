@@ -6,13 +6,21 @@ import evaluate
 import openrl.envs.nlp as nlp
 
 
+class VirtualMetric:
+    def compute(self, predictions: Any, references: Any) -> Dict[str, float]:
+        return {"meteor": 0.0}
+
+
 class Meteor:
-    def __init__(self, meteor_coeff: int) -> None:
+    def __init__(self, meteor_coeff: int, test: bool = False) -> None:
         super().__init__()
         self._meteor_coeff = meteor_coeff
-        self._metric = evaluate.load(
-            str(Path(nlp.__file__).parent / "utils/metrics/meteor.py")
-        )
+        if test:
+            self._metric = VirtualMetric()
+        else:
+            self._metric = evaluate.load(
+                str(Path(nlp.__file__).parent / "utils/metrics/meteor.py")
+            )
 
     def __call__(
         self,

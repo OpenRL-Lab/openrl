@@ -28,5 +28,6 @@ reward_class:
   args: { 
     "intent_model": "rajkumarrrk/roberta-daily-dialog-intent-classifier",
     "ref_model": "rajkumarrrk/gpt2-fine-tuned-on-daily-dialog",
+    "use_deepspeed": true,
   }
     
