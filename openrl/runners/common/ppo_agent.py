@@ -136,6 +136,7 @@ class PPOAgent(RLAgent):
         observation: Union[np.ndarray, Dict[str, np.ndarray]],
         info: Optional[List[Dict[str, Any]]] = None,
         deterministic: bool = True,
+        episode_starts: Optional[np.ndarray] = None,
     ) -> Tuple[np.ndarray, Optional[Tuple[np.ndarray, ...]]]:
         assert self.net is not None, "net is None"
         observation = ObsData.prepare_input(observation)
@@ -149,6 +150,7 @@ class PPOAgent(RLAgent):
             observation,
             action_masks=action_masks,
             deterministic=deterministic,
+            episode_starts=episode_starts
         )
 
         action = np.array(np.split(_t2n(action), self.env_num))
