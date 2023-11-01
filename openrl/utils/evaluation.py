@@ -101,8 +101,7 @@ def evaluate_policy(
             episode_starts_tmp = None
 
         actions, states = agent.act(
-            observations,
-            deterministic=deterministic,episode_starts=episode_starts_tmp
+            observations, deterministic=deterministic, episode_starts=episode_starts_tmp
         )
         observations, rewards, dones, infos = env.step(actions)
         rewards = np.squeeze(rewards, axis=-1)

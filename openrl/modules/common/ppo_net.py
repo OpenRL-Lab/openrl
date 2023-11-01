@@ -29,7 +29,10 @@ from openrl.modules.common.base_net import BaseNet
 from openrl.modules.ppo_module import PPOModule
 from openrl.utils.util import set_seed
 
-def reset_rnn_states(rnn_states, episode_starts, env_num, agent_num, rnn_layers, hidden_size):
+
+def reset_rnn_states(
+    rnn_states, episode_starts, env_num, agent_num, rnn_layers, hidden_size
+):
     # First we reshape the episode_starts to match the rnn_states shape
     # Since episode_starts affects all agents in the environment, we repeat it agent_num times
     episode_starts = np.repeat(copy.copy(episode_starts), agent_num)
@@ -38,10 +41,11 @@ def reset_rnn_states(rnn_states, episode_starts, env_num, agent_num, rnn_layers,
     episode_starts = episode_starts[:, None, None]
     # Now, episode_starts should broadcast over the last two dimensions of rnn_states when multiplied
     # We want to set rnn_states to zero where episode_starts is 1, so we invert the episode_starts as a mask
-    mask = (1 - episode_starts)
+    mask = 1 - episode_starts
     # Apply the mask to rnn_states, setting the appropriate states to zero
     rnn_states *= mask
     return rnn_states
+
 
 class PPONet(BaseNet):
     def __init__(

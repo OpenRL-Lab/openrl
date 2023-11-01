@@ -150,7 +150,7 @@ class PPOAgent(RLAgent):
             observation,
             action_masks=action_masks,
             deterministic=deterministic,
-            episode_starts=episode_starts
+            episode_starts=episode_starts,
         )
 
         action = np.array(np.split(_t2n(action), self.env_num))
