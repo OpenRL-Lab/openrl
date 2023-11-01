@@ -95,9 +95,13 @@ def evaluate_policy(
     episode_starts = np.ones((env.parallel_env_num,), dtype=bool)
 
     while (episode_counts < episode_count_targets).any():
+        if not np.all(episode_starts == 0):
+            episode_starts_tmp = episode_starts
+        else:
+            episode_starts_tmp = None
+
         actions, states = agent.act(
-            observations,
-            deterministic=deterministic,
+            observations, deterministic=deterministic, episode_starts=episode_starts_tmp
         )
         observations, rewards, dones, infos = env.step(actions)
         rewards = np.squeeze(rewards, axis=-1)
