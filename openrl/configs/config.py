@@ -1247,10 +1247,16 @@ def create_config_parser():
         help="local_rank",
     )
     parser.add_argument(
+        "--use_offload",
+        default=False,
+        type=bool,
+        help="whether to use offload (deepspeed)",
+    )
+    parser.add_argument(
         "--use_fp16",
         default=False,
         type=bool,
-        help="whether to use fp16",
+        help="whether to use fp16 (deepspeed)",
     )
 
     return parser

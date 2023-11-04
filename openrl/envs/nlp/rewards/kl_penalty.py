@@ -10,18 +10,18 @@ from transformers.modeling_utils import unwrap_model
 from openrl.envs.nlp.utils.distribution import CategoricalDistribution
 
 
-def get_eval_ds_config(offload, stage=0):
+def get_default_ds_config(offload=True, stage=0, fp16=True):
     device = "cpu" if offload else "none"
     zero_opt_dict = {
         "stage": stage,
         "offload_param": {"device": device},
     }
     return {
-        "train_batch_size": 28,  #
-        "train_micro_batch_size_per_gpu": 7,
+        "train_batch_size": 16,
+        "train_micro_batch_size_per_gpu": 16,
         "steps_per_print": 10,
         "zero_optimization": zero_opt_dict,
-        "fp16": {"enabled": True},
+        "fp16": {"enabled": fp16},
     }
 
 
@@ -32,10 +32,10 @@ class KLPenalty(nn.Module):
         ref_model: str,
         apply_model_parallel: bool = True,
         use_deepspeed: bool = True,
+        ds_config: str = "default",
     ):
         super().__init__()
         self.use_deepspeed = use_deepspeed
-        self.use_fp16 = True
 
         # reference model
         self._apply_model_parallel = apply_model_parallel
@@ -49,8 +49,19 @@ class KLPenalty(nn.Module):
         self._ref_net = self._ref_net.eval()
         if self.use_deepspeed:
             import deepspeed
+            
+            if ds_config == "default":
+                self.use_fp16 = True
+                ds_config = get_default_ds_config()
+            else:
+                import json
+                with open(ds_config) as file:
+                    ds_config = json.load(file)
+                if "fp16" in ds_config:
+                    self.use_fp16 = ds_config["fp16"]["enabled"]
+                else:
+                    self.use_fp16 = False
 
-            ds_config = get_eval_ds_config(offload=True, stage=0)
             self._ref_engine, *_ = deepspeed.initialize(model=self, config=ds_config)
         elif torch.cuda.is_available():
             if self._apply_model_parallel and self._ref_net.is_parallelizable:
@@ -94,11 +105,12 @@ class KLPenalty(nn.Module):
             self._ref_net, input_ids, past_model_kwargs
         )
 
-        if self.use_fp16:
-            for key in ["input_ids", "position_ids"]:
-                model_inputs[key] = model_inputs[key].half().int()
-            for key in ["attention_mask"]:
-                model_inputs[key] = model_inputs[key].half()
+        if self.use_deepspeed:
+            if self.use_fp16:
+                for key in ["input_ids", "position_ids"]:
+                    model_inputs[key] = model_inputs[key].half().int()
+                for key in ["attention_mask"]:
+                    model_inputs[key] = model_inputs[key].half()
 
         with torch.no_grad():
             output = self._ref_net(output_hidden_states=True, **model_inputs)

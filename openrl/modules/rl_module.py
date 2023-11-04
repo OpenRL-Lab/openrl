@@ -26,20 +26,6 @@ from openrl.modules.base_module import BaseModule
 from openrl.modules.model_config import ModelTrainConfig
 
 
-def get_train_ds_config(offload, use_fp16=False, stage=2):
-    return {
-        "train_batch_size": 28,
-        "train_micro_batch_size_per_gpu": 7,
-        "steps_per_print": 10,
-        "zero_optimization": {
-            "stage": 2,
-            "reduce_bucket_size": 5e7,
-            "allgather_bucket_size": 5e7,
-        },
-        "fp16": {"enabled": use_fp16, "loss_scale_window": 100},
-    }
-
-
 class RLModule(BaseModule):
     def __init__(
         self,
@@ -100,17 +86,24 @@ class RLModule(BaseModule):
                 self.models.update({model_key: model})
                 self.optimizers.update({model_key: optimizer})
             else:
+                import json
                 import deepspeed
                 from deepspeed.ops.adam import DeepSpeedCPUAdam, FusedAdam
                 from transformers import get_constant_schedule
+                
+                self.use_fp16 = cfg.use_fp16
+                self.use_offload = cfg.use_offload
+                
+                # Check for inconsistencies in configuration files 
+                assert not (self.use_fp16 and not self.use_deepspeed)
+                assert not (self.use_offload and not self.use_deepspeed)
+                assert cfg.deepspeed_config is not None
+                with open(cfg.deepspeed_config) as file:
+                    ds_config = json.load(file)
+                if "fp16" in ds_config:
+                    assert ds_config["fp16"]["enabled"] == self.use_fp16
 
-                self.offload = False
-                ds_config = get_train_ds_config(
-                    offload=self.offload,
-                    use_fp16=cfg.use_fp16,
-                )
-
-                AdamOptimizer = DeepSpeedCPUAdam if self.offload else FusedAdam
+                AdamOptimizer = DeepSpeedCPUAdam if self.use_offload else FusedAdam
                 optim_params = filter(lambda p: p.requires_grad, model.parameters())
                 optim = AdamOptimizer(
                     optim_params, lr=model_cg["lr"], betas=(0.9, 0.95)
@@ -122,10 +115,10 @@ class RLModule(BaseModule):
                 )
 
                 engine, *_ = deepspeed.initialize(
+                    args=cfg,
                     model=model,
                     optimizer=optim,
                     lr_scheduler=lr_scheduler,
-                    config=ds_config,
                 )
                 self.models.update({model_key: engine})
                 self.optimizers.update({model_key: engine})

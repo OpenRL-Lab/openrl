@@ -43,8 +43,10 @@ class PolicyValueNetworkGPT(CausalLMActorCriticPolicy):
             device=device,
         )
         self.use_half = use_half
-        self._use_fp16 = cfg.use_fp16 and cfg.use_deepspeed
         self.tpdv = dict(dtype=torch.float32, device=device)
+        
+        self._use_fp16 = cfg.use_fp16
+        assert cfg.use_fp16 and cfg.use_deepspeed
 
     def get_actor_para(self):
         return self._policy_model.parameters()

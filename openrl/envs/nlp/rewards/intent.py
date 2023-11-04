@@ -9,24 +9,28 @@ from openrl.supports.opendata.utils.opendata_utils import data_abs_path
 from openrl.supports.opengpu.manager import LocalGPUManager
 
 
-def get_eval_ds_config(offload, stage=0):
+def get_default_ds_config(offload=True, stage=0, fp16=True):
     device = "cpu" if offload else "none"
     zero_opt_dict = {
         "stage": stage,
         "offload_param": {"device": device},
     }
     return {
-        "train_batch_size": 28,
-        "train_micro_batch_size_per_gpu": 7,
+        "train_batch_size": 16,
+        "train_micro_batch_size_per_gpu": 16,
         "steps_per_print": 10,
         "zero_optimization": zero_opt_dict,
-        "fp16": {"enabled": True},
+        "fp16": {"enabled": fp16},
     }
 
 
 class Intent:
     def __init__(
-        self, intent_model: str, intent_coeff: float = 1.0, use_deepspeed: bool = True
+        self, 
+        intent_model: str, 
+        intent_coeff: float = 1.0, 
+        use_deepspeed: bool = True,
+        ds_config: str = "default",
     ) -> None:
         super().__init__()
 
@@ -64,11 +68,17 @@ class Intent:
 
         if self.use_deepspeed:
             import deepspeed
-
-            self._model = self._model.to("cuda")
-            ds_config = get_eval_ds_config(offload=True, stage=0)
-            self._model, *_ = deepspeed.initialize(model=self._model, config=ds_config)
+            
+            if ds_config == "default":
+                ds_config = get_default_ds_config()
+            else:
+                import json
+                with open(ds_config) as file:
+                    ds_config = json.load(file)
+                
             self._device = "cuda"
+            self._model = self._model.to("cuda")
+            self._model, *_ = deepspeed.initialize(model=self._model, config=ds_config)
         else:
             if torch.cuda.is_available():
                 manager = LocalGPUManager()
