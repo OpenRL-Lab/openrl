@@ -19,7 +19,7 @@ def train():
         print("choose not to use deepspeed in the nlp task")
     cfg = cfg_parser.parse_args()
 
-    env_num = 2
+    env_num = 5
     env = make(
         "daily_dialog",
         env_num=env_num,
