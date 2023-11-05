@@ -37,6 +37,7 @@ class PolicyValueNetworkGPT(CausalLMActorCriticPolicy):
         self.disable_drop_out = disable_drop_out
         self._use_valuenorm = cfg.use_valuenorm
         super(CausalLMActorCriticPolicy, self).__init__(
+            cfg,
             input_space,
             action_space,
             model_name=cfg.model_path,
@@ -46,7 +47,7 @@ class PolicyValueNetworkGPT(CausalLMActorCriticPolicy):
         self.tpdv = dict(dtype=torch.float32, device=device)
         
         self._use_fp16 = cfg.use_fp16
-        assert cfg.use_fp16 and cfg.use_deepspeed
+        assert not(cfg.use_fp16 and not cfg.use_deepspeed)
 
     def get_actor_para(self):
         return self._policy_model.parameters()

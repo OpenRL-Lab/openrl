@@ -6,5 +6,5 @@
     "stage": 0,
     "offload_param": {"device": "cpu"}
 },
-  "fp16": {"enabled": true}
+  "fp16": {"enabled": false}
 }

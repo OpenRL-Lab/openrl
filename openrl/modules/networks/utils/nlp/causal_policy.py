@@ -21,6 +21,7 @@ from openrl.modules.utils.valuenorm import ValueNorm
 class CausalLMActorCriticPolicy(LMActorCriticPolicy):
     def __init__(
         self,
+        cfg: Any,
         observation_space: DictSpace,
         action_space: Discrete,
         model_name: str,
@@ -36,6 +37,7 @@ class CausalLMActorCriticPolicy(LMActorCriticPolicy):
         device: str = "cpu",
     ):
         super().__init__(
+            cfg,
             observation_space,
             action_space,
             model_name,

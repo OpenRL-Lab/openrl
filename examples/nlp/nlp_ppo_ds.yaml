@@ -14,7 +14,7 @@ use_share_model: true
 hidden_size: 1
 
 use_deepspeed: true
-use_fp16: true
+use_fp16: false
 use_offload: false
 deepspeed_config: ds_config.json
 

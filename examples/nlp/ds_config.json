@@ -7,5 +7,5 @@
       "reduce_bucket_size": 5e7,
       "allgather_bucket_size": 5e7
   },
-  "fp16": {"enabled": true, "loss_scale_window": 100}
+  "fp16": {"enabled": false, "loss_scale_window": 100}
 }
