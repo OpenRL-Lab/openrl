@@ -49,12 +49,13 @@ class KLPenalty(nn.Module):
         self._ref_net = self._ref_net.eval()
         if self.use_deepspeed:
             import deepspeed
-            
+
             if ds_config == "default":
                 self.use_fp16 = True
                 ds_config = get_default_ds_config()
             else:
                 import json
+
                 with open(ds_config) as file:
                     ds_config = json.load(file)
                 if "fp16" in ds_config:

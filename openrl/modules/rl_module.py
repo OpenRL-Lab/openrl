@@ -87,14 +87,15 @@ class RLModule(BaseModule):
                 self.optimizers.update({model_key: optimizer})
             else:
                 import json
+
                 import deepspeed
                 from deepspeed.ops.adam import DeepSpeedCPUAdam, FusedAdam
                 from transformers import get_constant_schedule
-                
+
                 self.use_fp16 = cfg.use_fp16
                 self.use_offload = cfg.use_offload
-                
-                # Check for inconsistencies in configuration files 
+
+                # Check for inconsistencies in configuration files
                 assert not (self.use_fp16 and not self.use_deepspeed)
                 assert not (self.use_offload and not self.use_deepspeed)
                 assert cfg.deepspeed_config is not None

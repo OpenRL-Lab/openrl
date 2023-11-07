@@ -26,9 +26,9 @@ def get_default_ds_config(offload=True, stage=0, fp16=True):
 
 class Intent:
     def __init__(
-        self, 
-        intent_model: str, 
-        intent_coeff: float = 1.0, 
+        self,
+        intent_model: str,
+        intent_coeff: float = 1.0,
         use_deepspeed: bool = True,
         ds_config: str = "default",
     ) -> None:
@@ -68,14 +68,15 @@ class Intent:
 
         if self.use_deepspeed:
             import deepspeed
-            
+
             if ds_config == "default":
                 ds_config = get_default_ds_config()
             else:
                 import json
+
                 with open(ds_config) as file:
                     ds_config = json.load(file)
-                
+
             self._device = "cuda"
             self._model = self._model.to("cuda")
             self._model, *_ = deepspeed.initialize(model=self._model, config=ds_config)

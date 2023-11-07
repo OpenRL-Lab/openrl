@@ -14,6 +14,7 @@ def train():
     cfg_parser = create_config_parser()
     try:
         import deepspeed
+
         cfg_parser = deepspeed.add_config_arguments(cfg_parser)
     except:
         print("choose not to use deepspeed in the nlp task")

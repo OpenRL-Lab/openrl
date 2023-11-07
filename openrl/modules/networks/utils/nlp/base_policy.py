@@ -155,7 +155,7 @@ class LMActorCriticPolicy(nn.Module):
         super().__init__()
         self._use_deepspeed = cfg.use_deepspeed
         self._action_space = action_space
-        self._apply_model_parallel = not cfg.use_deepspeed # TODO
+        self._apply_model_parallel = not cfg.use_deepspeed  # TODO
         self._build_model_heads(model_name, config, device)
         self._action_dist = CategoricalDistribution(self._action_space.n)
         self._generation_kwargs = generation_kwargs

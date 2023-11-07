@@ -11,10 +11,10 @@ from openrl.rewards.base_reward import BaseReward
 
 class NLPReward(BaseReward):
     def __init__(
-        self, 
-        env: Env, 
-        ref_model: str, 
-        intent_model: str, 
+        self,
+        env: Env,
+        ref_model: str,
+        intent_model: str,
         use_deepspeed: bool = False,
         ref_ds_config: str = "default",
         intent_ds_config: str = "default",

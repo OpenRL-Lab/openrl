@@ -58,7 +58,7 @@ class PolicyNetwork(BasePolicyNetwork):
 
         self._use_fp16 = cfg.use_fp16
         assert cfg.use_fp16 and cfg.use_deepspeed
-        
+
         policy_obs_shape = get_policy_obs_space(input_space)
 
         if "Dict" in policy_obs_shape.__class__.__name__:
