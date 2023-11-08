@@ -57,7 +57,7 @@ class PolicyNetwork(BasePolicyNetwork):
         self.tpdv = dict(dtype=torch.float32, device=device)
 
         self._use_fp16 = cfg.use_fp16
-        assert cfg.use_fp16 and cfg.use_deepspeed
+        assert not (cfg.use_fp16 and not cfg.use_deepspeed)
 
         policy_obs_shape = get_policy_obs_space(input_space)
 
