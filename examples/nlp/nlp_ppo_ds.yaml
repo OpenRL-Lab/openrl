@@ -13,6 +13,10 @@ use_share_model: true
 
 hidden_size: 1
 
+use_deepspeed: true
+use_fp16: false
+use_offload: false
+deepspeed_config: ds_config.json
 
 model_path: rajkumarrrk/gpt2-fine-tuned-on-daily-dialog
 env:
@@ -24,8 +28,11 @@ vec_info_class:
   id: "NLPVecInfo"
 reward_class: 
   id: "NLPReward"
-  args: {
+  args: { 
+    "use_deepspeed": true,
+    "ref_ds_config": "eval_ds_config.json",
     "ref_model": "rajkumarrrk/gpt2-fine-tuned-on-daily-dialog",
+    "intent_ds_config": "eval_ds_config.json",
     "intent_model": "rajkumarrrk/roberta-daily-dialog-intent-classifier",
   }
     

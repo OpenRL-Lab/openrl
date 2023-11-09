@@ -6,6 +6,14 @@ Users can train the dialog task via:
 python train_ppo.py --config nlp_ppo.yaml
 ```
 
+Users can train the dialog task with deepspeed via:
+
+```shell
+deepspeed train_ppo.py --config nlp_ppo_ds.yaml
+
+
+```
+
 After the training, users can chat with the agent via:
 
 ```shell

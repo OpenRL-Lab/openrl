@@ -156,6 +156,8 @@ api_docs
 *.json
 opponent_pool
 !/examples/selfplay/opponent_templates/tictactoe_opponent/info.json
+!/examples/nlp/ds_config.json
+!/examples/nlp/eval_ds_config.json
 wandb_run
 examples/dmc/new.gif
 /examples/snake/submissions/rl/actor_2000.pth

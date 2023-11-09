@@ -124,13 +124,14 @@ class GenerationOutputs:
 class LMActorCriticPolicy(nn.Module):
     def __init__(
         self,
+        cfg: Any,
         observation_space: DictSpace,
         action_space: Discrete,
         model_name: str,
         optimizer_kwargs: Dict[str, Any] = {},
         weight_decay: float = 1e-6,
         use_sde: bool = None,
-        apply_model_parallel: bool = False,  # TODO
+        # apply_model_parallel: bool = True,
         optimizer_class: torch.optim.Optimizer = torch.optim.AdamW,
         generation_kwargs: Dict[str, Any] = {},
         prompt_truncation_side: str = "left",
@@ -146,15 +147,15 @@ class LMActorCriticPolicy(nn.Module):
             optimizer_kwargs (Dict[str, Any], optional): optimizer kwargs. Defaults to {}.
             weight_decay (float, optional): weight decay. Defaults to 1e-6.
             use_sde (bool, optional): Use state-dependent exploration. Defaults to None.
-            apply_model_parallel (bool, optional): whether to apply model parallel. Defaults to True.
+            apply_model_parallel (bool, optional): default to use model parallel when not using deepspeed.
             optimizer_class (torch.optim.Optimizer, optional): Optimizer class. Defaults to torch.optim.AdamW.
             generation_kwargs (Dict[str, Any], optional): generation parameters for rollout. Defaults to {}.
             prompt_truncation_side (str, optional): truncation side for prompt text. Defaults to "left".
         """
         super().__init__()
-        self._use_deepspeed = True  # TODO
+        self._use_deepspeed = cfg.use_deepspeed
         self._action_space = action_space
-        self._apply_model_parallel = apply_model_parallel
+        self._apply_model_parallel = not cfg.use_deepspeed  # TODO
         self._build_model_heads(model_name, config, device)
         self._action_dist = CategoricalDistribution(self._action_space.n)
         self._generation_kwargs = generation_kwargs

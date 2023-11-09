@@ -53,9 +53,11 @@ class PolicyNetwork(BasePolicyNetwork):
         self._influence_layer_N = cfg.influence_layer_N
         self._use_policy_vhead = cfg.use_policy_vhead
         self._recurrent_N = cfg.recurrent_N
-        self._use_fp16 = cfg.use_fp16 and cfg.use_deepspeed
         self.use_half = use_half
         self.tpdv = dict(dtype=torch.float32, device=device)
+
+        self._use_fp16 = cfg.use_fp16
+        assert not (cfg.use_fp16 and not cfg.use_deepspeed)
 
         policy_obs_shape = get_policy_obs_space(input_space)
 
