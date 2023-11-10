@@ -145,12 +145,13 @@ class BaseMultiPlayerWrapper(BaseWrapper, ABC):
                         info,
                     )
                 if termination or truncation:
+
                     return (
                         copy.copy(self.env.observe(self.self_player)),
-                        self.env.rewards[self.self_player],
+                        self.env.rewards[self.self_player] if self.self_player in self.env.rewards else 0,
                         termination,
                         truncation,
-                        self.env.infos[self.self_player],
+                        self.env.infos[self.self_player] if self.self_player in self.env.rewards else {},
                     )
 
                 else:
