@@ -122,8 +122,8 @@ class RockPaperScissors(AECEnv):
         """
         # observation of one agent is the previous state of the other
         # return np.array(self.observations[agent])
-        obs = np.zeros([1,4], dtype=np.int64)
-        obs[0,self.observations[agent]] = 1
+        obs = np.zeros([1, 4], dtype=np.int64)
+        obs[0, self.observations[agent]] = 1
         return obs
 
     def close(self):

@@ -24,8 +24,6 @@ from openrl.envs.common import make
 from openrl.envs.PettingZoo.registration import register
 from openrl.selfplay.wrappers.random_opponent_wrapper import RandomOpponentWrapper
 
-
-
 register("RockPaperScissors", RockPaperScissors)
 
 env = make(
