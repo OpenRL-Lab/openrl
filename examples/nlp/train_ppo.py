@@ -3,9 +3,8 @@
 from openrl.configs.config import create_config_parser
 from openrl.envs.common import make
 from openrl.modules.common import PPONet as Net
-from openrl.modules.networks.policy_value_network_gpt import (
-    PolicyValueNetworkGPT as PolicyValueNetwork,
-)
+from openrl.modules.networks.value_network_gpt import ValueNetworkGPT as ValueNetwork
+from openrl.modules.networks.policy_network_gpt import PolicyNetworkGPT as PolicyNetwork
 from openrl.runners.common import PPOAgent as Agent
 
 
@@ -29,11 +28,11 @@ def train():
     )
 
     # create the neural network
-    model_dict = {"model": PolicyValueNetwork}
+    model_dict = {"policy": PolicyNetwork, "critic": ValueNetwork}
     net = Net(env, device="cuda", cfg=cfg, model_dict=model_dict)
 
     # initialize the trainer
-    agent = Agent(net, use_wandb=True)
+    agent = Agent(net, use_wandb=False)
 
     # start training
     agent.train(total_time_steps=100000)
