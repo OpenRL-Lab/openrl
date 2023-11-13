@@ -15,6 +15,7 @@
 # limitations under the License.
 
 """"""
+import time
 from copy import deepcopy
 from typing import Any, Callable, Iterable, List, Optional, Sequence, Union
 
@@ -202,6 +203,7 @@ class SyncVectorEnv(BaseVecEnv):
                     self._truncateds[i],
                     info,
                 ) = returns
+
                 need_reset = _need_reset and (
                     all(self._terminateds[i]) or all(self._truncateds[i])
                 )

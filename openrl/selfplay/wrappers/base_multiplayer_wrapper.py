@@ -104,6 +104,7 @@ class BaseMultiPlayerWrapper(BaseWrapper, ABC):
                     action = self.get_opponent_action(
                         player_name, observation, reward, termination, truncation, info
                     )
+
                     self.env.step(action)
 
     def on_episode_end(
