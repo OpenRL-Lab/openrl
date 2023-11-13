@@ -21,6 +21,9 @@ from typing import Any, Dict, Optional, SupportsFloat, Tuple
 import gymnasium as gym
 import numpy as np
 from gymnasium import spaces
+from gymnasium.utils.step_api_compatibility import (
+    convert_to_terminated_truncated_step_api,
+)
 from gymnasium.wrappers import AutoResetWrapper, StepAPICompatibility
 
 from openrl.envs.wrappers import BaseObservationWrapper, BaseRewardWrapper, BaseWrapper
@@ -46,6 +49,76 @@ class FrameSkip(BaseWrapper):
         return obs, total_reward, term, trunc, info
 
 
+def convert_to_done_step_api(
+    step_returns,
+    is_vector_env: bool = False,
+):
+    if len(step_returns) == 4:
+        return step_returns
+    else:
+        assert len(step_returns) == 5
+        observations, rewards, terminated, truncated, infos = step_returns
+
+        # Cases to handle - info single env /  info vector env (list) / info vector env (dict)
+        # if truncated[0]:
+        #     import pdb;
+        #     pdb.set_trace()
+
+        if is_vector_env is False:
+            if isinstance(terminated, list):
+                infos["TimeLimit.truncated"] = truncated[0] and not terminated[0]
+                done_return = np.logical_or(terminated, truncated)
+            else:
+                if truncated or terminated:
+                    infos["TimeLimit.truncated"] = truncated and not terminated
+                done_return = terminated or truncated
+            return (
+                observations,
+                rewards,
+                done_return,
+                infos,
+            )
+        elif isinstance(infos, list):
+            for info, env_truncated, env_terminated in zip(
+                infos, truncated, terminated
+            ):
+                if env_truncated or env_terminated:
+                    info["TimeLimit.truncated"] = env_truncated and not env_terminated
+            return (
+                observations,
+                rewards,
+                np.logical_or(terminated, truncated),
+                infos,
+            )
+        elif isinstance(infos, dict):
+            if np.logical_or(np.any(truncated), np.any(terminated)):
+                infos["TimeLimit.truncated"] = np.logical_and(
+                    truncated, np.logical_not(terminated)
+                )
+            return (
+                observations,
+                rewards,
+                np.logical_or(terminated, truncated),
+                infos,
+            )
+        else:
+            raise TypeError(
+                "Unexpected value of infos, as is_vector_envs=False, expects `info` to"
+                f" be a list or dict, actual type: {type(infos)}"
+            )
+
+
+def step_api_compatibility(
+    step_returns,
+    output_truncation_bool: bool = True,
+    is_vector_env: bool = False,
+):
+    if output_truncation_bool:
+        return convert_to_terminated_truncated_step_api(step_returns, is_vector_env)
+    else:
+        return convert_to_done_step_api(step_returns, is_vector_env)
+
+
 class RemoveTruncated(StepAPICompatibility, BaseWrapper):
     def __init__(
         self,
@@ -53,6 +126,12 @@ class RemoveTruncated(StepAPICompatibility, BaseWrapper):
     ):
         output_truncation_bool = False
         super().__init__(env, output_truncation_bool=output_truncation_bool)
+
+    def step(self, action):
+        step_returns = self.env.step(action)
+        return step_api_compatibility(
+            step_returns, self.output_truncation_bool, self.is_vector_env
+        )
 
 
 class FlattenObservation(BaseObservationWrapper):
