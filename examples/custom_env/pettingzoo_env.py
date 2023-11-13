@@ -28,7 +28,7 @@ register("RockPaperScissors", RockPaperScissors)
 
 env = make(
     "RockPaperScissors",
-    env_num=1,
+    env_num=10,
     opponent_wrappers=[RandomOpponentWrapper],
 )
 
