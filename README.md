@@ -1,5 +1,5 @@
 <div align="center">
-    <a href="https://openrl-docs.readthedocs.io/zh/latest/index.html"><img width="450px" height="auto" src="docs/images/openrl_text.png"></a>
+    <a href="https://openrl-docs.readthedocs.io/"><img width="450px" height="auto" src="docs/images/openrl_text.png"></a>
 </div>
 
 ---
@@ -25,7 +25,7 @@
 [![Contributors](https://img.shields.io/github/contributors/OpenRL-Lab/openrl)](https://github.com/OpenRL-Lab/openrl/graphs/contributors)
 [![GitHub license](https://img.shields.io/github/license/OpenRL-Lab/openrl)](https://github.com/OpenRL-Lab/openrl/blob/master/LICENSE)
 
-[![Embark](https://img.shields.io/badge/discord-OpenRL-%237289da.svg?logo=discord)](https://discord.gg/guvAS2up)
+[![Embark](https://img.shields.io/badge/discord-OpenRL-%237289da.svg?logo=discord)](https://discord.gg/qMbVT2qBhr)
 [![slack badge](https://img.shields.io/badge/Slack-join-blueviolet?logo=slack&amp)](https://join.slack.com/t/openrlhq/shared_invite/zt-1tqwpvthd-Eeh0IxQ~DIaGqYXoW2IUQg)
 
 OpenRL-v0.1.10 is updated on Oct 27, 2023
@@ -333,7 +333,7 @@ If you are using OpenRL in your research project, you are also welcome to join t
 
 - Join the [slack](https://join.slack.com/t/openrlhq/shared_invite/zt-1tqwpvthd-Eeh0IxQ~DIaGqYXoW2IUQg) group to discuss
   OpenRL usage and development with us.
-- Join the [Discord](https://discord.gg/guvAS2up) group to discuss OpenRL usage and development with us.
+- Join the [Discord](https://discord.gg/qMbVT2qBhr) group to discuss OpenRL usage and development with us.
 - Send an E-mail to: [huangshiyu@4paradigm.com](huangshiyu@4paradigm.com)
 - Join the [GitHub Discussion](https://github.com/orgs/OpenRL-Lab/discussions).
 
