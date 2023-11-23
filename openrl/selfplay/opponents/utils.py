@@ -28,6 +28,9 @@ from openrl.selfplay.opponents.jidi_opponent import JiDiOpponent
 
 
 def check_opponent_template(opponent_template: Union[str, Path]):
+    assert isinstance(opponent_template, Path) or isinstance(
+        opponent_template, str
+    ), f"opponent_template {opponent_template} must be a Path or str"
     if isinstance(opponent_template, str):
         opponent_template = Path(opponent_template)
     assert (
