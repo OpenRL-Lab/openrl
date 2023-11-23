@@ -1,4 +1,5 @@
 import os
+import socket
 import sys
 
 import numpy as np
@@ -15,10 +16,17 @@ from openrl.selfplay.wrappers.opponent_pool_wrapper import OpponentPoolWrapper
 from openrl.selfplay.wrappers.random_opponent_wrapper import RandomOpponentWrapper
 
 
+def find_free_port():
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind(("", 0))
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        return s.getsockname()[1]
+
+
 @pytest.fixture(
     scope="module",
     params=[
-        {"port": 13486, "strategy": "RandomOpponent"},
+        {"port": find_free_port(), "strategy": "RandomOpponent"},
     ],
 )
 def config(request):
@@ -54,7 +62,7 @@ def train(cfg):
         "tictactoe_v3",
         render_mode=render_model,
         env_num=env_num,
-        asynchronous=True,
+        asynchronous=False,
         opponent_wrappers=[RecordWinner, OpponentPoolWrapper],
         env_wrappers=[FlattenObservation],
         cfg=cfg,
