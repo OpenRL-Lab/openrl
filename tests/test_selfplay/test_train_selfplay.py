@@ -59,22 +59,20 @@ def train(cfg):
     # Create agent
     agent = Agent(net)
     # Begin training
-    agent.train(total_time_steps=100)
+    agent.train(total_time_steps=20)
     env.close()
     agent.save("./selfplay_agent/")
     return agent
 
 
 def evaluation():
-    from examples.selfplay.tictactoe_utils.tictactoe_render import TictactoeRender
-
     print("Evaluation...")
     env_num = 1
     env = make(
         "tictactoe_v3",
         env_num=env_num,
         asynchronous=True,
-        opponent_wrappers=[TictactoeRender, RandomOpponentWrapper],
+        opponent_wrappers=[RandomOpponentWrapper],
         env_wrappers=[FlattenObservation],
         auto_reset=False,
     )
