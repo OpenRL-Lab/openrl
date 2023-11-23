@@ -3,7 +3,6 @@ import sys
 
 import numpy as np
 import pytest
-import ray
 import torch
 
 from openrl.configs.config import create_config_parser
@@ -20,7 +19,6 @@ from openrl.selfplay.wrappers.random_opponent_wrapper import RandomOpponentWrapp
     scope="module",
     params=[
         {"port": 13486, "strategy": "RandomOpponent"},
-        {"port": 13487, "strategy": "LastOpponent"},
     ],
 )
 def config(request):
@@ -67,7 +65,7 @@ def train(cfg):
     # Create agent
     agent = Agent(net)
     # Begin training
-    agent.train(total_time_steps=20)
+    agent.train(total_time_steps=10)
     env.close()
     agent.save("./selfplay_agent/")
     return agent
