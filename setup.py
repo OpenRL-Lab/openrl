@@ -25,7 +25,7 @@ from setuptools import setup
 def get_install_requires() -> list:
     return [
         "setuptools>=67.0",
-        "gymnasium",
+        "gymnasium>=0.29",
         "click",
         "termcolor",
         "gym",
@@ -71,7 +71,13 @@ def get_extra_requires() -> dict:
             "evaluate",
         ],
         "selfplay": ["ray[default]", "ray[serve]", "pettingzoo[classic]", "trueskill"],
-        "selfplay_test": ["pettingzoo[mpe]", "pettingzoo[butterfly]"],
+        "selfplay_test": [
+            "ray[default]",
+            "ray[serve]",
+            "fastapi",
+            "pettingzoo[mpe]",
+            "pettingzoo[butterfly]",
+        ],
         "retro": ["gym-retro"],
         "super_mario": ["gym-super-mario-bros"],
         "atari": ["gymnasium[atari]", "gymnasium[accept-rom-license]"],

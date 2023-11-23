@@ -57,7 +57,10 @@ class SelfplayAPI(BaseSelfplayCallback):
             success = self.api_client.set_sample_strategy(self.sample_strategy)
             try_time -= 1
             if try_time <= 0:
-                raise RuntimeError("Failed to set sample strategy.")
+                raise RuntimeError(
+                    f"Failed to set sample strategy: {self.sample_strategy}. host:"
+                    f" {self.host}, port: {self.port}"
+                )
 
     def _on_step(self) -> bool:
         # print("To send request to API server.")
@@ -72,5 +75,6 @@ class SelfplayAPI(BaseSelfplayCallback):
             print(f"deleting {application_name}")
         serve.delete(application_name)
         del self.bind
+        serve.shutdown()
         if self.verbose >= 2:
             print(f"delete {application_name} done!")

@@ -3,6 +3,7 @@ import sys
 
 import numpy as np
 import pytest
+import ray
 import torch
 
 from openrl.configs.config import create_config_parser
@@ -18,22 +19,29 @@ from openrl.selfplay.wrappers.random_opponent_wrapper import RandomOpponentWrapp
 @pytest.fixture(
     scope="module",
     params=[
-        "RandomOpponent",
-        "LastOpponent",
+        {"port": 13486, "strategy": "RandomOpponent"},
+        {"port": 13487, "strategy": "LastOpponent"},
     ],
 )
 def config(request):
     cfg_parser = create_config_parser()
     cfg = cfg_parser.parse_args(["--config", "./examples/selfplay/selfplay.yaml"])
+    cfg.selfplay_api.port = request.param["port"]
     for i, c in enumerate(cfg.callbacks):
         if c["id"] == "SelfplayCallback":
             c["args"][
                 "opponent_template"
             ] = "./examples/selfplay/opponent_templates/tictactoe_opponent"
+            port = c["args"]["api_address"].split(":")[-1].split("/")[0]
+            c["args"]["api_address"] = c["args"]["api_address"].replace(
+                port, str(request.param["port"])
+            )
             cfg.callbacks[i] = c
         elif c["id"] == "SelfplayAPI":
-            c["args"]["sample_strategy"] = request.param
+            c["args"]["sample_strategy"] = request.param["strategy"]
+            c["args"]["port"] = request.param["port"]
             cfg.callbacks[i] = c
+
         else:
             pass
 

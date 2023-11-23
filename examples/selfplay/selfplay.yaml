@@ -1,6 +1,6 @@
 globals:
   selfplay_api_host: 127.0.0.1
-  selfplay_api_port: 10086
+  selfplay_api_port: 13486
 
 seed: 0
 selfplay_api:
