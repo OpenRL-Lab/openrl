@@ -73,12 +73,14 @@ def get_extra_requires() -> dict:
         "selfplay": [
             "ray[default]>=2.7",
             "ray[serve]",
+            "async_timeout",
             "pettingzoo[classic]",
             "trueskill",
         ],
         "selfplay_test": [
             "ray[default]>=2.7",
             "ray[serve]",
+            "async_timeout",
             "fastapi",
             "pettingzoo[mpe]",
             "pettingzoo[butterfly]",
