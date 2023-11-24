@@ -27,12 +27,14 @@ def find_free_port():
     scope="module",
     params=[
         {"port": find_free_port(), "strategy": "RandomOpponent"},
+        {"port": find_free_port(), "strategy": "LastOpponent"},
     ],
 )
 def config(request):
     cfg_parser = create_config_parser()
     cfg = cfg_parser.parse_args(["--config", "./examples/selfplay/selfplay.yaml"])
     cfg.selfplay_api.port = request.param["port"]
+    print("port:",request.param["port"])
     for i, c in enumerate(cfg.callbacks):
         if c["id"] == "SelfplayCallback":
             c["args"][
