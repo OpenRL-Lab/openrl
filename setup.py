@@ -70,9 +70,14 @@ def get_extra_requires() -> dict:
             "datasets==2.13",
             "evaluate",
         ],
-        "selfplay": ["ray[default]", "ray[serve]", "pettingzoo[classic]", "trueskill"],
+        "selfplay": [
+            "ray[default]>=2.7",
+            "ray[serve]",
+            "pettingzoo[classic]",
+            "trueskill",
+        ],
         "selfplay_test": [
-            "ray[default]",
+            "ray[default]>=2.7",
             "ray[serve]",
             "fastapi",
             "pettingzoo[mpe]",

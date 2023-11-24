@@ -50,7 +50,7 @@ class SelfplayAPI(BaseSelfplayCallback):
         )
 
         self.bind = SelfplayAPIServer.bind()
-        serve.run(self.bind)
+        serve.run(self.bind, route_prefix="/selfplay")
         success = False
         try_time = 10
         while not success:
