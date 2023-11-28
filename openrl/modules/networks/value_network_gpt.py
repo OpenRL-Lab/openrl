@@ -45,8 +45,15 @@ class ValueNetworkGPT(BaseValueNetwork):
         extra_args=None,
     ):
         
+        self.device = device
         self.use_half = use_half
-        self.tpdv = dict(dtype=torch.float32, device=device)
+
+        self.use_data_parallel = False
+        self.use_model_parallel = False
+        self.use_deepspeed = cfg.use_deepspeed
+        assert not (self.use_deepspeed and self.use_data_parallel)
+        assert not (self.use_deepspeed and self.use_model_parallel)
+        assert not (self.use_data_parallel and self.use_model_parallel)
         
         super(ValueNetworkGPT, self).__init__(cfg, device)
         
@@ -63,6 +70,15 @@ class ValueNetworkGPT(BaseValueNetwork):
         
         self._value_head.to(self.device)
 
+        if torch.cuda.is_available():
+            if self.use_model_parallel:
+                self._value_model.parallelize()
+            elif self.use_data_parallel:
+                self._value_model = torch.nn.DataParallel(self._value_model)
+                self._value_model = self._value_model.to(self.device)
+                self._value_head = torch.nn.DataParallel(self._value_head)
+                self._value_head = self._value_head.to(self.device)
+
         
     def _prepare_inputs_for_model(
         self,
@@ -73,16 +89,28 @@ class ValueNetworkGPT(BaseValueNetwork):
         model_inputs = unwrap_model(model).prepare_inputs_for_generation(
             input_ids, **model_kwargs
         )
+
+        if self.use_model_parallel:
+            model_inputs = {
+                key: (
+                    value.to(model.transformer.first_device)
+                    if isinstance(value, torch.Tensor)
+                    and hasattr(model.transformer, "first_device")
+                    else value
+                )
+                for key, value in model_inputs.items()
+            }
+        
         return model_inputs
 
     def forward(self, critic_obs, rnn_states, masks):
         for key in critic_obs.keys():
             critic_obs[key] = torch.from_numpy(critic_obs[key]) if type(critic_obs[key]) == np.ndarray else critic_obs[key]
-            critic_obs[key] = critic_obs[key].to(self._value_model.device)
-            # critic_obs[key] = check(critic_obs[key], self.use_half, self.tpdv)
-            # if self._use_fp16:
-            #     critic_obs[key] = critic_obs[key].half()
-        masks = check(masks).to(self._value_model.device)
+            if self.use_data_parallel:
+                critic_obs[key] = critic_obs[key].to(self.device)
+            else:
+                critic_obs[key] = critic_obs[key].to(self._value_model.device)
+        
         rnn_states = check(rnn_states)
         
         input_ids = critic_obs["input_encoded_pt"].int()
@@ -99,6 +127,10 @@ class ValueNetworkGPT(BaseValueNetwork):
         )
         output = self._value_model(output_hidden_states=True, **model_inputs)
         last_tokens_hidden = output.hidden_states[-1][:, -1]
+
+        if self.use_model_parallel:
+            last_tokens_hidden = last_tokens_hidden.to(self.device)
+
         values = self._value_head.forward(last_tokens_hidden)
 
         return values, rnn_states

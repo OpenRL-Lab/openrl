@@ -32,7 +32,7 @@ def train():
     net = Net(env, device="cuda", cfg=cfg, model_dict=model_dict)
 
     # initialize the trainer
-    agent = Agent(net, use_wandb=False)
+    agent = Agent(net, use_wandb=True)
 
     # start training
     agent.train(total_time_steps=100000)

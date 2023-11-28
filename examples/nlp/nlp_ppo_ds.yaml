@@ -7,9 +7,8 @@ use_valuenorm: true
 use_adv_normalize: true
 wandb_entity: "openrl-lab"
 ppo_epoch: 5
-episode_length: 64
+episode_length: 128
 num_mini_batch: 20
-# use_share_model: true
 
 hidden_size: 1
 
@@ -18,11 +17,11 @@ use_fp16: false
 use_offload: false
 deepspeed_config: ds_config.json
 
-model_path: rajkumarrrk/gpt2-fine-tuned-on-daily-dialog
+model_path: /home/chenwenze/data_server/huggingface/models/facebook/opt-125m
 env:
   args: {
-    'tokenizer_path': 'gpt2',
-    'data_path': 'daily_dialog',
+    'tokenizer_path': '/home/chenwenze/data_server/huggingface/models/gpt2',
+    'data_path': '/home/chenwenze/data_server/huggingface/datasets/daily_dialog',
   }
 vec_info_class:
   id: "NLPVecInfo"
@@ -31,8 +30,8 @@ reward_class:
   args: { 
     "use_deepspeed": true,
     "ref_ds_config": "eval_ds_config.json",
-    "ref_model": "rajkumarrrk/gpt2-fine-tuned-on-daily-dialog",
+    "ref_model": "/home/chenwenze/data_server/huggingface/models/facebook/opt-125m",
     "intent_ds_config": "eval_ds_config.json",
-    "intent_model": "rajkumarrrk/roberta-daily-dialog-intent-classifier",
+    "intent_model": "/home/chenwenze/data_server/huggingface/models/rajkumarrrk/roberta-daily-dialog-intent-classifier",
   }
     

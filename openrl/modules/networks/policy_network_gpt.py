@@ -47,14 +47,20 @@ class PolicyNetworkGPT(BasePolicyNetwork):
         extra_args=None,
     ) -> None:
         
+        self.device = device
         self.use_half = use_half
-        self.tpdv = dict(dtype=torch.float32, device=device)
+
+        self.use_data_parallel = False
+        self.use_model_parallel = False
+        self.use_deepspeed = cfg.use_deepspeed
+
+        assert not (self.use_deepspeed and self.use_data_parallel)
+        assert not (self.use_deepspeed and self.use_model_parallel)
+        assert not (self.use_data_parallel and self.use_model_parallel)
         
         super(PolicyNetworkGPT, self).__init__(cfg, device)
         
         self.disable_drop_out = disable_drop_out
-        
-        
         
         self._action_dist = CategoricalDistribution(action_space.n)
         
@@ -69,6 +75,14 @@ class PolicyNetworkGPT(BasePolicyNetwork):
             cfg.model_path, config=config
         )
         self._policy_model.config.use_cache = False
+
+        if torch.cuda.is_available():
+            if self.use_model_parallel:
+                self._policy_model.parallelize()
+            elif self.use_data_parallel:
+                self._policy_model = torch.nn.DataParallel(self._policy_model)
+                self._policy_model = self._policy_model.to(self.device)
+
 
     def forward(self, forward_type, *args, **kwargs):
         if forward_type == "original":
@@ -87,6 +101,18 @@ class PolicyNetworkGPT(BasePolicyNetwork):
         model_inputs = unwrap_model(model).prepare_inputs_for_generation(
             input_ids, **model_kwargs
         )
+
+        if self.use_model_parallel:
+            model_inputs = {
+                key: (
+                    value.to(model.transformer.first_device)
+                    if isinstance(value, torch.Tensor)
+                    and hasattr(model.transformer, "first_device")
+                    else value
+                )
+                for key, value in model_inputs.items()
+            }
+
         return model_inputs
 
     def forward_original(
@@ -94,10 +120,11 @@ class PolicyNetworkGPT(BasePolicyNetwork):
     ):
         for key in raw_obs.keys():
             raw_obs[key] = torch.from_numpy(raw_obs[key]) if type(raw_obs[key]) == np.ndarray else raw_obs[key]
-            raw_obs[key] = raw_obs[key].to(self._policy_model.device)
-            # raw_obs[key] = check(raw_obs[key], self.use_half, self.tpdv)
-            # if self._use_fp16:
-            #     raw_obs[key] = raw_obs[key].half()
+            if self.use_data_parallel:
+                raw_obs[key] = raw_obs[key].to(self.device)
+            else:
+                raw_obs[key] = raw_obs[key].to(self._policy_model.device)
+
         rnn_states = check(rnn_states)
         
         input_ids = raw_obs["input_encoded_pt"].int()
@@ -131,11 +158,14 @@ class PolicyNetworkGPT(BasePolicyNetwork):
     ):
         for key in obs.keys():
             obs[key] = torch.from_numpy(obs[key]) if type(obs[key]) == np.ndarray else obs[key]
-            obs[key] = obs[key].to(self._policy_model.device)
-            # obs[key] = check(obs[key], self.use_half, self.tpdv)
-            # if self._use_fp16:
-            #     obs[key] = obs[key].half()
-        action = check(action).to(self._policy_model.device).squeeze()
+            if self.use_data_parallel:
+                obs[key] = obs[key].to(self.device)
+            else:
+                obs[key] = obs[key].to(self._policy_model.device)
+        if self.use_data_parallel:
+            action = check(action).to(self.device).squeeze()
+        else:
+            action = check(action).to(self._policy_model.device).squeeze()
         rnn_states = check(rnn_states)
         
         input_ids = obs["input_encoded_pt"].int()
