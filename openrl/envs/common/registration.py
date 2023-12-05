@@ -29,7 +29,7 @@ from openrl.envs.vec_env import (
 )
 from openrl.envs.vec_env.vec_info import VecInfoFactory
 from openrl.rewards import RewardFactory
-
+from openrl.envs.PettingZoo.registration import pettingzoo_env_dict
 
 def make(
     id: str,
@@ -150,7 +150,7 @@ def make(
             )
         elif (
             id in openrl.envs.pettingzoo_all_envs
-            or id in openrl.envs.PettingZoo.registration.pettingzoo_env_dict.keys()
+            or id in pettingzoo_env_dict.keys()
         ):
             from openrl.envs.PettingZoo import make_PettingZoo_envs
 
