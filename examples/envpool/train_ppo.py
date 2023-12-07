@@ -32,7 +32,7 @@ def train():
 
     # create environment, set environment parallelism to 9
     env = make(
-        "envpool:Adventure-v5",
+        "envpool:CartPole-v1",
         render_mode=None,
         env_num=9,
         asynchronous=False,
@@ -45,7 +45,7 @@ def train():
         cfg=cfg,
     )
     # initialize the trainer
-    agent = Agent(net, use_wandb=False, project_name="envpool:Adventure-v5")
+    agent = Agent(net, use_wandb=False, project_name="envpool:CartPole-v1")
     # start training, set total number of training steps to 20000
     agent.train(total_time_steps=20000)
 
