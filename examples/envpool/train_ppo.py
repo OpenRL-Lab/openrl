@@ -16,7 +16,6 @@
 
 """"""
 import numpy as np
-from test_model import evaluation
 
 from openrl.configs.config import create_config_parser
 from openrl.envs.common import make
