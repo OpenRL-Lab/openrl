@@ -6,6 +6,7 @@ import gymnasium as gym
 from gymnasium import Env
 
 from openrl.envs.wrappers.base_wrapper import BaseWrapper
+from openrl.envs.wrappers.envpool_wrappers import VecEnvWrapper, VecMonitor
 
 
 def build_envs(
@@ -36,13 +37,22 @@ def build_envs(
                 new_kwargs["env_num"] = env_num
             if id.startswith("ALE/") or id in gym.envs.registry.keys():
                 new_kwargs.pop("cfg", None)
-
-            env = make(
-                id,
-                render_mode=env_render_mode,
-                disable_env_checker=_disable_env_checker,
-                **new_kwargs,
-            )
+            if "envpool" in new_kwargs:
+                # for now envpool doesnt support any render mode
+                # envpool also doesnt stores the id anywhere
+                new_kwargs.pop("envpool")
+                env = make(
+                    id,
+                    **new_kwargs,
+                )
+                env.unwrapped.spec.id = id
+            else:
+                env = make(
+                    id,
+                    render_mode=env_render_mode,
+                    disable_env_checker=_disable_env_checker,
+                    **new_kwargs,
+                )
 
             if wrappers is not None:
                 if callable(wrappers):

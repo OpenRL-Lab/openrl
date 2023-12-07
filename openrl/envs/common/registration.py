@@ -17,6 +17,7 @@
 """"""
 from typing import Callable, Optional
 
+import envpool
 import gymnasium as gym
 
 import openrl
@@ -72,7 +73,6 @@ def make(
             env_fns = make_single_agent_drone_envs(
                 id=id, env_num=env_num, render_mode=convert_render_mode, **kwargs
             )
-
         elif id.startswith("snakes_"):
             from openrl.envs.snake import make_snake_envs
 
@@ -154,6 +154,18 @@ def make(
 
             env_fns = make_PettingZoo_envs(
                 id=id, env_num=env_num, render_mode=convert_render_mode, **kwargs
+            )
+        elif (
+            "envpool:" in id
+            and id.split(":")[-1] in envpool.registration.list_all_envs()
+        ):
+            from openrl.envs.envpool import make_envpool_envs
+
+            env_fns = make_envpool_envs(
+                id=id.split(":")[-1],
+                env_num=env_num,
+                render_mode=convert_render_mode,
+                **kwargs,
             )
         else:
             raise NotImplementedError(f"env {id} is not supported.")
