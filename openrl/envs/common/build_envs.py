@@ -6,7 +6,6 @@ import gymnasium as gym
 from gymnasium import Env
 
 from openrl.envs.wrappers.base_wrapper import BaseWrapper
-from openrl.envs.wrappers.envpool_wrappers import VecEnvWrapper, VecMonitor
 
 
 def build_envs(
