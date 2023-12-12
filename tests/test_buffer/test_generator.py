@@ -25,6 +25,11 @@ from openrl.modules.common import PPONet as Net
 from openrl.runners.common import PPOAgent as Agent
 
 
+@pytest.fixture(scope="module", params=["--episode_length 10"])
+def episode_length(request):
+    return request.param
+
+
 @pytest.fixture(
     scope="module",
     params=[
@@ -64,9 +69,17 @@ def use_popart(request):
 
 
 @pytest.fixture(scope="module")
-def config(use_proper_time_limits, use_popart, use_gae, generator_type):
+def config(use_proper_time_limits, use_popart, use_gae, generator_type, episode_length):
     config_str = (
-        use_proper_time_limits + " " + use_popart + " " + use_gae + " " + generator_type
+        use_proper_time_limits
+        + " "
+        + use_popart
+        + " "
+        + use_gae
+        + " "
+        + generator_type
+        + " "
+        + episode_length
     )
 
     from openrl.configs.config import create_config_parser
@@ -80,7 +93,7 @@ def config(use_proper_time_limits, use_popart, use_gae, generator_type):
 def test_buffer_generator(config):
     env = make("CartPole-v1", env_num=2)
     agent = Agent(Net(env, cfg=config))
-    agent.train(total_time_steps=200)
+    agent.train(total_time_steps=50)
     env.close()
 
 
