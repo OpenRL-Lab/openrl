@@ -33,9 +33,7 @@ def act_space():
     return spaces.Discrete(2)
 
 
-@pytest.fixture(
-    scope="module", params=["--use_share_model false", "--use_share_model true"]
-)
+@pytest.fixture(scope="module", params=["", "--use_share_model true"])
 def config(request):
     from openrl.configs.config import create_config_parser
 
@@ -46,9 +44,9 @@ def config(request):
 
 @pytest.fixture
 def init_module(config, obs_space, act_space):
-    from openrl.modules.ppo_module import PPOModule
+    from openrl.modules.bc_module import BCModule
 
-    module = PPOModule(
+    module = BCModule(
         config,
         policy_input_space=obs_space,
         critic_input_space=obs_space,
@@ -74,12 +72,12 @@ def buffer_data(config, obs_space, act_space):
 
 
 @pytest.mark.unittest
-def test_ppo_algorithm(config, init_module, buffer_data):
-    from openrl.algorithms.ppo import PPOAlgorithm
+def test_bc_algorithm(config, init_module, buffer_data):
+    from openrl.algorithms.behavior_cloning import BCAlgorithm
 
-    ppo_algo = PPOAlgorithm(config, init_module)
+    bc_algo = BCAlgorithm(config, init_module)
 
-    ppo_algo.train(buffer_data)
+    bc_algo.train(buffer_data)
 
 
 if __name__ == "__main__":
