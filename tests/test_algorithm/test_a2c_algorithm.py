@@ -45,6 +45,15 @@ def config(request):
 
 
 @pytest.fixture
+def amp_config():
+    from openrl.configs.config import create_config_parser
+
+    cfg_parser = create_config_parser()
+    cfg = cfg_parser.parse_args("")
+    return cfg
+
+
+@pytest.fixture
 def init_module(config, obs_space, act_space):
     from openrl.modules.ppo_module import PPOModule
 
@@ -74,12 +83,12 @@ def buffer_data(config, obs_space, act_space):
 
 
 @pytest.mark.unittest
-def test_ppo_algorithm(config, init_module, buffer_data):
-    from openrl.algorithms.ppo import PPOAlgorithm
+def test_a2c_algorithm(config, init_module, buffer_data):
+    from openrl.algorithms.a2c import A2CAlgorithm
 
-    ppo_algo = PPOAlgorithm(config, init_module)
+    a2c_algo = A2CAlgorithm(config, init_module)
 
-    ppo_algo.train(buffer_data)
+    a2c_algo.train(buffer_data)
 
 
 if __name__ == "__main__":

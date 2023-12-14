@@ -30,12 +30,10 @@ def obs_space():
 
 @pytest.fixture
 def act_space():
-    return spaces.Discrete(2)
+    return spaces.box.Box(low=-np.inf, high=+np.inf, shape=(1,), dtype=np.float32)
 
 
-@pytest.fixture(
-    scope="module", params=["--use_share_model false", "--use_share_model true"]
-)
+@pytest.fixture(scope="module", params=[""])
 def config(request):
     from openrl.configs.config import create_config_parser
 
@@ -45,41 +43,48 @@ def config(request):
 
 
 @pytest.fixture
-def init_module(config, obs_space, act_space):
-    from openrl.modules.ppo_module import PPOModule
+def amp_config():
+    from openrl.configs.config import create_config_parser
 
-    module = PPOModule(
+    cfg_parser = create_config_parser()
+    cfg = cfg_parser.parse_args("")
+    return cfg
+
+
+@pytest.fixture
+def init_module(config, obs_space, act_space):
+    from openrl.modules.sac_module import SACModule
+
+    module = SACModule(
         config,
-        policy_input_space=obs_space,
-        critic_input_space=obs_space,
+        input_space=obs_space,
         act_space=act_space,
-        share_model=config.use_share_model,
     )
     return module
 
 
 @pytest.fixture
 def buffer_data(config, obs_space, act_space):
-    from openrl.buffers.normal_buffer import NormalReplayBuffer
+    from openrl.buffers.offpolicy_buffer import OffPolicyReplayBuffer
 
-    buffer = NormalReplayBuffer(
+    buffer = OffPolicyReplayBuffer(
         config,
         num_agents=1,
         obs_space=obs_space,
         act_space=act_space,
         data_client=None,
-        episode_length=100,
+        episode_length=5000,
     )
     return buffer.data
 
 
 @pytest.mark.unittest
-def test_ppo_algorithm(config, init_module, buffer_data):
-    from openrl.algorithms.ppo import PPOAlgorithm
+def test_sac_algorithm(config, init_module, buffer_data):
+    from openrl.algorithms.sac import SACAlgorithm
 
-    ppo_algo = PPOAlgorithm(config, init_module)
+    sac_algo = SACAlgorithm(config, init_module)
 
-    ppo_algo.train(buffer_data)
+    sac_algo.train(buffer_data)
 
 
 if __name__ == "__main__":
