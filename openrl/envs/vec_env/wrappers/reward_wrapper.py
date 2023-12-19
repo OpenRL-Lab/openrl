@@ -24,13 +24,12 @@ from openrl.envs.vec_env.base_venv import BaseVecEnv
 from openrl.envs.vec_env.wrappers.base_wrapper import VecEnvWrapper
 from openrl.rewards.base_reward import BaseReward
 
-
 class RewardWrapper(VecEnvWrapper):
     def __init__(self, env: BaseVecEnv, reward_class: BaseReward):
         super().__init__(env)
         self.reward_class = reward_class
-        if len(self.reward_class.inner_rew_funcs) > 0:
-            env.call("set_reward", **{"reward_fn": self.reward_class.inner_rew_funcs})
+        # if len(self.reward_class.inner_rew_funcs) > 0:
+        #     env.call("set_reward", **{"reward_fn": self.reward_class.inner_rew_funcs})
 
     def step(
         self, action: ActType, extra_data: Optional[Dict[str, Any]]
