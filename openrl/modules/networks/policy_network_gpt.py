@@ -48,11 +48,11 @@ class PolicyNetworkGPT(BasePolicyNetwork):
     ) -> None:
         
         self.device = device
-        self.use_half = use_half
-
-        self.use_data_parallel = False
-        self.use_model_parallel = False
+        self.use_fp16 = cfg.use_fp16
         self.use_deepspeed = cfg.use_deepspeed
+        self.use_half = False
+        self.use_data_parallel = not cfg.use_deepspeed # default to use data parallel
+        self.use_model_parallel = False
 
         assert not (self.use_deepspeed and self.use_data_parallel)
         assert not (self.use_deepspeed and self.use_model_parallel)
@@ -80,6 +80,8 @@ class PolicyNetworkGPT(BasePolicyNetwork):
             if self.use_model_parallel:
                 self._policy_model.parallelize()
             elif self.use_data_parallel:
+                if self.use_half:
+                    self._policy_model = self._policy_model.half()
                 self._policy_model = torch.nn.DataParallel(self._policy_model)
                 self._policy_model = self._policy_model.to(self.device)
 
@@ -120,15 +122,22 @@ class PolicyNetworkGPT(BasePolicyNetwork):
     ):
         for key in raw_obs.keys():
             raw_obs[key] = torch.from_numpy(raw_obs[key]) if type(raw_obs[key]) == np.ndarray else raw_obs[key]
-            if self.use_data_parallel:
-                raw_obs[key] = raw_obs[key].to(self.device)
-            else:
-                raw_obs[key] = raw_obs[key].to(self._policy_model.device)
-
         rnn_states = check(rnn_states)
-        
-        input_ids = raw_obs["input_encoded_pt"].int()
-        attention_mask = raw_obs["input_attention_mask_pt"]
+
+        if self.use_half:
+            input_ids = raw_obs["input_encoded_pt"].int()
+            attention_mask = raw_obs["input_attention_mask_pt"].int()
+        else:
+            input_ids = raw_obs["input_encoded_pt"].long()
+            attention_mask = raw_obs["input_attention_mask_pt"].long()
+
+        for key in raw_obs.keys():
+            if self.use_data_parallel:
+                input_ids = input_ids.to(self.device)
+                attention_mask = attention_mask.to(self.device)
+            else:
+                input_ids = input_ids.to(self._policy_model.device)
+                attention_mask = attention_mask.to(self._policy_model.device)
         
         past_model_kwargs = None
         
@@ -145,7 +154,7 @@ class PolicyNetworkGPT(BasePolicyNetwork):
         output = self._policy_model(**model_inputs)
         
         # compute action probs - policy head
-        next_token_logits = output.logits[:, -1]
+        next_token_logits = output.logits[:, -1]   
         dist = self._action_dist.proba_distribution(action_logits=next_token_logits)
         
         actions = dist.mode() if deterministic else dist.sample()
@@ -168,8 +177,12 @@ class PolicyNetworkGPT(BasePolicyNetwork):
             action = check(action).to(self._policy_model.device).squeeze()
         rnn_states = check(rnn_states)
         
-        input_ids = obs["input_encoded_pt"].int()
-        attention_mask = obs["input_attention_mask_pt"]
+        if self.half:
+            input_ids = obs["input_encoded_pt"].int()
+            attention_mask = obs["input_attention_mask_pt"].int()
+        else:
+            input_ids = obs["input_encoded_pt"].long()
+            attention_mask = obs["input_attention_mask_pt"].long()
         
         past_model_kwargs = None
         

@@ -46,11 +46,12 @@ class ValueNetworkGPT(BaseValueNetwork):
     ):
         
         self.device = device
-        self.use_half = use_half
 
-        self.use_data_parallel = False
-        self.use_model_parallel = False
+        self.use_fp16 = cfg.use_fp16
         self.use_deepspeed = cfg.use_deepspeed
+        self.use_half = False
+        self.use_data_parallel = not cfg.use_deepspeed
+        self.use_model_parallel = False
         assert not (self.use_deepspeed and self.use_data_parallel)
         assert not (self.use_deepspeed and self.use_model_parallel)
         assert not (self.use_data_parallel and self.use_model_parallel)
@@ -62,18 +63,22 @@ class ValueNetworkGPT(BaseValueNetwork):
         self._value_model = AutoModelForCausalLM.from_pretrained(cfg.model_path)
         self._value_model.config.use_cache = False
         self._value_head = nn.Linear(
-            self._value_model.config.hidden_size, 1, bias=False
+            self._value_model.config.n_embd, 1, bias=False # gpt2
+            # self._value_model.config.word_embed_proj_dim, 1, bias=False # opt-x
         )
         self.value_normalizer = (
             ValueNorm(1, device=device) if self._use_valuenorm else None
         )
         
-        self._value_head.to(self.device)
-
-        if torch.cuda.is_available():
+        if self.use_deepspeed:
+            self._value_head.to(self.device)
+        else:
             if self.use_model_parallel:
                 self._value_model.parallelize()
             elif self.use_data_parallel:
+                if self.use_half:
+                    self._value_model = self._value_model.half()
+                    self._value_head = self._value_head.half()
                 self._value_model = torch.nn.DataParallel(self._value_model)
                 self._value_model = self._value_model.to(self.device)
                 self._value_head = torch.nn.DataParallel(self._value_head)
@@ -113,9 +118,13 @@ class ValueNetworkGPT(BaseValueNetwork):
         
         rnn_states = check(rnn_states)
         
-        input_ids = critic_obs["input_encoded_pt"].int()
-        attention_mask = critic_obs["input_attention_mask_pt"]
-        
+        if self.use_half:
+            input_ids = critic_obs["input_encoded_pt"].int()
+            attention_mask = critic_obs["input_attention_mask_pt"].int()
+        else:
+            input_ids = critic_obs["input_encoded_pt"].long()
+            attention_mask = critic_obs["input_attention_mask_pt"].long()
+
         past_model_kwargs = None
         if not past_model_kwargs:
             past_model_kwargs = {
