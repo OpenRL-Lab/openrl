@@ -72,6 +72,7 @@ def make(
             env_fns = make_single_agent_drone_envs(
                 id=id, env_num=env_num, render_mode=convert_render_mode, **kwargs
             )
+
         elif id.startswith("snakes_"):
             from openrl.envs.snake import make_snake_envs
 

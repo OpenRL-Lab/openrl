@@ -36,22 +36,13 @@ def build_envs(
                 new_kwargs["env_num"] = env_num
             if id.startswith("ALE/") or id in gym.envs.registry.keys():
                 new_kwargs.pop("cfg", None)
-            if "envpool" in new_kwargs:
-                # for now envpool doesnt support any render mode
-                # envpool also doesnt stores the id anywhere
-                new_kwargs.pop("envpool")
-                env = make(
-                    id,
-                    **new_kwargs,
-                )
-                env.unwrapped.spec.id = id
-            else:
-                env = make(
-                    id,
-                    render_mode=env_render_mode,
-                    disable_env_checker=_disable_env_checker,
-                    **new_kwargs,
-                )
+
+            env = make(
+                id,
+                render_mode=env_render_mode,
+                disable_env_checker=_disable_env_checker,
+                **new_kwargs,
+            )
 
             if wrappers is not None:
                 if callable(wrappers):
