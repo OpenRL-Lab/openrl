@@ -41,6 +41,10 @@ class Intent:
         self.use_model_parallel = False
 
         if intent_model == "builtin_intent":
+            
+            self._device = "cpu"
+            self.use_data_parallel = False 
+            
             from transformers import GPT2Config, GPT2LMHeadModel
 
             class TestTokenizer:
@@ -66,6 +70,7 @@ class Intent:
             self._model = GPT2LMHeadModel(config)
 
         else:
+            self._device = "cuda"
             model_path = data_abs_path(intent_model)
             self._tokenizer = AutoTokenizer.from_pretrained(intent_model)
             self._model = AutoModelForSequenceClassification.from_pretrained(model_path)
@@ -81,12 +86,10 @@ class Intent:
                 with open(ds_config) as file:
                     ds_config = json.load(file)
 
-            self._device = "cuda"
-            self._model = self._model.to("cuda")
+            self._model = self._model.to(self._device)
             self._model, *_ = deepspeed.initialize(model=self._model, config=ds_config)
             self.use_fp16 = ds_config["fp16"]["enabled"]
         else:
-            self._device = "cuda"
             if self.use_model_parallel:
                 self._model.parallelize()
             elif self.use_data_parallel:

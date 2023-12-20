@@ -47,6 +47,10 @@ class KLPenalty(nn.Module):
 
         # reference model
         if ref_model == "builtin_ref":
+            
+            self.device = "cpu"
+            self.use_data_parallel = False 
+            
             from transformers import GPT2Config, GPT2LMHeadModel
 
             config = GPT2Config()
@@ -77,8 +81,9 @@ class KLPenalty(nn.Module):
             elif self.use_data_parallel:  # else defaults to data parallel
                 if self.use_half:
                     self._ref_net = self._ref_net.half()
-                self._ref_net = torch.nn.DataParallel(self._ref_net)
-                self._ref_net = self._ref_net.to(self.device)
+                else:
+                    self._ref_net = torch.nn.DataParallel(self._ref_net)
+                    self._ref_net = self._ref_net.to(self.device)
 
         # alpha adjustment
         self._alpha = 0.2
