@@ -113,8 +113,20 @@ class DailyDialogEnv(Env):
         self.__time_step = None
         self.reward_function = None
 
-    def set_reward(self, reward_fn):
-        self.reward_function = reward_fn
+        self.set_reward()
+
+    def set_reward(self, reward_fn=None):
+        
+        from openrl.envs.nlp.rewards.meteor import Meteor
+        meteor_config = {
+            "meteor_coeff": 0.5,
+            "test": False,
+        }
+        self.reward_function = {
+            "meteor": Meteor(**meteor_config),
+        }
+        
+        # self.reward_function = reward_fn
 
     def step_word(self, word: str) -> Tuple[Dict[str, torch.tensor], int, bool, dict]:
         action = self.tokenizer.encode(word)[1]
@@ -135,7 +147,7 @@ class DailyDialogEnv(Env):
         done = done or self.__current_obs.context_text.endswith(DailyDialog.EOU_TOKEN)
 
         reward = 0.0
-        reward_info = dict()
+        reward_info = dict()    
 
         if done and self.reward_function:
             for reward_function in self.reward_function.values():
