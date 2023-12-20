@@ -1,8 +1,8 @@
 __TITLE__ = "openrl"
-__VERSION__ = "v0.2.0"
+__VERSION__ = "v0.2.1"
 __DESCRIPTION__ = "Distributed Deep RL Framework"
 __AUTHOR__ = "OpenRL Contributors"
-__EMAIL__ = "huangshiyu@4paradigm.com"
+__EMAIL__ = "huangsy1314@163.com"
 __version__ = __VERSION__
 
 import platform
