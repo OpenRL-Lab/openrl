@@ -20,6 +20,7 @@ from typing import Callable, Optional
 import gymnasium as gym
 
 import openrl
+from openrl.envs.PettingZoo.registration import pettingzoo_env_dict
 from openrl.envs.vec_env import (
     AsyncVectorEnv,
     BaseVecEnv,
@@ -148,10 +149,7 @@ def make(
                 render_mode=convert_render_mode,
                 **kwargs,
             )
-        elif (
-            id in openrl.envs.pettingzoo_all_envs
-            or id in openrl.envs.PettingZoo.registration.pettingzoo_env_dict.keys()
-        ):
+        elif id in openrl.envs.pettingzoo_all_envs or id in pettingzoo_env_dict.keys():
             from openrl.envs.PettingZoo import make_PettingZoo_envs
 
             env_fns = make_PettingZoo_envs(

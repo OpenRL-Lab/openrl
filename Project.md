@@ -18,7 +18,7 @@ However, in many practical applications, it is important to develop reasonable a
 In this paper, we propose an on-policy framework for discovering multiple strategies for the same task.
 Experimental results show that our method efficiently finds diverse strategies in a wide variety of reinforcement learning tasks.
 
-- Paper: [DGPO: Discovering Multiple Strategies with Diversity-Guided Policy Optimization](https://arxiv.org/abs/2207.05631)(AAMAS Extended Abstract 2023)
-- Authors: Wenze Chen, Shiyu Huang, Yuan Chiang, Ting Chen, Jun Zhu
+- Paper: [DGPO: Discovering Multiple Strategies with Diversity-Guided Policy Optimization](https://arxiv.org/abs/2207.05631)(AAAAI 2024)
+- Authors: Wenze Chen, Shiyu Huang, Yuan Chiang, Tim Pearce, Wei-Wei Tu, Ting Chen, Jun Zhu
 
 

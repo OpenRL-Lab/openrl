@@ -97,52 +97,52 @@ class OffPolicyReplayData(ReplayData):
         )
         self.first_insert_flag = True
 
-    def dict_insert(self, data):
-        if self._mixed_obs:
-            for key in self.critic_obs.keys():
-                self.critic_obs[key][self.step + 1] = data["critic_obs"][key].copy()
-            for key in self.policy_obs.keys():
-                self.policy_obs[key][self.step + 1] = data["policy_obs"][key].copy()
-            for key in self.next_policy_obs.keys():
-                self.next_policy_obs[key][self.step + 1] = data["next_policy_obs"][
-                    key
-                ].copy()
-            for key in self.next_critic_obs.keys():
-                self.next_critic_obs[key][self.step + 1] = data["next_critic_obs"][
-                    key
-                ].copy()
-        else:
-            self.critic_obs[self.step + 1] = data["critic_obs"].copy()
-            self.policy_obs[self.step + 1] = data["policy_obs"].copy()
-            self.next_policy_obs[self.step + 1] = data["next_policy_obs"].copy()
-            self.next_critic_obs[self.step + 1] = data["next_critic_obs"].copy()
-
-        if "rnn_states" in data:
-            self.rnn_states[self.step + 1] = data["rnn_states"].copy()
-        if "rnn_states_critic" in data:
-            self.rnn_states_critic[self.step + 1] = data["rnn_states_critic"].copy()
-        if "actions" in data:
-            self.actions[self.step + 1] = data["actions"].copy()
-        if "action_log_probs" in data:
-            self.action_log_probs[self.step] = data["action_log_probs"].copy()
-
-        if "value_preds" in data:
-            self.value_preds[self.step] = data["value_preds"].copy()
-        if "rewards" in data:
-            self.rewards[self.step + 1] = data["rewards"].copy()
-        if "masks" in data:
-            self.masks[self.step + 1] = data["masks"].copy()
-
-        if "bad_masks" in data:
-            self.bad_masks[self.step + 1] = data["bad_masks"].copy()
-        if "active_masks" in data:
-            self.active_masks[self.step + 1] = data["active_masks"].copy()
-        if "action_masks" in data:
-            self.action_masks[self.step + 1] = data["action_masks"].copy()
-
-        if (self.step + 1) % self.episode_length != 0:
-            self.first_insert_flag = False
-        self.step = (self.step + 1) % self.episode_length
+    # def dict_insert(self, data):
+    #     if self._mixed_obs:
+    #         for key in self.critic_obs.keys():
+    #             self.critic_obs[key][self.step + 1] = data["critic_obs"][key].copy()
+    #         for key in self.policy_obs.keys():
+    #             self.policy_obs[key][self.step + 1] = data["policy_obs"][key].copy()
+    #         for key in self.next_policy_obs.keys():
+    #             self.next_policy_obs[key][self.step + 1] = data["next_policy_obs"][
+    #                 key
+    #             ].copy()
+    #         for key in self.next_critic_obs.keys():
+    #             self.next_critic_obs[key][self.step + 1] = data["next_critic_obs"][
+    #                 key
+    #             ].copy()
+    #     else:
+    #         self.critic_obs[self.step + 1] = data["critic_obs"].copy()
+    #         self.policy_obs[self.step + 1] = data["policy_obs"].copy()
+    #         self.next_policy_obs[self.step + 1] = data["next_policy_obs"].copy()
+    #         self.next_critic_obs[self.step + 1] = data["next_critic_obs"].copy()
+    #
+    #     if "rnn_states" in data:
+    #         self.rnn_states[self.step + 1] = data["rnn_states"].copy()
+    #     if "rnn_states_critic" in data:
+    #         self.rnn_states_critic[self.step + 1] = data["rnn_states_critic"].copy()
+    #     if "actions" in data:
+    #         self.actions[self.step + 1] = data["actions"].copy()
+    #     if "action_log_probs" in data:
+    #         self.action_log_probs[self.step] = data["action_log_probs"].copy()
+    #
+    #     if "value_preds" in data:
+    #         self.value_preds[self.step] = data["value_preds"].copy()
+    #     if "rewards" in data:
+    #         self.rewards[self.step + 1] = data["rewards"].copy()
+    #     if "masks" in data:
+    #         self.masks[self.step + 1] = data["masks"].copy()
+    #
+    #     if "bad_masks" in data:
+    #         self.bad_masks[self.step + 1] = data["bad_masks"].copy()
+    #     if "active_masks" in data:
+    #         self.active_masks[self.step + 1] = data["active_masks"].copy()
+    #     if "action_masks" in data:
+    #         self.action_masks[self.step + 1] = data["action_masks"].copy()
+    #
+    #     if (self.step + 1) % self.episode_length != 0:
+    #         self.first_insert_flag = False
+    #     self.step = (self.step + 1) % self.episode_length
 
     def init_buffer(self, raw_obs, action_masks=None):
         critic_obs = get_critic_obs(raw_obs)

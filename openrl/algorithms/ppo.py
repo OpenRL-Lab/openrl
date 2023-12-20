@@ -187,7 +187,7 @@ class PPOAlgorithm(BaseAlgorithm):
             -self.clip_param, self.clip_param
         )
 
-        if self._use_popart or self._use_valuenorm:
+        if (self._use_popart or self._use_valuenorm) and value_normalizer is not None:
             value_normalizer.update(return_batch)
             error_clipped = (
                 value_normalizer.normalize(return_batch) - value_pred_clipped
@@ -390,9 +390,12 @@ class PPOAlgorithm(BaseAlgorithm):
                 ].module.value_normalizer
             else:
                 value_normalizer = self.algo_module.get_critic_value_normalizer()
-            advantages = buffer.returns[:-1] - value_normalizer.denormalize(
-                buffer.value_preds[:-1]
-            )
+            if value_normalizer is not None:
+                advantages = buffer.returns[:-1] - value_normalizer.denormalize(
+                    buffer.value_preds[:-1]
+                )
+            else:
+                advantages = buffer.returns[:-1] - buffer.value_preds[:-1]
         else:
             advantages = buffer.returns[:-1] - buffer.value_preds[:-1]
 
