@@ -46,7 +46,6 @@ class PolicyNetworkGPT(BasePolicyNetwork):
         disable_drop_out: bool = True,
         extra_args=None,
     ) -> None:
-
         self.device = device
         self.use_fp16 = cfg.use_fp16
         self.use_deepspeed = cfg.use_deepspeed

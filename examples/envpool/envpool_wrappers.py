@@ -9,8 +9,7 @@ from envpool.python.protocol import EnvPool
 from packaging import version
 from stable_baselines3.common.vec_env import VecEnvWrapper as BaseWrapper
 from stable_baselines3.common.vec_env import VecMonitor
-from stable_baselines3.common.vec_env.base_vec_env import (VecEnvObs,
-                                                           VecEnvStepReturn)
+from stable_baselines3.common.vec_env.base_vec_env import VecEnvObs, VecEnvStepReturn
 
 is_legacy_gym = version.parse(gym.__version__) < version.parse("0.26.0")
 
@@ -114,9 +113,9 @@ class VecMonitor(VecEnvWrapper):
 
         if is_wrapped_with_monitor:
             warnings.warn(
-                "The environment is already wrapped with a `Monitor` wrapper"
-                "but you are wrapping it with a `VecMonitor` wrapper, the `Monitor` statistics will be"
-                "overwritten by the `VecMonitor` ones.",
+                "The environment is already wrapped with a `Monitor` wrapperbut you are"
+                " wrapping it with a `VecMonitor` wrapper, the `Monitor` statistics"
+                " will beoverwritten by the `VecMonitor` ones.",
                 UserWarning,
             )
 

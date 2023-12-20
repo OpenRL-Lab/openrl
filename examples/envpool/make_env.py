@@ -5,9 +5,12 @@ from typing import Callable, Iterable, List, Optional, Union
 import envpool
 from gymnasium import Env
 
-
-from openrl.envs.vec_env import (AsyncVectorEnv, RewardWrapper,
-                                 SyncVectorEnv, VecMonitorWrapper)
+from openrl.envs.vec_env import (
+    AsyncVectorEnv,
+    RewardWrapper,
+    SyncVectorEnv,
+    VecMonitorWrapper,
+)
 from openrl.envs.vec_env.vec_info import VecInfoFactory
 from openrl.envs.wrappers.base_wrapper import BaseWrapper
 from openrl.rewards import RewardFactory
@@ -76,7 +79,7 @@ def make_envpool_envs(
     assert kwargs.get("env_type") in ["gym", "dm", "gymnasium"]
     kwargs["envpool"] = True
 
-    if 'env_wrappers' in kwargs:
+    if "env_wrappers" in kwargs:
         env_wrappers = kwargs.pop("env_wrappers")
     else:
         env_wrappers = []
