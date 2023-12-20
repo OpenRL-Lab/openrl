@@ -234,10 +234,13 @@ class CatSelfEmbedding(nn.Module):
             K = self.split_shape[i][0]
             L = self.split_shape[i][1]
             for j in range(K):
-                torch.cat((x[i][:, (L * j) : (L * j + L)], self_x), dim=-1)
-                exec("x1.append(self.fc_{}(temp))".format(i))
-        x[self_idx]
-        exec("x1.append(self.fc_{}(temp))".format(N - 1))
+                # torch.cat((x[i][:, (L * j) : (L * j + L)], self_x), dim=-1)
+                # exec("x1.append(self.fc_{}(temp))".format(i))
+                temp = torch.cat((x[i][:, (L * j) : (L * j + L)], self_x), dim=-1)
+                x1.append(getattr(self, "fc_" + str(i))(temp))
+        x1.append(getattr(self, "fc_" + str(N - 1))(self_x))
+        # x[self_idx]
+        # exec("x1.append(self.fc_{}(temp))".format(N - 1))
 
         out = torch.stack(x1, 1)
 
@@ -278,8 +281,10 @@ class Embedding(nn.Module):
             K = self.split_shape[i][0]
             L = self.split_shape[i][1]
             for j in range(K):
-                x[i][:, (L * j) : (L * j + L)]
-                exec("x1.append(self.fc_{}(temp))".format(i))
+                # x[i][:, (L * j) : (L * j + L)]
+                # exec("x1.append(self.fc_{}(temp))".format(i))
+                temp = x[i][:, (L * j) : (L * j + L)]
+                x1.append(getattr(self, "fc_" + str(i))(temp))
 
         out = torch.stack(x1, 1)
 

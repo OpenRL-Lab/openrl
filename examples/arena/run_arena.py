@@ -17,6 +17,7 @@
 """"""
 from openrl.arena import make_arena
 from openrl.arena.agents.local_agent import LocalAgent
+from openrl.arena.agents.random_agent import RandomAgent
 from openrl.envs.wrappers.pettingzoo_wrappers import RecordWinner
 
 
@@ -37,7 +38,7 @@ def run_arena(
     arena = make_arena("tictactoe_v3", env_wrappers=env_wrappers, use_tqdm=use_tqdm)
 
     agent1 = LocalAgent("../selfplay/opponent_templates/random_opponent")
-    agent2 = LocalAgent("../selfplay/opponent_templates/random_opponent")
+    agent2 = RandomAgent()
 
     arena.reset(
         agents={"agent1": agent1, "agent2": agent2},
@@ -52,5 +53,12 @@ def run_arena(
 
 
 if __name__ == "__main__":
-    run_arena(render=False, parallel=True, seed=0, total_games=100, max_game_onetime=10)
-    # run_arena(render=False, parallel=False, seed=1, total_games=1, max_game_onetime=1,use_tqdm=False)
+    # run_arena(render=False, parallel=True, seed=0, total_games=100, max_game_onetime=10)
+    run_arena(
+        render=False,
+        parallel=False,
+        seed=1,
+        total_games=300,
+        max_game_onetime=1,
+        use_tqdm=False,
+    )

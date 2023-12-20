@@ -33,7 +33,7 @@ from openrl.selfplay.selfplay_api.base_api import (
 from openrl.selfplay.selfplay_api.opponent_model import BattleResult
 
 
-@serve.deployment(route_prefix="/selfplay")
+@serve.deployment()
 @serve.ingress(app)
 class SelfplayAPIServer(BaseSelfplayAPIServer):
     @app.post("/set_sample_strategy")

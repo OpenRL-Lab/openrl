@@ -18,6 +18,7 @@
 
 
 import functools
+import time
 
 import gymnasium
 import numpy as np
@@ -54,7 +55,7 @@ class RockPaperScissors(AECEnv):
 
     metadata = {"render_modes": ["human"], "name": "rps_v2"}
 
-    def __init__(self, render_mode=None):
+    def __init__(self, id, render_mode=None):
         """
         The init method takes in environment arguments and
          should define the following attributes:
@@ -122,8 +123,8 @@ class RockPaperScissors(AECEnv):
         """
         # observation of one agent is the previous state of the other
         # return np.array(self.observations[agent])
-        obs = np.zeros(4, dtype=np.int64)
-        obs[self.observations[agent]] = 1
+        obs = np.zeros([1, 4], dtype=np.int64)
+        obs[0, self.observations[agent]] = 1
         return obs
 
     def close(self):
@@ -182,6 +183,7 @@ class RockPaperScissors(AECEnv):
             # handles stepping an agent which is already dead
             # accepts a None action for the one agent, and moves the agent_selection to
             # the next dead agent,  or if there are no more dead agents, to the next live agent
+            action = None
             self._was_dead_step(action)
             return
 

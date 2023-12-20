@@ -33,7 +33,9 @@ def act_space():
     return spaces.Discrete(2)
 
 
-@pytest.fixture(scope="module", params=["", "--use_share_model true"])
+@pytest.fixture(
+    scope="module", params=["--use_share_model false", "--use_share_model true"]
+)
 def config(request):
     from openrl.configs.config import create_config_parser
 

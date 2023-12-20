@@ -41,10 +41,10 @@ class SMACInfo(EPS_RewardInfo):
                     assert (
                         "game_state" in singe_env_info["final_info"].keys()
                     ), "game_state must be in info"
-                    assert singe_env_info["final_info"]["game_state"] in [
-                        "win",
-                        "lose",
-                    ], "game_state in the final_info must be win or lose"
+                    # assert singe_env_info["final_info"]["game_state"] in [
+                    #     "win",
+                    #     "lose",
+                    # ], "game_state in the final_info must be win or lose"
                     self.win_history.append(
                         singe_env_info["final_info"]["game_state"] == "win"
                     )

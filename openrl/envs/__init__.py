@@ -16,12 +16,9 @@ connect_all_envs = [
 
 toy_all_envs = [
     "BitFlippingEnv",
-    "FakeImageEnv",
     "IdentityEnv",
     "IdentityEnvcontinuous",
     "IdentityEnvBox",
-    "IdentityEnvMultiBinary",
-    "IdentityEnvMultiDiscrete",
     "SimpleMultiObsEnv",
     "SimpleMultiObsEnv",
 ]

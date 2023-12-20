@@ -56,6 +56,9 @@ class PolicyNetwork(BasePolicyNetwork):
         self.use_half = use_half
         self.tpdv = dict(dtype=torch.float32, device=device)
 
+        self._use_fp16 = cfg.use_fp16
+        assert not (cfg.use_fp16 and not cfg.use_deepspeed)
+
         policy_obs_shape = get_policy_obs_space(input_space)
 
         if "Dict" in policy_obs_shape.__class__.__name__:
@@ -135,8 +138,9 @@ class PolicyNetwork(BasePolicyNetwork):
                     policy_obs[key].half()
         else:
             policy_obs = check(policy_obs, self.use_half, self.tpdv)
-            # if self.use_half:
-            #     obs = obs.half()
+            if self.use_half or self._use_fp16:
+                policy_obs = policy_obs.half()
+
         rnn_states = check(rnn_states, self.use_half, self.tpdv)
         masks = check(masks, self.use_half, self.tpdv)
 
@@ -165,6 +169,8 @@ class PolicyNetwork(BasePolicyNetwork):
                 obs[key] = check(obs[key], self.use_half, self.tpdv)
         else:
             obs = check(obs, self.use_half, self.tpdv)
+            if self._use_fp16:
+                obs = obs.half()
 
         rnn_states = check(rnn_states, self.use_half, self.tpdv)
         action = check(action, self.use_half, self.tpdv)
@@ -202,6 +208,8 @@ class PolicyNetwork(BasePolicyNetwork):
                 obs[key] = check(obs[key], self.use_half, self.tpdv)
         else:
             obs = check(obs).to(**self.tpdv)
+            if self.use_half or self._use_fp16:
+                obs = obs.half()
         rnn_states = check(rnn_states, self.use_half, self.tpdv)
         masks = check(masks, self.use_half, self.tpdv)
 

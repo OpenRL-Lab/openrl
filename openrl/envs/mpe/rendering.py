@@ -1,6 +1,7 @@
 """
 2D rendering framework
 """
+
 from __future__ import division
 
 import os
@@ -26,15 +27,14 @@ except ImportError:
 
 try:
     from pyglet.gl import *
+
 except ImportError:
     print(
         "Error occured while running `from pyglet.gl import *`",
-        (
-            "HINT: make sure you have OpenGL install. On Ubuntu, you can run 'apt-get"
-            " install python-opengl'. If you're running on a server, you may need a"
-            " virtual frame buffer; something like this should work: 'xvfb-run -s"
-            ' "-screen 0 1400x900x24" python <your_script.py>\''
-        ),
+        "HINT: make sure you have OpenGL install. On Ubuntu, you can run 'apt-get"
+        " install python-opengl'. If you're running on a server, you may need a"
+        " virtual frame buffer; something like this should work: 'xvfb-run -s"
+        ' "-screen 0 1400x900x24" python <your_script.py>\'',
     )
 
 import math
@@ -320,28 +320,6 @@ def make_polyline(v):
     return PolyLine(v, False)
 
 
-def make_capsule(length, width):
-    left, r, t, b = 0, length, width / 2, -width / 2
-    box = make_polygon([(left, b), (left, t), (r, t), (r, b)])
-    circ0 = make_circle(width / 2)
-    circ1 = make_circle(width / 2)
-    circ1.add_attr(Transform(translation=(length, 0)))
-    geom = Compound([box, circ0, circ1])
-    return geom
-
-
-class Compound(Geom):
-    def __init__(self, gs):
-        Geom.__init__(self)
-        self.gs = gs
-        for g in self.gs:
-            g.attrs = [a for a in g.attrs if not isinstance(a, Color)]
-
-    def render1(self):
-        for g in self.gs:
-            g.render()
-
-
 class PolyLine(Geom):
     def __init__(self, v, close):
         Geom.__init__(self)
@@ -373,59 +351,3 @@ class Line(Geom):
         glVertex2f(*self.start)
         glVertex2f(*self.end)
         glEnd()
-
-
-class Image(Geom):
-    def __init__(self, fname, width, height):
-        Geom.__init__(self)
-        self.width = width
-        self.height = height
-        img = pyglet.image.load(fname)
-        self.img = img
-        self.flip = False
-
-    def render1(self):
-        self.img.blit(
-            -self.width / 2, -self.height / 2, width=self.width, height=self.height
-        )
-
-
-# ================================================================
-
-
-class SimpleImageViewer(object):
-    def __init__(self, display=None):
-        self.window = None
-        self.isopen = False
-        self.display = display
-
-    def imshow(self, arr):
-        if self.window is None:
-            height, width, channels = arr.shape
-            self.window = pyglet.window.Window(
-                width=width, height=height, display=self.display
-            )
-            self.width = width
-            self.height = height
-            self.isopen = True
-        assert arr.shape == (
-            self.height,
-            self.width,
-            3,
-        ), "You passed in an image with the wrong number shape"
-        image = pyglet.image.ImageData(
-            self.width, self.height, "RGB", arr.tobytes(), pitch=self.width * -3
-        )
-        self.window.clear()
-        self.window.switch_to()
-        self.window.dispatch_events()
-        image.blit(0, 0)
-        self.window.flip()
-
-    def close(self):
-        if self.isopen:
-            self.window.close()
-            self.isopen = False
-
-    def __del__(self):
-        self.close()

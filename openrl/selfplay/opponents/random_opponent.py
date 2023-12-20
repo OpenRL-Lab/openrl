@@ -47,11 +47,20 @@ class RandomOpponent(BaseOpponent):
             action = []
 
             for obs, space in zip(observation, action_space):
-                mask = obs.get("action_mask", None)
-                action.append(space.sample(mask))
+                if termination or truncation:
+                    action.append(None)
+                else:
+                    if isinstance(obs, dict):
+                        mask = obs.get("action_mask", None)
+                    else:
+                        mask = None
+                    action.append(space.sample(mask))
         else:
-            mask = observation.get("action_mask", None)
-            action = action_space.sample(mask)
+            if termination or truncation:
+                action = None
+            else:
+                mask = observation.get("action_mask", None)
+                action = action_space.sample(mask)
         return action
 
     def _load(self, opponent_path: Union[str, Path]):

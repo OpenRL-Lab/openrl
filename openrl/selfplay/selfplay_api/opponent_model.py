@@ -49,7 +49,7 @@ class BattleHistory:
         result = {}
         result["win_rate"] = float(self.num_wins) / max(self.num_games, 1)
         result["draw_rate"] = float(self.num_draws) / max(self.num_games, 1)
-        result["loss_rate"] = float(self.num_losses) / max(self.num_games, 1)
+        result["lose_rate"] = float(self.num_losses) / max(self.num_games, 1)
         result["total_games"] = self.num_games
         return result
 

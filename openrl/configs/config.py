@@ -498,13 +498,14 @@ def create_config_parser():
     )
     parser.add_argument(
         "--use_popart",
-        action="store_true",
         default=False,
+        type=bool,
         help="by default False, use PopArt to normalize rewards.",
     )
     parser.add_argument(
         "--dual_clip_ppo",
         default=False,
+        type=bool,
         help="by default False, use dual-clip ppo.",
     )
     parser.add_argument(
@@ -618,7 +619,7 @@ def create_config_parser():
     )
     parser.add_argument(
         "--use_average_pool",
-        action="store_false",
+        type=bool,
         default=True,
         help="by default True, use average pooling for attn model.",
     )
@@ -730,8 +731,8 @@ def create_config_parser():
     )
     parser.add_argument(
         "--use_gae",
-        action="store_false",
         default=True,
+        type=bool,
         help="use generalized advantage estimation",
     )
     parser.add_argument(
@@ -748,8 +749,8 @@ def create_config_parser():
     )
     parser.add_argument(
         "--use_proper_time_limits",
-        action="store_true",
         default=False,
+        type=bool,
         help="compute returns taking into account time limits",
     )
     parser.add_argument(
@@ -1233,6 +1234,30 @@ def create_config_parser():
         default=0.5,
         type=float,
         help="newest_weight",
+    )
+    parser.add_argument(
+        "--use_deepspeed",
+        default=False,
+        type=bool,
+        help="whether to use deepspeed",
+    )
+    parser.add_argument(
+        "--local_rank",
+        default=-1,
+        type=int,
+        help="local_rank",
+    )
+    parser.add_argument(
+        "--use_offload",
+        default=False,
+        type=bool,
+        help="whether to use offload (deepspeed)",
+    )
+    parser.add_argument(
+        "--use_fp16",
+        default=False,
+        type=bool,
+        help="whether to use fp16 (deepspeed)",
     )
 
     return parser

@@ -1,4 +1,5 @@
 """An async vector environment."""
+
 import multiprocessing as mp
 import sys
 import time
@@ -233,10 +234,8 @@ class AsyncVectorEnv(BaseVecEnv):
 
         if self._state != AsyncState.DEFAULT:
             raise AlreadyPendingCallError(
-                (
-                    "Calling `reset_send` while waiting for a pending call to"
-                    f" `{self._state.value}` to complete"
-                ),
+                "Calling `reset_send` while waiting for a pending call to"
+                f" `{self._state.value}` to complete",
                 self._state.value,
             )
 
@@ -328,10 +327,8 @@ class AsyncVectorEnv(BaseVecEnv):
         self._assert_is_running()
         if self._state != AsyncState.DEFAULT:
             raise AlreadyPendingCallError(
-                (
-                    "Calling `step_send` while waiting for a pending call to"
-                    f" `{self._state.value}` to complete."
-                ),
+                "Calling `step_send` while waiting for a pending call to"
+                f" `{self._state.value}` to complete.",
                 self._state.value,
             )
 
@@ -341,9 +338,7 @@ class AsyncVectorEnv(BaseVecEnv):
             pipe.send(("step", action))
         self._state = AsyncState.WAITING_STEP
 
-    def step_fetch(
-        self, timeout: Optional[Union[int, float]] = None
-    ) -> Union[
+    def step_fetch(self, timeout: Optional[Union[int, float]] = None) -> Union[
         Tuple[Any, NDArray[Any], NDArray[Any], List[Dict[str, Any]]],
         Tuple[Any, NDArray[Any], NDArray[Any], NDArray[Any], List[Dict[str, Any]]],
     ]:
@@ -575,10 +570,8 @@ class AsyncVectorEnv(BaseVecEnv):
         self._assert_is_running()
         if self._state != AsyncState.DEFAULT:
             raise AlreadyPendingCallError(
-                (
-                    "Calling `call_send` while waiting "
-                    f"for a pending call to `{self._state.value}` to complete."
-                ),
+                "Calling `call_send` while waiting "
+                f"for a pending call to `{self._state.value}` to complete.",
                 str(self._state.value),
             )
 
@@ -635,10 +628,8 @@ class AsyncVectorEnv(BaseVecEnv):
         self._assert_is_running()
         if self._state != AsyncState.DEFAULT:
             raise AlreadyPendingCallError(
-                (
-                    "Calling `exec_func_send` while waiting "
-                    f"for a pending call to `{self._state.value}` to complete."
-                ),
+                "Calling `exec_func_send` while waiting "
+                f"for a pending call to `{self._state.value}` to complete.",
                 str(self._state.value),
             )
 
@@ -674,6 +665,7 @@ class AsyncVectorEnv(BaseVecEnv):
             )
 
         results, successes = zip(*[pipe.recv() for pipe in self.parent_pipes])
+
         self._raise_if_errors(successes)
         self._state = AsyncState.DEFAULT
 
@@ -715,10 +707,8 @@ class AsyncVectorEnv(BaseVecEnv):
 
         if self._state != AsyncState.DEFAULT:
             raise AlreadyPendingCallError(
-                (
-                    "Calling `set_attr` while waiting "
-                    f"for a pending call to `{self._state.value}` to complete."
-                ),
+                "Calling `set_attr` while waiting "
+                f"for a pending call to `{self._state.value}` to complete.",
                 str(self._state.value),
             )
 
@@ -732,7 +722,7 @@ def _worker(
     index: int,
     env_fn: callable,
     pipe: Connection,
-    parent_pipe: Connection,
+    parent_pipe: Optional[Connection],
     shared_memory: bool,
     error_queue: Queue,
     auto_reset: bool = True,
@@ -756,7 +746,8 @@ def _worker(
             observation = None
         return observation
 
-    parent_pipe.close()
+    if parent_pipe is not None:
+        parent_pipe.close()
     try:
         while True:
             command, data = pipe.recv()
@@ -837,7 +828,7 @@ def _worker(
                 )
             elif command == "_func_exec":
                 function, indices, args, kwargs = data
-                if index in indices:
+                if indices is None or index in indices:
                     if callable(function):
                         pipe.send((function(env, *args, **kwargs), True))
                     else:

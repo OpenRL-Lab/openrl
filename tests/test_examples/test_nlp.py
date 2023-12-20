@@ -17,20 +17,26 @@
 # """"""
 #
 
+import os
+import sys
 
+import pytest
+
+from openrl.configs.config import create_config_parser
 from openrl.envs.common import make
 from openrl.modules.common import PPONet as Net
 from openrl.runners.common import PPOAgent as Agent
 
 
-def config():
-    from openrl.configs.config import create_config_parser
-
+# @pytest.fixture(scope="module", params=["--env.args {'data_path':None,'tokenizer_path':'builtin_BPE'}"])
+@pytest.fixture(scope="module", params=[""])
+def config(request):
     cfg_parser = create_config_parser()
-    cfg = cfg_parser.parse_args()
+    cfg = cfg_parser.parse_args(request.param.split())
     return cfg
 
 
+@pytest.mark.unittest
 def test_train_nlp(config):
     env = make("fake_dialog_data", env_num=3, cfg=config)
     agent = Agent(Net(env))
@@ -38,5 +44,4 @@ def test_train_nlp(config):
 
 
 if __name__ == "__main__":
-    cfg = config()
-    test_train_nlp(cfg)
+    sys.exit(pytest.main(["-sv", os.path.basename(__file__)]))

@@ -1,5 +1,5 @@
 <div align="center">
-    <a href="https://openrl-docs.readthedocs.io/zh/latest/index.html"><img width="450px" height="auto" src="docs/images/openrl_text.png"></a>
+    <a href="https://openrl-docs.readthedocs.io/"><img width="450px" height="auto" src="docs/images/openrl_text.png"></a>
 </div>
 
 ---
@@ -25,10 +25,10 @@
 [![Contributors](https://img.shields.io/github/contributors/OpenRL-Lab/openrl)](https://github.com/OpenRL-Lab/openrl/graphs/contributors)
 [![GitHub license](https://img.shields.io/github/license/OpenRL-Lab/openrl)](https://github.com/OpenRL-Lab/openrl/blob/master/LICENSE)
 
-[![Embark](https://img.shields.io/badge/discord-OpenRL-%237289da.svg?logo=discord)](https://discord.gg/guvAS2up)
+[![Embark](https://img.shields.io/badge/discord-OpenRL-%237289da.svg?logo=discord)](https://discord.gg/qMbVT2qBhr)
 [![slack badge](https://img.shields.io/badge/Slack-join-blueviolet?logo=slack&amp)](https://join.slack.com/t/openrlhq/shared_invite/zt-1tqwpvthd-Eeh0IxQ~DIaGqYXoW2IUQg)
 
-OpenRL-v0.1.7 is updated on Sep 21, 2023
+OpenRL-v0.2.0 is updated on Dec 20, 2023
 
 The main branch is the latest version of OpenRL, which is under active development. If you just want to have a try with
 OpenRL, you can switch to the stable branch.
@@ -57,6 +57,8 @@ Currently, the features supported by OpenRL include:
 - Support self-play training
 
 - Reinforcement learning training support for natural language tasks (such as dialogue)
+
+- Support [DeepSpeed](https://github.com/microsoft/DeepSpeed)
 
 - Support [Arena](https://openrl-docs.readthedocs.io/en/latest/arena/index.html) , which allows convenient evaluation of
   various agents (even submissions for [JiDi](https://openrl-docs.readthedocs.io/en/latest/arena/index.html#performing-local-evaluation-of-agents-submitted-to-the-jidi-platform-using-openrl)) in a competitive environment.
@@ -160,19 +162,19 @@ Here we provide a table for the comparison of OpenRL and existing popular RL lib
 OpenRL employs a modular design and high-level abstraction, allowing users to accomplish training for various tasks
 through a unified and user-friendly interface.
 
-|                              Library                               |      NLP/RLHF      |     Multi-agent      |  Self-Play Training  |     Offline RL     | Bilingual Document | 
-|:------------------------------------------------------------------:|:------------------:|:--------------------:|:--------------------:|:------------------:|:------------------:| 
-|         **[OpenRL](https://github.com/OpenRL-Lab/openrl)**         | :heavy_check_mark: |  :heavy_check_mark:  |  :heavy_check_mark:  | :heavy_check_mark: | :heavy_check_mark: |
-|  [Stable Baselines3](https://github.com/DLR-RM/stable-baselines3)  |        :x:         |         :x:          |         :x:          |        :x:         |        :x:         |
-| [Ray/RLlib](https://github.com/ray-project/ray/tree/master/rllib/) |        :x:         |  :heavy_check_mark:  |  :heavy_check_mark:  | :heavy_check_mark: |        :x:         |
-|        [DI-engine](https://github.com/opendilab/DI-engine/)        |        :x:         |  :heavy_check_mark:  | not fullly supported | :heavy_check_mark: | :heavy_check_mark: |
-|           [Tianshou](https://github.com/thu-ml/tianshou)           |        :x:         | not fullly supported | not fullly supported | :heavy_check_mark: | :heavy_check_mark: |
-|       [MARLlib](https://github.com/Replicable-MARL/MARLlib)        |        :x:         |  :heavy_check_mark:  | not fullly supported |        :x:         |        :x:         |
-|   [MAPPO Benchmark](https://github.com/marlbenchmark/on-policy)    |        :x:         |  :heavy_check_mark:  |         :x:          |        :x:         |        :x:         |
-|            [RL4LMs](https://github.com/allenai/RL4LMs)             | :heavy_check_mark: |         :x:          |         :x:          |        :x:         |        :x:         |
-|              [trlx](https://github.com/CarperAI/trlx)              | :heavy_check_mark: |         :x:          |         :x:          |        :x:         |        :x:         |
-|             [trl](https://github.com/huggingface/trl)              | :heavy_check_mark: |         :x:          |         :x:          |        :x:         |        :x:         |
-|       [TimeChamber](https://github.com/inspirai/TimeChamber)       |        :x:         |         :x:          |  :heavy_check_mark:  |        :x:         |        :x:         |
+|                              Library                               |      NLP/RLHF      |     Multi-agent      |  Self-Play Training  |     Offline RL     |      [DeepSpeed](https://github.com/microsoft/DeepSpeed)       | 
+|:------------------------------------------------------------------:|:------------------:|:--------------------:|:--------------------:|:------------------:|:--------------------:| 
+|         **[OpenRL](https://github.com/OpenRL-Lab/openrl)**         | :heavy_check_mark: |  :heavy_check_mark:  |  :heavy_check_mark:  | :heavy_check_mark: |  :heavy_check_mark:  |
+|  [Stable Baselines3](https://github.com/DLR-RM/stable-baselines3)  |        :x:         |         :x:          |         :x:          |        :x:         |         :x:          |
+| [Ray/RLlib](https://github.com/ray-project/ray/tree/master/rllib/) |        :x:         |  :heavy_check_mark:  |  :heavy_check_mark:  | :heavy_check_mark: |         :x:          |
+|        [DI-engine](https://github.com/opendilab/DI-engine/)        |        :x:         |  :heavy_check_mark:  | not fullly supported | :heavy_check_mark: |         :x:          |
+|           [Tianshou](https://github.com/thu-ml/tianshou)           |        :x:         | not fullly supported | not fullly supported | :heavy_check_mark: |           :x:           |
+|       [MARLlib](https://github.com/Replicable-MARL/MARLlib)        |        :x:         |  :heavy_check_mark:  | not fullly supported |        :x:         |         :x:          |
+|   [MAPPO Benchmark](https://github.com/marlbenchmark/on-policy)    |        :x:         |  :heavy_check_mark:  |         :x:          |        :x:         |         :x:          |
+|            [RL4LMs](https://github.com/allenai/RL4LMs)             | :heavy_check_mark: |         :x:          |         :x:          |        :x:         |         :x:          |
+|              [trlx](https://github.com/CarperAI/trlx)              | :heavy_check_mark: |         :x:          |         :x:          |        :x:         |        :heavy_check_mark:          |
+|             [trl](https://github.com/huggingface/trl)              | :heavy_check_mark: |         :x:          |         :x:          |        :x:         |         :heavy_check_mark:          |
+|       [TimeChamber](https://github.com/inspirai/TimeChamber)       |        :x:         |         :x:          |  :heavy_check_mark:  |        :x:         |         :x:          |
 
 ## Installation
 
@@ -333,7 +335,7 @@ If you are using OpenRL in your research project, you are also welcome to join t
 
 - Join the [slack](https://join.slack.com/t/openrlhq/shared_invite/zt-1tqwpvthd-Eeh0IxQ~DIaGqYXoW2IUQg) group to discuss
   OpenRL usage and development with us.
-- Join the [Discord](https://discord.gg/guvAS2up) group to discuss OpenRL usage and development with us.
+- Join the [Discord](https://discord.gg/qMbVT2qBhr) group to discuss OpenRL usage and development with us.
 - Send an E-mail to: [huangshiyu@4paradigm.com](huangshiyu@4paradigm.com)
 - Join the [GitHub Discussion](https://github.com/orgs/OpenRL-Lab/discussions).
 

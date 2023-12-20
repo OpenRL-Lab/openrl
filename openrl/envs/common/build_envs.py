@@ -2,6 +2,7 @@ import copy
 import inspect
 from typing import Callable, Iterable, List, Optional, Union
 
+import gymnasium as gym
 from gymnasium import Env
 
 from openrl.envs.wrappers.base_wrapper import BaseWrapper
@@ -33,6 +34,8 @@ def build_envs(
             if need_env_id:
                 new_kwargs["env_id"] = env_id
                 new_kwargs["env_num"] = env_num
+            if id.startswith("ALE/") or id in gym.envs.registry.keys():
+                new_kwargs.pop("cfg", None)
 
             env = make(
                 id,

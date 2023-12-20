@@ -198,49 +198,49 @@ class ReplayData(object):
         else:
             return np.concatenate(data[step])
 
-    def all_batch_data(self, data_name: str, min=None, max=None):
-        assert hasattr(self, data_name)
-        data = getattr(self, data_name)
+    # def all_batch_data(self, data_name: str, min=None, max=None):
+    #     assert hasattr(self, data_name)
+    #     data = getattr(self, data_name)
+    #
+    #     if isinstance(data, ObsData):
+    #         return data.all_batch(min, max)
+    #     else:
+    #         return data[min:max].reshape((-1, *data.shape[3:]))
 
-        if isinstance(data, ObsData):
-            return data.all_batch(min, max)
-        else:
-            return data[min:max].reshape((-1, *data.shape[3:]))
-
-    def dict_insert(self, data):
-        if self._mixed_obs:
-            for key in self.critic_obs.keys():
-                self.critic_obs[key][self.step + 1] = data["critic_obs"][key].copy()
-            for key in self.policy_obs.keys():
-                self.policy_obs[key][self.step + 1] = data["policy_obs"][key].copy()
-        else:
-            self.critic_obs[self.step + 1] = data["critic_obs"].copy()
-            self.policy_obs[self.step + 1] = data["policy_obs"].copy()
-
-        if "rnn_states" in data:
-            self.rnn_states[self.step + 1] = data["rnn_states"].copy()
-        if "rnn_states_critic" in data:
-            self.rnn_states_critic[self.step + 1] = data["rnn_states_critic"].copy()
-        if "actions" in data:
-            self.actions[self.step] = data["actions"].copy()
-        if "action_log_probs" in data:
-            self.action_log_probs[self.step] = data["action_log_probs"].copy()
-
-        if "value_preds" in data:
-            self.value_preds[self.step] = data["value_preds"].copy()
-        if "rewards" in data:
-            self.rewards[self.step] = data["rewards"].copy()
-        if "masks" in data:
-            self.masks[self.step + 1] = data["masks"].copy()
-
-        if "bad_masks" in data:
-            self.bad_masks[self.step + 1] = data["bad_masks"].copy()
-        if "active_masks" in data:
-            self.active_masks[self.step + 1] = data["active_masks"].copy()
-        if "action_masks" in data:
-            self.action_masks[self.step + 1] = data["action_masks"].copy()
-
-        self.step = (self.step + 1) % self.episode_length
+    # def dict_insert(self, data):
+    #     if self._mixed_obs:
+    #         for key in self.critic_obs.keys():
+    #             self.critic_obs[key][self.step + 1] = data["critic_obs"][key].copy()
+    #         for key in self.policy_obs.keys():
+    #             self.policy_obs[key][self.step + 1] = data["policy_obs"][key].copy()
+    #     else:
+    #         self.critic_obs[self.step + 1] = data["critic_obs"].copy()
+    #         self.policy_obs[self.step + 1] = data["policy_obs"].copy()
+    #
+    #     if "rnn_states" in data:
+    #         self.rnn_states[self.step + 1] = data["rnn_states"].copy()
+    #     if "rnn_states_critic" in data:
+    #         self.rnn_states_critic[self.step + 1] = data["rnn_states_critic"].copy()
+    #     if "actions" in data:
+    #         self.actions[self.step] = data["actions"].copy()
+    #     if "action_log_probs" in data:
+    #         self.action_log_probs[self.step] = data["action_log_probs"].copy()
+    #
+    #     if "value_preds" in data:
+    #         self.value_preds[self.step] = data["value_preds"].copy()
+    #     if "rewards" in data:
+    #         self.rewards[self.step] = data["rewards"].copy()
+    #     if "masks" in data:
+    #         self.masks[self.step + 1] = data["masks"].copy()
+    #
+    #     if "bad_masks" in data:
+    #         self.bad_masks[self.step + 1] = data["bad_masks"].copy()
+    #     if "active_masks" in data:
+    #         self.active_masks[self.step + 1] = data["active_masks"].copy()
+    #     if "action_masks" in data:
+    #         self.action_masks[self.step + 1] = data["action_masks"].copy()
+    #
+    #     self.step = (self.step + 1) % self.episode_length
 
     def insert(
         self,
@@ -323,7 +323,9 @@ class ReplayData(object):
                 self.value_preds[-1] = next_value
                 gae = 0
                 for step in reversed(range(self.rewards.shape[0])):
-                    if self._use_popart or self._use_valuenorm:
+                    if (
+                        self._use_popart or self._use_valuenorm
+                    ) and value_normalizer is not None:
                         # step + 1
                         delta = (
                             self.rewards[step]
@@ -357,7 +359,9 @@ class ReplayData(object):
             else:
                 self.returns[-1] = next_value
                 for step in reversed(range(self.rewards.shape[0])):
-                    if self._use_popart or self._use_valuenorm:
+                    if (
+                        self._use_popart or self._use_valuenorm
+                    ) and value_normalizer is not None:
                         self.returns[step] = (
                             self.returns[step + 1] * self.gamma * self.masks[step + 1]
                             + self.rewards[step]
@@ -947,119 +951,119 @@ class ReplayData(object):
 
             yield critic_obs_batch, policy_obs_batch, rnn_states_batch, rnn_states_critic_batch, actions_batch, value_preds_batch, return_batch, masks_batch, active_masks_batch, old_action_log_probs_batch, adv_targ, action_masks_batch
 
-    def recurrent_generator_v2(
-        self, advantages, num_mini_batch=None, mini_batch_size=None
-    ):
-        """
-        Yield training data for MLP policies.
-        :param advantages: (np.ndarray) advantage estimates.
-        :param num_mini_batch: (int) number of minibatches to split the batch into.
-        :param mini_batch_size: (int) number of samples in each minibatch.
-        """
-        episode_length, n_rollout_threads, num_agents = self.rewards.shape[0:3]
-        batch_size = n_rollout_threads * episode_length
-
-        if mini_batch_size is None:
-            assert (
-                batch_size >= num_mini_batch
-            ), (
-                "PPO requires the number of processes ({}) "
-                "* number of steps ({}) = {} "
-                "to be greater than or equal to the number of PPO mini batches ({})."
-                "".format(
-                    n_rollout_threads,
-                    episode_length,
-                    n_rollout_threads * episode_length,
-                    num_mini_batch,
-                )
-            )
-            mini_batch_size = batch_size // num_mini_batch
-
-        rand = torch.randperm(batch_size).numpy()
-        sampler = [
-            rand[i * mini_batch_size : (i + 1) * mini_batch_size]
-            for i in range(num_mini_batch)
-        ]
-
-        # keep (num_agent, dim)
-        critic_obs = self.critic_obs[:-1].reshape(-1, *self.critic_obs.shape[2:])
-
-        policy_obs = self.policy_obs[:-1].reshape(-1, *self.policy_obs.shape[2:])
-
-        rnn_states = self.rnn_states[:-1].reshape(-1, *self.rnn_states.shape[2:])
-
-        rnn_states_critic = self.rnn_states_critic[:-1].reshape(
-            -1, *self.rnn_states_critic.shape[2:]
-        )
-
-        actions = self.actions.reshape(-1, *self.actions.shape[2:])
-
-        if self.action_masks is not None:
-            action_masks = self.action_masks[:-1].reshape(
-                -1, *self.action_masks.shape[2:]
-            )
-
-        value_preds = self.value_preds[:-1].reshape(-1, *self.value_preds.shape[2:])
-
-        returns = self.returns[:-1].reshape(-1, *self.returns.shape[2:])
-
-        masks = self.masks[:-1].reshape(-1, *self.masks.shape[2:])
-
-        active_masks = self.active_masks[:-1].reshape(-1, *self.active_masks.shape[2:])
-
-        action_log_probs = self.action_log_probs.reshape(
-            -1, *self.action_log_probs.shape[2:]
-        )
-
-        advantages = advantages.reshape(-1, *advantages.shape[2:])
-
-        shuffle = False
-        if shuffle:
-            rows, cols = _shuffle_agent_grid(batch_size, num_agents)
-
-            if self.action_masks is not None:
-                action_masks = action_masks[rows, cols]
-            critic_obs = critic_obs[rows, cols]
-            policy_obs = policy_obs[rows, cols]
-            rnn_states = rnn_states[rows, cols]
-            rnn_states_critic = rnn_states_critic[rows, cols]
-            actions = actions[rows, cols]
-            value_preds = value_preds[rows, cols]
-            returns = returns[rows, cols]
-            masks = masks[rows, cols]
-            active_masks = active_masks[rows, cols]
-            action_log_probs = action_log_probs[rows, cols]
-            advantages = advantages[rows, cols]
-
-        for indices in sampler:
-            # [L,T,N,Dim]-->[L*T,N,Dim]-->[index,N,Dim]-->[index*N, Dim]
-            critic_obs_batch = critic_obs[indices].reshape(-1, *critic_obs.shape[2:])
-            policy_obs_batch = policy_obs[indices].reshape(-1, *policy_obs.shape[2:])
-            rnn_states_batch = rnn_states[indices].reshape(-1, *rnn_states.shape[2:])
-            rnn_states_critic_batch = rnn_states_critic[indices].reshape(
-                -1, *rnn_states_critic.shape[2:]
-            )
-            actions_batch = actions[indices].reshape(-1, *actions.shape[2:])
-            if self.action_masks is not None:
-                action_masks_batch = action_masks[indices].reshape(
-                    -1, *action_masks.shape[2:]
-                )
-            else:
-                action_masks_batch = None
-            value_preds_batch = value_preds[indices].reshape(-1, *value_preds.shape[2:])
-            return_batch = returns[indices].reshape(-1, *returns.shape[2:])
-            masks_batch = masks[indices].reshape(-1, *masks.shape[2:])
-            active_masks_batch = active_masks[indices].reshape(
-                -1, *active_masks.shape[2:]
-            )
-            old_action_log_probs_batch = action_log_probs[indices].reshape(
-                -1, *action_log_probs.shape[2:]
-            )
-            if advantages is None:
-                adv_targ = None
-            else:
-                adv_targ = advantages[indices].reshape(-1, *advantages.shape[2:])
-            yield critic_obs_batch, policy_obs_batch, rnn_states_batch, rnn_states_critic_batch, actions_batch, value_preds_batch, return_batch, masks_batch, active_masks_batch, old_action_log_probs_batch, adv_targ, action_masks_batch
+    # def recurrent_generator_v2(
+    #     self, advantages, num_mini_batch=None, mini_batch_size=None
+    # ):
+    #     """
+    #     Yield training data for MLP policies.
+    #     :param advantages: (np.ndarray) advantage estimates.
+    #     :param num_mini_batch: (int) number of minibatches to split the batch into.
+    #     :param mini_batch_size: (int) number of samples in each minibatch.
+    #     """
+    #     episode_length, n_rollout_threads, num_agents = self.rewards.shape[0:3]
+    #     batch_size = n_rollout_threads * episode_length
+    #
+    #     if mini_batch_size is None:
+    #         assert (
+    #             batch_size >= num_mini_batch
+    #         ), (
+    #             "PPO requires the number of processes ({}) "
+    #             "* number of steps ({}) = {} "
+    #             "to be greater than or equal to the number of PPO mini batches ({})."
+    #             "".format(
+    #                 n_rollout_threads,
+    #                 episode_length,
+    #                 n_rollout_threads * episode_length,
+    #                 num_mini_batch,
+    #             )
+    #         )
+    #         mini_batch_size = batch_size // num_mini_batch
+    #
+    #     rand = torch.randperm(batch_size).numpy()
+    #     sampler = [
+    #         rand[i * mini_batch_size : (i + 1) * mini_batch_size]
+    #         for i in range(num_mini_batch)
+    #     ]
+    #
+    #     # keep (num_agent, dim)
+    #     critic_obs = self.critic_obs[:-1].reshape(-1, *self.critic_obs.shape[2:])
+    #
+    #     policy_obs = self.policy_obs[:-1].reshape(-1, *self.policy_obs.shape[2:])
+    #
+    #     rnn_states = self.rnn_states[:-1].reshape(-1, *self.rnn_states.shape[2:])
+    #
+    #     rnn_states_critic = self.rnn_states_critic[:-1].reshape(
+    #         -1, *self.rnn_states_critic.shape[2:]
+    #     )
+    #
+    #     actions = self.actions.reshape(-1, *self.actions.shape[2:])
+    #
+    #     if self.action_masks is not None:
+    #         action_masks = self.action_masks[:-1].reshape(
+    #             -1, *self.action_masks.shape[2:]
+    #         )
+    #
+    #     value_preds = self.value_preds[:-1].reshape(-1, *self.value_preds.shape[2:])
+    #
+    #     returns = self.returns[:-1].reshape(-1, *self.returns.shape[2:])
+    #
+    #     masks = self.masks[:-1].reshape(-1, *self.masks.shape[2:])
+    #
+    #     active_masks = self.active_masks[:-1].reshape(-1, *self.active_masks.shape[2:])
+    #
+    #     action_log_probs = self.action_log_probs.reshape(
+    #         -1, *self.action_log_probs.shape[2:]
+    #     )
+    #
+    #     advantages = advantages.reshape(-1, *advantages.shape[2:])
+    #
+    #     shuffle = False
+    #     if shuffle:
+    #         rows, cols = _shuffle_agent_grid(batch_size, num_agents)
+    #
+    #         if self.action_masks is not None:
+    #             action_masks = action_masks[rows, cols]
+    #         critic_obs = critic_obs[rows, cols]
+    #         policy_obs = policy_obs[rows, cols]
+    #         rnn_states = rnn_states[rows, cols]
+    #         rnn_states_critic = rnn_states_critic[rows, cols]
+    #         actions = actions[rows, cols]
+    #         value_preds = value_preds[rows, cols]
+    #         returns = returns[rows, cols]
+    #         masks = masks[rows, cols]
+    #         active_masks = active_masks[rows, cols]
+    #         action_log_probs = action_log_probs[rows, cols]
+    #         advantages = advantages[rows, cols]
+    #
+    #     for indices in sampler:
+    #         # [L,T,N,Dim]-->[L*T,N,Dim]-->[index,N,Dim]-->[index*N, Dim]
+    #         critic_obs_batch = critic_obs[indices].reshape(-1, *critic_obs.shape[2:])
+    #         policy_obs_batch = policy_obs[indices].reshape(-1, *policy_obs.shape[2:])
+    #         rnn_states_batch = rnn_states[indices].reshape(-1, *rnn_states.shape[2:])
+    #         rnn_states_critic_batch = rnn_states_critic[indices].reshape(
+    #             -1, *rnn_states_critic.shape[2:]
+    #         )
+    #         actions_batch = actions[indices].reshape(-1, *actions.shape[2:])
+    #         if self.action_masks is not None:
+    #             action_masks_batch = action_masks[indices].reshape(
+    #                 -1, *action_masks.shape[2:]
+    #             )
+    #         else:
+    #             action_masks_batch = None
+    #         value_preds_batch = value_preds[indices].reshape(-1, *value_preds.shape[2:])
+    #         return_batch = returns[indices].reshape(-1, *returns.shape[2:])
+    #         masks_batch = masks[indices].reshape(-1, *masks.shape[2:])
+    #         active_masks_batch = active_masks[indices].reshape(
+    #             -1, *active_masks.shape[2:]
+    #         )
+    #         old_action_log_probs_batch = action_log_probs[indices].reshape(
+    #             -1, *action_log_probs.shape[2:]
+    #         )
+    #         if advantages is None:
+    #             adv_targ = None
+    #         else:
+    #             adv_targ = advantages[indices].reshape(-1, *advantages.shape[2:])
+    #         yield critic_obs_batch, policy_obs_batch, rnn_states_batch, rnn_states_critic_batch, actions_batch, value_preds_batch, return_batch, masks_batch, active_masks_batch, old_action_log_probs_batch, adv_targ, action_masks_batch
 
     def recurrent_generator(self, advantages, num_mini_batch, data_chunk_length):
         episode_length, n_rollout_threads, num_agents = self.rewards.shape[0:3]

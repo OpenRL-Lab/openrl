@@ -41,10 +41,12 @@ class PPOAlgorithm(BaseAlgorithm):
         self.use_joint_action_loss = cfg.use_joint_action_loss
         super(PPOAlgorithm, self).__init__(cfg, init_module, agent_num, device)
         self.train_list = [self.train_ppo]
+        self.use_deepspeed = cfg.use_deepspeed
 
     def ppo_update(self, sample, turn_on=True):
         for optimizer in self.algo_module.optimizers.values():
-            optimizer.zero_grad()
+            if not self.use_deepspeed:
+                optimizer.zero_grad()
 
         (
             critic_obs_batch,
@@ -108,8 +110,18 @@ class PPOAlgorithm(BaseAlgorithm):
                 active_masks_batch,
                 turn_on,
             )
-            for loss in loss_list:
-                loss.backward()
+            if self.use_deepspeed:
+                if self._use_share_model:
+                    for loss in loss_list:
+                        self.algo_module.models["model"].backward(loss)
+                else:
+                    actor_loss = loss_list[0]
+                    critic_loss = loss_list[1]
+                    self.algo_module.models["policy"].backward(actor_loss)
+                    self.algo_module.models["critic"].backward(critic_loss)
+            else:
+                for loss in loss_list:
+                    loss.backward()
 
         # else:
         if self._use_share_model:
@@ -141,8 +153,15 @@ class PPOAlgorithm(BaseAlgorithm):
 
             self.algo_module.scaler.update()
         else:
-            for optimizer in self.algo_module.optimizers.values():
-                optimizer.step()
+            if self.use_deepspeed:
+                if self._use_share_model:
+                    self.algo_module.optimizers["model"].step()
+                else:
+                    self.algo_module.optimizers["policy"].step()
+                    self.algo_module.optimizers["critic"].step()
+            else:
+                for optimizer in self.algo_module.optimizers.values():
+                    optimizer.step()
 
         if self.world_size > 1:
             torch.cuda.synchronize()
@@ -168,7 +187,7 @@ class PPOAlgorithm(BaseAlgorithm):
             -self.clip_param, self.clip_param
         )
 
-        if self._use_popart or self._use_valuenorm:
+        if (self._use_popart or self._use_valuenorm) and value_normalizer is not None:
             value_normalizer.update(return_batch)
             error_clipped = (
                 value_normalizer.normalize(return_batch) - value_pred_clipped
@@ -371,9 +390,12 @@ class PPOAlgorithm(BaseAlgorithm):
                 ].module.value_normalizer
             else:
                 value_normalizer = self.algo_module.get_critic_value_normalizer()
-            advantages = buffer.returns[:-1] - value_normalizer.denormalize(
-                buffer.value_preds[:-1]
-            )
+            if value_normalizer is not None:
+                advantages = buffer.returns[:-1] - value_normalizer.denormalize(
+                    buffer.value_preds[:-1]
+                )
+            else:
+                advantages = buffer.returns[:-1] - buffer.value_preds[:-1]
         else:
             advantages = buffer.returns[:-1] - buffer.value_preds[:-1]
 

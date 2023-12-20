@@ -18,25 +18,12 @@
 from typing import Any
 
 from openrl.envs.toy_envs.bit_flipping_env import BitFlippingEnv
-from openrl.envs.toy_envs.identity_env import (
-    FakeImageEnv,
-    IdentityEnv,
-    IdentityEnvBox,
-    IdentityEnvcontinuous,
-    IdentityEnvMultiBinary,
-    IdentityEnvMultiDiscrete,
-)
-from openrl.envs.toy_envs.multi_input_envs import SimpleMultiObsEnv
+from openrl.envs.toy_envs.identity_env import IdentityEnv, IdentityEnvcontinuous
 
 __all__ = [
     "BitFlippingEnv",
-    "FakeImageEnv",
     "IdentityEnv",
     "IdentityEnvcontinuous",
-    "IdentityEnvBox",
-    "IdentityEnvMultiBinary",
-    "IdentityEnvMultiDiscrete",
-    "SimpleMultiObsEnv",
 ]
 
 
@@ -49,13 +36,8 @@ from openrl.envs.common import build_envs
 
 env_dict = {
     "BitFlippingEnv": BitFlippingEnv,
-    "FakeImageEnv": FakeImageEnv,
     "IdentityEnv": IdentityEnv,
     "IdentityEnvcontinuous": IdentityEnvcontinuous,
-    "IdentityEnvBox": IdentityEnvBox,
-    "IdentityEnvMultiBinary": IdentityEnvMultiBinary,
-    "IdentityEnvMultiDiscrete": IdentityEnvMultiDiscrete,
-    "SimpleMultiObsEnv": SimpleMultiObsEnv,
 }
 
 

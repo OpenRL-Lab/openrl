@@ -25,7 +25,7 @@ from setuptools import setup
 def get_install_requires() -> list:
     return [
         "setuptools>=67.0",
-        "gymnasium",
+        "gymnasium>=0.29",
         "click",
         "termcolor",
         "gym",
@@ -60,16 +60,39 @@ def get_extra_requires() -> dict:
         "mpe": ["pyglet==1.5.27"],
         "nlp": [
             "transformers==4.18.0",
-            "datasets",
+            "datasets==2.13",
             "nltk",
             "evaluate",
             "icetk",
         ],
-        "selfplay": ["ray[default]", "ray[serve]", "pettingzoo[classic]", "trueskill"],
+        "nlp_test": [
+            "transformers",
+            "datasets==2.13",
+            "evaluate",
+        ],
+        "selfplay": [
+            "ray[default]>=2.7",
+            "ray[serve]",
+            "async_timeout",
+            "pettingzoo[classic]",
+            "trueskill",
+        ],
+        "selfplay_test": [
+            "ray[default]>=2.7",
+            "ray[serve]",
+            "async_timeout",
+            "fastapi",
+            "pettingzoo[mpe]",
+            "pettingzoo[butterfly]",
+        ],
         "retro": ["gym-retro"],
         "super_mario": ["gym-super-mario-bros"],
+        "atari": ["gymnasium[atari]", "gymnasium[accept-rom-license]"],
     }
     req["test"].extend(req["selfplay"])
+    req["test"].extend(req["selfplay_test"])
+    req["test"].extend(req["atari"])
+    req["test"].extend(req["nlp_test"])
     return req
 
 

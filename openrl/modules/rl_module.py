@@ -55,6 +55,8 @@ class RLModule(BaseModule):
         self.rank = rank
         self.world_size = world_size
 
+        self.use_deepspeed = cfg.use_deepspeed
+
         use_half_actor = self.program_type == "actor" and cfg.use_half_actor
 
         if model_configs is None:
@@ -70,18 +72,57 @@ class RLModule(BaseModule):
                 use_half=use_half_actor,
                 extra_args=model_cg["extra_args"] if "extra_args" in model_cg else None,
             )
-            self.models.update({model_key: model})
 
             if self.program_type == "actor":
                 continue
 
-            optimizer = torch.optim.Adam(
-                model.parameters(),
-                lr=model_cg["lr"],
-                eps=cfg.opti_eps,
-                weight_decay=cfg.weight_decay,
-            )
-            self.optimizers.update({model_key: optimizer})
+            if not self.use_deepspeed:
+                optimizer = torch.optim.Adam(
+                    model.parameters(),
+                    lr=model_cg["lr"],
+                    eps=cfg.opti_eps,
+                    weight_decay=cfg.weight_decay,
+                )
+                self.models.update({model_key: model})
+                self.optimizers.update({model_key: optimizer})
+            else:
+                import json
+
+                import deepspeed
+                from deepspeed.ops.adam import DeepSpeedCPUAdam, FusedAdam
+                from transformers import get_constant_schedule
+
+                self.use_fp16 = cfg.use_fp16
+                self.use_offload = cfg.use_offload
+
+                # Check for inconsistencies in configuration files
+                assert not (self.use_fp16 and not self.use_deepspeed)
+                assert not (self.use_offload and not self.use_deepspeed)
+                assert cfg.deepspeed_config is not None
+                with open(cfg.deepspeed_config) as file:
+                    ds_config = json.load(file)
+                if "fp16" in ds_config:
+                    assert ds_config["fp16"]["enabled"] == self.use_fp16
+
+                AdamOptimizer = DeepSpeedCPUAdam if self.use_offload else FusedAdam
+                optim_params = filter(lambda p: p.requires_grad, model.parameters())
+                optim = AdamOptimizer(
+                    optim_params, lr=model_cg["lr"], betas=(0.9, 0.95)
+                )
+
+                # LR Scheduler
+                lr_scheduler = get_constant_schedule(
+                    optimizer=optim,
+                )
+
+                engine, *_ = deepspeed.initialize(
+                    args=cfg,
+                    model=model,
+                    optimizer=optim,
+                    lr_scheduler=lr_scheduler,
+                )
+                self.models.update({model_key: engine})
+                self.optimizers.update({model_key: engine})
 
             if cfg.use_amp:
                 self.scaler = torch.cuda.amp.GradScaler()

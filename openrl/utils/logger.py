@@ -32,9 +32,9 @@ class Logger:
     def __init__(
         self,
         cfg,
-        project_name: str,
-        scenario_name: str,
-        wandb_entity: str,
+        project_name: str = "openrl",
+        scenario_name: str = "openrl",
+        wandb_entity: str = "openrl",
         exp_name: Optional[str] = None,
         log_path: Optional[str] = None,
         use_wandb: bool = False,
@@ -45,6 +45,10 @@ class Logger:
         # TODO: change these flags to log_backend
         self.use_wandb = use_wandb
         self.use_tensorboard = use_tensorboard
+
+        self.skip_logging = False
+        if cfg.use_deepspeed and cfg.local_rank != 0:
+            self.skip_logging = True
 
         self.log_level = log_level
         self.log_path = log_path
@@ -126,20 +130,21 @@ class Logger:
         )
 
         if self.use_wandb:
-            wandb.init(
-                config=self.cfg,
-                project=self.project_name,
-                entity=self.wandb_entity,
-                notes=socket.gethostname(),
-                name=self.scenario_name
-                + "_"
-                + str(self.exp_name)
-                + "_seed"
-                + str(self.cfg.seed),
-                dir=str(run_dir),
-                job_type="training",
-                reinit=True,
-            )
+            if not self.skip_logging:
+                wandb.init(
+                    config=self.cfg,
+                    project=self.project_name,
+                    entity=self.wandb_entity,
+                    notes=socket.gethostname(),
+                    name=self.scenario_name
+                    + "_"
+                    + str(self.exp_name)
+                    + "_seed"
+                    + str(self.cfg.seed),
+                    dir=str(run_dir),
+                    job_type="training",
+                    reinit=True,
+                )
         elif self.use_tensorboard:
             from tensorboardX import SummaryWriter
 
@@ -152,7 +157,8 @@ class Logger:
 
     def close(self):
         if self.use_wandb:
-            wandb.finish()
+            if not self.skip_logging:
+                wandb.finish()
 
     def info(self, msg: str):
         logging.info(msg)
@@ -167,7 +173,8 @@ class Logger:
             return
         for k, v in infos.items():
             if self.use_wandb:
-                wandb.log({"Learner_{}/{}".format(leaner_id, k): v}, step=step)
+                if not self.skip_logging:
+                    wandb.log({"Learner_{}/{}".format(leaner_id, k): v}, step=step)
             elif self.use_tensorboard:
                 self.writter.add_scalars(
                     "Learner_{}/{}".format(leaner_id, k),
@@ -192,7 +199,8 @@ class Logger:
             logging_info_str += f"\t{k}: {v}\n"
 
             if self.use_wandb:
-                wandb.log({k: v}, step=step)
+                if not self.skip_logging:
+                    wandb.log({k: v}, step=step)
             elif self.use_tensorboard:
                 self.writter.add_scalars(k, {k: v}, step)
         if self.log_to_terminal:

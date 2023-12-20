@@ -17,6 +17,10 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb libglu1-mesa-dev python3-opengl
       - name: Upgrade pip
         run: |
           python -m pip install --upgrade pip setuptools wheel
@@ -27,7 +31,7 @@ jobs:
       - name: do_unittest
         timeout-minutes: 40
         run: |
-          python3 -m pytest tests --cov=openrl --cov-report=xml -m unittest --cov-report=term-missing --durations=0 -v --color=yes
+          xvfb-run -s "-screen 0 1400x900x24" python3 -m pytest tests --cov=openrl --cov-report=xml -m unittest --cov-report=term-missing --durations=0 -v --color=yes -s
       - name: Upload coverage reports to Codecov with GitHub Action
         uses: codecov/codecov-action@v3
         with:

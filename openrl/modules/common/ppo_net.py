@@ -15,7 +15,7 @@
 # limitations under the License.
 
 """"""
-
+import copy
 from typing import Any, Dict, Optional, Tuple, Union
 
 import gymnasium as gym
@@ -28,6 +28,23 @@ from openrl.modules.base_module import BaseModule
 from openrl.modules.common.base_net import BaseNet
 from openrl.modules.ppo_module import PPOModule
 from openrl.utils.util import set_seed
+
+
+def reset_rnn_states(
+    rnn_states, episode_starts, env_num, agent_num, rnn_layers, hidden_size
+):
+    # First we reshape the episode_starts to match the rnn_states shape
+    # Since episode_starts affects all agents in the environment, we repeat it agent_num times
+    episode_starts = np.repeat(copy.copy(episode_starts), agent_num)
+    # We then need to expand the dimensions of episode_starts to match rnn_states
+    # The new shape of episode_starts should be (env_num * agent_num, 1, 1) to broadcast correctly
+    episode_starts = episode_starts[:, None, None]
+    # Now, episode_starts should broadcast over the last two dimensions of rnn_states when multiplied
+    # We want to set rnn_states to zero where episode_starts is 1, so we invert the episode_starts as a mask
+    mask = 1 - episode_starts
+    # Apply the mask to rnn_states, setting the appropriate states to zero
+    rnn_states *= mask
+    return rnn_states
 
 
 class PPONet(BaseNet):
@@ -89,7 +106,18 @@ class PPONet(BaseNet):
         observation: Union[np.ndarray, Dict[str, np.ndarray]],
         action_masks: Optional[np.ndarray] = None,
         deterministic: bool = False,
+        episode_starts: Optional[np.ndarray] = None,
     ) -> Tuple[np.ndarray, Optional[Tuple[np.ndarray, ...]]]:
+        if episode_starts is not None:
+            self.rnn_states_actor = reset_rnn_states(
+                self.rnn_states_actor,
+                episode_starts,
+                self.env.parallel_env_num,
+                self.env.agent_num,
+                self.rnn_states_actor.shape[1],
+                self.rnn_states_actor.shape[2],
+            )
+
         actions, self.rnn_states_actor = self.module.act(
             obs=observation,
             rnn_states_actor=self.rnn_states_actor,
