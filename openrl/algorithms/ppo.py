@@ -45,7 +45,8 @@ class PPOAlgorithm(BaseAlgorithm):
 
     def ppo_update(self, sample, turn_on=True):
         for optimizer in self.algo_module.optimizers.values():
-            optimizer.zero_grad()
+            if not self.use_deepspeed:
+                optimizer.zero_grad()
 
         (
             critic_obs_batch,
@@ -152,8 +153,15 @@ class PPOAlgorithm(BaseAlgorithm):
 
             self.algo_module.scaler.update()
         else:
-            for optimizer in self.algo_module.optimizers.values():
-                optimizer.step()
+            if self.use_deepspeed:
+                if self._use_share_model:
+                    self.algo_module.optimizers["model"].step()
+                else:
+                    self.algo_module.optimizers["policy"].step()
+                    self.algo_module.optimizers["critic"].step()
+            else:
+                for optimizer in self.algo_module.optimizers.values():
+                    optimizer.step()
 
         if self.world_size > 1:
             torch.cuda.synchronize()

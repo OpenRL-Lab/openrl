@@ -22,13 +22,16 @@ class NLPReward(BaseReward):
         self.rew_infos = []
         self.env_infos = []
 
-        meteor_config = {
-            "meteor_coeff": 0.5,
-            "test": ref_model == "builtin_ref",
-        }
-        self.inner_rew_funcs = {
-            "meteor": Meteor(**meteor_config),
-        }
+        # bug unfixed
+        self.inner_rew_funcs = dict()
+
+        # meteor_config = {
+        #     "meteor_coeff": 0.5,
+        #     "test": ref_model == "builtin_ref",
+        # }
+        # self.inner_rew_funcs = {
+        #     "meteor": Meteor(**meteor_config),
+        # }
 
         kl_config = {
             "action_space": env.action_space,

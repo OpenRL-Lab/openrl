@@ -9,10 +9,8 @@ wandb_entity: "openrl-lab"
 ppo_epoch: 5
 episode_length: 128
 num_mini_batch: 20
-use_share_model: true
 
 hidden_size: 1
-
 
 model_path: rajkumarrrk/gpt2-fine-tuned-on-daily-dialog
 env:
