@@ -47,10 +47,9 @@ class KLPenalty(nn.Module):
 
         # reference model
         if ref_model == "builtin_ref":
-            
             self.device = "cpu"
-            self.use_data_parallel = False 
-            
+            self.use_data_parallel = False
+
             from transformers import GPT2Config, GPT2LMHeadModel
 
             config = GPT2Config()
@@ -146,10 +145,12 @@ class KLPenalty(nn.Module):
         rew = -self._alpha * kl_div
         infos = []
         for kl in kl_div:
-            infos.append({
-                "alpha": self._alpha,
-                "kl_div": kl.mean(),
-            })
+            infos.append(
+                {
+                    "alpha": self._alpha,
+                    "kl_div": kl.mean(),
+                }
+            )
         return rew, infos
 
     def _prepare_inputs_for_model(

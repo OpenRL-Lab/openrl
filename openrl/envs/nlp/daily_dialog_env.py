@@ -72,16 +72,18 @@ class DailyDialogEnv(Env):
         # set the observation and action space here
         self._vocab_size = self.tokenizer.vocab_size
 
-        self.observation_space = DictSpace({
-            "input_encoded_pt": spaces.Box(
-                low=0,
-                high=self._vocab_size,
-                shape=(self._max_text_length + self.max_steps,),
-            ),
-            "input_attention_mask_pt": spaces.Box(
-                low=0, high=1, shape=(self._max_text_length + self.max_steps,)
-            ),
-        })
+        self.observation_space = DictSpace(
+            {
+                "input_encoded_pt": spaces.Box(
+                    low=0,
+                    high=self._vocab_size,
+                    shape=(self._max_text_length + self.max_steps,),
+                ),
+                "input_attention_mask_pt": spaces.Box(
+                    low=0, high=1, shape=(self._max_text_length + self.max_steps,)
+                ),
+            }
+        )
         self.action_space = Discrete(n=self._vocab_size)
         # see https://github.com/huggingface/transformers/issues/4875 : rounding up to nearest power of 2 for better GPU efficiency
 
@@ -112,7 +114,6 @@ class DailyDialogEnv(Env):
         self.reward_function = None
 
     def set_reward(self, reward_fn=None):
-
         self.reward_function = reward_fn
 
     def step_word(self, word: str) -> Tuple[Dict[str, torch.tensor], int, bool, dict]:

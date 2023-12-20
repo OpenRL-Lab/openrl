@@ -41,10 +41,9 @@ class Intent:
         self.use_model_parallel = False
 
         if intent_model == "builtin_intent":
-            
             self._device = "cpu"
-            self.use_data_parallel = False 
-            
+            self.use_data_parallel = False
+
             from transformers import GPT2Config, GPT2LMHeadModel
 
             class TestTokenizer:

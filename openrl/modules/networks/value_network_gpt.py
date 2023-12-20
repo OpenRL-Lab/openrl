@@ -44,7 +44,6 @@ class ValueNetworkGPT(BaseValueNetwork):
         device=torch.device("cpu"),
         extra_args=None,
     ):
-
         self.device = device
 
         self.use_fp16 = cfg.use_fp16
