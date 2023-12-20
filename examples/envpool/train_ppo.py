@@ -18,8 +18,8 @@
 import numpy as np
 
 from openrl.configs.config import create_config_parser
-from openrl.envs.common import make
-from openrl.envs.wrappers.envpool_wrappers import VecAdapter, VecMonitor
+from make_env import make
+from examples.envpool.envpool_wrappers import VecAdapter, VecMonitor
 from openrl.modules.common import PPONet as Net
 from openrl.modules.common.ppo_net import PPONet as Net
 from openrl.runners.common import PPOAgent as Agent
@@ -32,7 +32,7 @@ def train():
 
     # create environment, set environment parallelism to 9
     env = make(
-        "envpool:CartPole-v1",
+        "CartPole-v1",
         render_mode=None,
         env_num=9,
         asynchronous=False,
@@ -45,7 +45,7 @@ def train():
         cfg=cfg,
     )
     # initialize the trainer
-    agent = Agent(net, use_wandb=False, project_name="envpool:CartPole-v1")
+    agent = Agent(net, use_wandb=False, project_name="CartPole-v1")
     # start training, set total number of training steps to 20000
     agent.train(total_time_steps=20000)
 
@@ -58,7 +58,14 @@ def evaluation(agent):
     # Create an environment for testing and set the number of environments to interact with to 9. Set rendering mode to group_human.
     render_mode = "group_human"
     render_mode = None
-    env = make("CartPole-v1", render_mode=render_mode, env_num=9, asynchronous=True)
+    env = make(
+        "CartPole-v1",
+        env_wrappers=[VecAdapter, VecMonitor],
+        render_mode=render_mode,
+        env_num=9,
+        asynchronous=True,
+        env_type="gym",
+    )
     # The trained agent sets up the interactive environment it needs.
     agent.set_env(env)
     # Initialize the environment and get initial observations and environmental information.

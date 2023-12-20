@@ -76,7 +76,6 @@ def get_extra_requires() -> dict:
             "async_timeout",
             "pettingzoo[classic]",
             "trueskill",
-            "envpool",
         ],
         "selfplay_test": [
             "ray[default]>=2.7",
@@ -85,7 +84,6 @@ def get_extra_requires() -> dict:
             "fastapi",
             "pettingzoo[mpe]",
             "pettingzoo[butterfly]",
-            "envpool",
         ],
         "retro": ["gym-retro"],
         "super_mario": ["gym-super-mario-bros"],
