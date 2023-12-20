@@ -111,21 +111,9 @@ class DailyDialogEnv(Env):
         self.__time_step = None
         self.reward_function = None
 
-        self.set_reward()
-
     def set_reward(self, reward_fn=None):
 
-        from openrl.envs.nlp.rewards.meteor import Meteor
-
-        meteor_config = {
-            "meteor_coeff": 0.5,
-            "test": False,
-        }
-        self.reward_function = {
-            "meteor": Meteor(**meteor_config),
-        }
-
-        # self.reward_function = reward_fn
+        self.reward_function = reward_fn
 
     def step_word(self, word: str) -> Tuple[Dict[str, torch.tensor], int, bool, dict]:
         action = self.tokenizer.encode(word)[1]
