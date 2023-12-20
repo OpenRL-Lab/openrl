@@ -24,7 +24,7 @@ class NLPReward(BaseReward):
 
         # bug unfixed
         self.inner_rew_funcs = dict()
-        
+
         # meteor_config = {
         #     "meteor_coeff": 0.5,
         #     "test": ref_model == "builtin_ref",
@@ -32,7 +32,6 @@ class NLPReward(BaseReward):
         # self.inner_rew_funcs = {
         #     "meteor": Meteor(**meteor_config),
         # }
-            
 
         kl_config = {
             "action_space": env.action_space,

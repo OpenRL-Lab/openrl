@@ -24,6 +24,7 @@ from openrl.envs.vec_env.base_venv import BaseVecEnv
 from openrl.envs.vec_env.wrappers.base_wrapper import VecEnvWrapper
 from openrl.rewards.base_reward import BaseReward
 
+
 class RewardWrapper(VecEnvWrapper):
     def __init__(self, env: BaseVecEnv, reward_class: BaseReward):
         super().__init__(env)

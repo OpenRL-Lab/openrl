@@ -72,18 +72,16 @@ class DailyDialogEnv(Env):
         # set the observation and action space here
         self._vocab_size = self.tokenizer.vocab_size
 
-        self.observation_space = DictSpace(
-            {
-                "input_encoded_pt": spaces.Box(
-                    low=0,
-                    high=self._vocab_size,
-                    shape=(self._max_text_length + self.max_steps,),
-                ),
-                "input_attention_mask_pt": spaces.Box(
-                    low=0, high=1, shape=(self._max_text_length + self.max_steps,)
-                ),
-            }
-        )
+        self.observation_space = DictSpace({
+            "input_encoded_pt": spaces.Box(
+                low=0,
+                high=self._vocab_size,
+                shape=(self._max_text_length + self.max_steps,),
+            ),
+            "input_attention_mask_pt": spaces.Box(
+                low=0, high=1, shape=(self._max_text_length + self.max_steps,)
+            ),
+        })
         self.action_space = Discrete(n=self._vocab_size)
         # see https://github.com/huggingface/transformers/issues/4875 : rounding up to nearest power of 2 for better GPU efficiency
 
@@ -116,8 +114,9 @@ class DailyDialogEnv(Env):
         self.set_reward()
 
     def set_reward(self, reward_fn=None):
-        
+
         from openrl.envs.nlp.rewards.meteor import Meteor
+
         meteor_config = {
             "meteor_coeff": 0.5,
             "test": False,
@@ -125,7 +124,7 @@ class DailyDialogEnv(Env):
         self.reward_function = {
             "meteor": Meteor(**meteor_config),
         }
-        
+
         # self.reward_function = reward_fn
 
     def step_word(self, word: str) -> Tuple[Dict[str, torch.tensor], int, bool, dict]:
@@ -147,7 +146,7 @@ class DailyDialogEnv(Env):
         done = done or self.__current_obs.context_text.endswith(DailyDialog.EOU_TOKEN)
 
         reward = 0.0
-        reward_info = dict()    
+        reward_info = dict()
 
         if done and self.reward_function:
             for reward_function in self.reward_function.values():

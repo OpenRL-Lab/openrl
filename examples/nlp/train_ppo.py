@@ -3,8 +3,8 @@
 from openrl.configs.config import create_config_parser
 from openrl.envs.common import make
 from openrl.modules.common import PPONet as Net
-from openrl.modules.networks.value_network_gpt import ValueNetworkGPT as ValueNetwork
 from openrl.modules.networks.policy_network_gpt import PolicyNetworkGPT as PolicyNetwork
+from openrl.modules.networks.value_network_gpt import ValueNetworkGPT as ValueNetwork
 from openrl.runners.common import PPOAgent as Agent
 
 

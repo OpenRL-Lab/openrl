@@ -35,7 +35,7 @@ class KLPenalty(nn.Module):
         ds_config: str = "default",
     ):
         super().__init__()
-        
+
         self.device = "cuda"
         self.use_deepspeed = use_deepspeed
         self.use_half = False
@@ -116,7 +116,7 @@ class KLPenalty(nn.Module):
             self._ref_net, input_ids, past_model_kwargs
         )
 
-        if self.use_half: 
+        if self.use_half:
             for key in ["input_ids", "position_ids", "attention_mask"]:
                 if key in model_inputs:
                     model_inputs[key] = model_inputs[key].int()
@@ -124,7 +124,6 @@ class KLPenalty(nn.Module):
             for key in ["input_ids", "position_ids", "attention_mask"]:
                 if key in model_inputs:
                     model_inputs[key] = model_inputs[key].long()
-
 
         with torch.no_grad():
             output = self._ref_net(output_hidden_states=True, **model_inputs)
@@ -139,15 +138,13 @@ class KLPenalty(nn.Module):
         ref_log_prob = ref_log_prob.reshape(action_log_probs.shape)
 
         kl_div = action_log_probs.copy() - ref_log_prob.detach().cpu().numpy()
-        rew = -self._alpha * kl_div  
+        rew = -self._alpha * kl_div
         infos = []
         for kl in kl_div:
-            infos.append(
-                {
-                    "alpha": self._alpha,
-                    "kl_div": kl.mean(),
-                }
-            )
+            infos.append({
+                "alpha": self._alpha,
+                "kl_div": kl.mean(),
+            })
         return rew, infos
 
     def _prepare_inputs_for_model(
@@ -173,11 +170,7 @@ class KLPenalty(nn.Module):
             }
         elif self.use_data_parallel:
             model_inputs = {
-                key: (
-                    value.to(self.device)
-                    if isinstance(value, torch.Tensor)
-                    else value
-                )
+                key: value.to(self.device) if isinstance(value, torch.Tensor) else value
                 for key, value in model_inputs.items()
             }
         elif self.use_deepspeed:

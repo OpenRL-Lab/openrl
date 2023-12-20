@@ -30,18 +30,16 @@ class FakeDialogEnv(Env):
         # set the observation and action space here
         self._vocab_size = 2
 
-        self.observation_space = DictSpace(
-            {
-                "input_encoded_pt": spaces.Box(
-                    low=0,
-                    high=self._vocab_size,
-                    shape=(self._max_text_length + self.max_steps,),
-                ),
-                "input_attention_mask_pt": spaces.Box(
-                    low=0, high=1, shape=(self._max_text_length + self.max_steps,)
-                ),
-            }
-        )
+        self.observation_space = DictSpace({
+            "input_encoded_pt": spaces.Box(
+                low=0,
+                high=self._vocab_size,
+                shape=(self._max_text_length + self.max_steps,),
+            ),
+            "input_attention_mask_pt": spaces.Box(
+                low=0, high=1, shape=(self._max_text_length + self.max_steps,)
+            ),
+        })
         self.action_space = Discrete(n=self._vocab_size)
 
         n = 2

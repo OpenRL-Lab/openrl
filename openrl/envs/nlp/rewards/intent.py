@@ -37,7 +37,7 @@ class Intent:
         self._intent_coeff = intent_coeff
         self.use_deepspeed = use_deepspeed
         self.use_half = False
-        self.use_data_parallel = not use_deepspeed # default to use data parallel
+        self.use_data_parallel = not use_deepspeed  # default to use data parallel
         self.use_model_parallel = False
 
         if intent_model == "builtin_intent":
