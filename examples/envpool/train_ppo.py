@@ -20,7 +20,6 @@ from make_env import make
 
 from examples.envpool.envpool_wrappers import VecAdapter, VecMonitor
 from openrl.configs.config import create_config_parser
-from openrl.modules.common import PPONet as Net
 from openrl.modules.common.ppo_net import PPONet as Net
 from openrl.runners.common import PPOAgent as Agent
 
