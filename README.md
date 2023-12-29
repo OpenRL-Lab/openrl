@@ -336,7 +336,7 @@ If you are using OpenRL in your research project, you are also welcome to join t
 - Join the [slack](https://join.slack.com/t/openrlhq/shared_invite/zt-1tqwpvthd-Eeh0IxQ~DIaGqYXoW2IUQg) group to discuss
   OpenRL usage and development with us.
 - Join the [Discord](https://discord.gg/qMbVT2qBhr) group to discuss OpenRL usage and development with us.
-- Send an E-mail to: [huangshiyu@4paradigm.com](huangshiyu@4paradigm.com)
+- Send an E-mail to: [huangsy1314@163.com](huangsy1314@163.com)
 - Join the [GitHub Discussion](https://github.com/orgs/OpenRL-Lab/discussions).
 
 The OpenRL framework is still under continuous development and documentation.
@@ -354,7 +354,7 @@ At present, OpenRL is maintained by the following maintainers:
 - Yiwen Sun([@YiwenAI](https://github.com/YiwenAI))
 
 Welcome more contributors to join our maintenance team (send an E-mail
-to [huangshiyu@4paradigm.com](huangshiyu@4paradigm.com)
+to [huangsy1314@163.com](huangsy1314@163.com)
 to apply for joining the OpenRL team).
 
 ## Supporters
@@ -378,12 +378,11 @@ to apply for joining the OpenRL team).
 If our work has been helpful to you, please feel free to cite us:
 
 ```latex
-@misc{openrl2023,
-    title={OpenRL},
-    author={OpenRL Contributors},
-    publisher = {GitHub},
-    howpublished = {\url{https://github.com/OpenRL-Lab/openrl}},
-    year={2023},
+@article{huang2023openrl,
+  title={OpenRL: A Unified Reinforcement Learning Framework},
+  author={Huang, Shiyu and Chen, Wentse and Sun, Yiwen and Bie, Fuqing and Tu, Wei-Wei},
+  journal={arXiv preprint arXiv:2312.16189},
+  year={2023}
 }
 ```
 
