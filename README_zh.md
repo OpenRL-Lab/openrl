@@ -295,7 +295,7 @@ openrl --mode train --env CartPole-v1
 - 加入 [slack](https://join.slack.com/t/openrlhq/shared_invite/zt-1tqwpvthd-Eeh0IxQ~DIaGqYXoW2IUQg)
   群组，与我们一起讨论OpenRL的使用和开发。
 - 加入 [Discord](https://discord.gg/qMbVT2qBhr) 群组，与我们一起讨论OpenRL的使用和开发。
-- 发送邮件到: [huangshiyu@4paradigm.com](huangshiyu@4paradigm.com)
+- 发送邮件到: [huangsy1314@163.com](huangsy1314@163.com)
 - 加入 [GitHub Discussion](https://github.com/orgs/OpenRL-Lab/discussions)
 
 OpenRL框架目前还在持续开发和文档建设，欢迎加入我们让该项目变得更好：
@@ -310,7 +310,7 @@ OpenRL框架目前还在持续开发和文档建设，欢迎加入我们让该�
 - [Shiyu Huang](https://huangshiyu13.github.io/)([@huangshiyu13](https://github.com/huangshiyu13))
 - Wenze Chen([@Chen001117](https://github.com/Chen001117))
 
-欢迎更多的贡献者加入我们的维护团队 (发送邮件到[huangshiyu@4paradigm.com](huangshiyu@4paradigm.com)申请加入OpenRL团队)。
+欢迎更多的贡献者加入我们的维护团队 (发送邮件到[huangsy1314@163.com](huangsy1314@163.com)申请加入OpenRL团队)。
 
 ## 支持者
 
@@ -333,12 +333,11 @@ OpenRL框架目前还在持续开发和文档建设，欢迎加入我们让该�
 如果我们的工作对你有帮助，欢迎引用我们:
 
 ```latex
-@misc{openrl2023,
-    title={OpenRL},
-    author={OpenRL Contributors},
-    publisher = {GitHub},
-    howpublished = {\url{https://github.com/OpenRL-Lab/openrl}},
-    year={2023},
+@article{huang2023openrl,
+  title={OpenRL: A Unified Reinforcement Learning Framework},
+  author={Huang, Shiyu and Chen, Wentse and Sun, Yiwen and Bie, Fuqing and Tu, Wei-Wei},
+  journal={arXiv preprint arXiv:2312.16189},
+  year={2023}
 }
 ```
 
