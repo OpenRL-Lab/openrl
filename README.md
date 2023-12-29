@@ -122,6 +122,7 @@ Environments currently supported by OpenRL (for more details, please refer to [G
 - [DeepMind Control](https://shimmy.farama.org/environments/dm_control/)
 - [Snake](http://www.jidiai.cn/env_detail?envid=1)
 - [gym-pybullet-drones](https://github.com/utiasDSL/gym-pybullet-drones)
+- [EnvPool](https://github.com/sail-sg/envpool)
 - [GridWorld](./examples/gridworld/)
 - [Super Mario Bros](https://github.com/Kautenja/gym-super-mario-bros)
 - [Gym Retro](https://github.com/openai/retro)
