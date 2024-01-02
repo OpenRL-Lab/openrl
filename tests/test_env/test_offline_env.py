@@ -56,7 +56,7 @@ def gen_data(total_episode, data_save_path):
 
 
 @pytest.fixture(scope="function")
-def config(request, tmp_path):
+def config(tmp_path):
     total_episode = 5
     data_save_path = tmp_path / "data.pkl"
     gen_data(total_episode, data_save_path)
@@ -66,10 +66,15 @@ def config(request, tmp_path):
     return cfg
 
 
+@pytest.fixture(scope="function", params=[True, False])
+def asynchronous(request):
+    return request.param
+
+
 @pytest.mark.unittest
-def test_offline_env(config):
+def test_offline_env(asynchronous, config):
     # create environment
-    env = make("OfflineEnv", env_num=1, cfg=config, asynchronous=True)
+    env = make("OfflineEnv", env_num=2, cfg=config, asynchronous=asynchronous)
 
     for ep_index in range(10):
         done = False
