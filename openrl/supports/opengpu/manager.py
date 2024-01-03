@@ -20,89 +20,91 @@ import logging
 import traceback
 from typing import List, Union
 
-from openrl.supports.opengpu.gpu_info import get_local_GPU_info, get_remote_GPU_info
+from openrl.supports.opengpu.gpu_info import get_local_GPU_info
+
+# from openrl.supports.opengpu.gpu_info import get_remote_GPU_info
 
 
-class RemoteGPUManager:
-    def __init__(self, pytorch_config=None, check: bool = False):
-        self.gpu_info_dict = get_remote_GPU_info()
-        self.pytorch_config = pytorch_config
-        self.server_list = []
-        if self.pytorch_config is not None:
-            for server_address in self.pytorch_config.GPU_usage_dict:
-                self.server_list.append(server_address)
-
-        if check:
-            self.check_gpus()
-
-        self.cal_learner_number()
-
-    def check_gpus(self):
-        assert self.pytorch_config is not None
-        assert len(self.server_list) > 0
-
-        bad_gpus = []
-        for server_address in self.server_list:
-            assert (
-                server_address in self.gpu_info_dict
-            ), "can not get gpu info from {}".format(server_address)
-            assert len(self.gpu_info_dict[server_address]["gpu_infos"]) > 0
-
-            for gpu_info in self.gpu_info_dict[server_address]["gpu_infos"]:
-                if (
-                    self.pytorch_config.GPU_usage_dict[server_address]["gpus"] == "all"
-                    or gpu_info["gpu"]
-                    in self.pytorch_config.GPU_usage_dict[server_address]["gpus"]
-                ):
-                    if (
-                        gpu_info["memory"]["total"] - gpu_info["memory"]["used"]
-                        < self.pytorch_config.min_memory_per_gpu
-                    ):
-                        bad_gpus.append(
-                            {
-                                "server": server_address,
-                                "gpu": gpu_info["gpu"],
-                                "free": (
-                                    gpu_info["memory"]["total"]
-                                    - gpu_info["memory"]["used"]
-                                ),
-                            }
-                        )
-        if len(bad_gpus) > 0:
-            for bad_gpu in bad_gpus:
-                print(
-                    "server:{} GPU:{}, minimal memory {}GB, but only get {}GB free"
-                    " memory.".format(
-                        bad_gpu["server"],
-                        bad_gpu["gpu"],
-                        self.pytorch_config.min_memory_per_gpu,
-                        bad_gpu["free"],
-                    )
-                )
-            assert False, "GPUs not satisfy."
-
-    def cal_learner_number(self):
-        self.server_gpu_mapping = {}
-        gpu_num = 0
-        for server_address in self.server_list:
-            gpu_mapping = {}
-            for gpu_info in self.gpu_info_dict[server_address]["gpu_infos"]:
-                if (
-                    self.pytorch_config.GPU_usage_dict[server_address]["gpus"] == "all"
-                    or gpu_info["gpu"]
-                    in self.pytorch_config.GPU_usage_dict[server_address]["gpus"]
-                ):
-                    gpu_mapping[gpu_info["gpu"]] = gpu_num
-                    gpu_num += 1
-            self.server_gpu_mapping[server_address] = gpu_mapping
-        self.learner_num = gpu_num
-
-    def get_gpu_info(self, server_list: list):
-        gpu_infos = {}
-        for server_address in server_list:
-            if server_address in self.gpu_info_dict:
-                gpu_infos[server_address] = self.gpu_info_dict[server_address]
-        return gpu_infos
+# class RemoteGPUManager:
+#     def __init__(self, pytorch_config=None, check: bool = False):
+#         self.gpu_info_dict = get_remote_GPU_info()
+#         self.pytorch_config = pytorch_config
+#         self.server_list = []
+#         if self.pytorch_config is not None:
+#             for server_address in self.pytorch_config.GPU_usage_dict:
+#                 self.server_list.append(server_address)
+#
+#         if check:
+#             self.check_gpus()
+#
+#         self.cal_learner_number()
+#
+#     def check_gpus(self):
+#         assert self.pytorch_config is not None
+#         assert len(self.server_list) > 0
+#
+#         bad_gpus = []
+#         for server_address in self.server_list:
+#             assert (
+#                 server_address in self.gpu_info_dict
+#             ), "can not get gpu info from {}".format(server_address)
+#             assert len(self.gpu_info_dict[server_address]["gpu_infos"]) > 0
+#
+#             for gpu_info in self.gpu_info_dict[server_address]["gpu_infos"]:
+#                 if (
+#                     self.pytorch_config.GPU_usage_dict[server_address]["gpus"] == "all"
+#                     or gpu_info["gpu"]
+#                     in self.pytorch_config.GPU_usage_dict[server_address]["gpus"]
+#                 ):
+#                     if (
+#                         gpu_info["memory"]["total"] - gpu_info["memory"]["used"]
+#                         < self.pytorch_config.min_memory_per_gpu
+#                     ):
+#                         bad_gpus.append(
+#                             {
+#                                 "server": server_address,
+#                                 "gpu": gpu_info["gpu"],
+#                                 "free": (
+#                                     gpu_info["memory"]["total"]
+#                                     - gpu_info["memory"]["used"]
+#                                 ),
+#                             }
+#                         )
+#         if len(bad_gpus) > 0:
+#             for bad_gpu in bad_gpus:
+#                 print(
+#                     "server:{} GPU:{}, minimal memory {}GB, but only get {}GB free"
+#                     " memory.".format(
+#                         bad_gpu["server"],
+#                         bad_gpu["gpu"],
+#                         self.pytorch_config.min_memory_per_gpu,
+#                         bad_gpu["free"],
+#                     )
+#                 )
+#             assert False, "GPUs not satisfy."
+#
+#     def cal_learner_number(self):
+#         self.server_gpu_mapping = {}
+#         gpu_num = 0
+#         for server_address in self.server_list:
+#             gpu_mapping = {}
+#             for gpu_info in self.gpu_info_dict[server_address]["gpu_infos"]:
+#                 if (
+#                     self.pytorch_config.GPU_usage_dict[server_address]["gpus"] == "all"
+#                     or gpu_info["gpu"]
+#                     in self.pytorch_config.GPU_usage_dict[server_address]["gpus"]
+#                 ):
+#                     gpu_mapping[gpu_info["gpu"]] = gpu_num
+#                     gpu_num += 1
+#             self.server_gpu_mapping[server_address] = gpu_mapping
+#         self.learner_num = gpu_num
+#
+#     def get_gpu_info(self, server_list: list):
+#         gpu_infos = {}
+#         for server_address in server_list:
+#             if server_address in self.gpu_info_dict:
+#                 gpu_infos[server_address] = self.gpu_info_dict[server_address]
+#         return gpu_infos
 
 
 class LocalGPUManager:
