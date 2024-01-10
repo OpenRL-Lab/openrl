@@ -726,8 +726,8 @@ def create_config_parser():
     parser.add_argument(
         "--max_grad_norm",
         type=float,
-        default=10.0,
-        help="max norm of gradients (default: 0.5)",
+        default=10,
+        help="max norm of gradients (default: 10)",
     )
     parser.add_argument(
         "--use_gae",

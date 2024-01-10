@@ -41,6 +41,7 @@ def get_install_requires() -> list:
         "mujoco",
         "tqdm",
         "Jinja2",
+        "pettingzoo",
     ]
 
 
