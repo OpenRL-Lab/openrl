@@ -43,11 +43,11 @@ env_wrappers = [
 
 def train():
     cfg_parser = create_config_parser()
-    cfg = cfg_parser.parse_args()
+    cfg = cfg_parser.parse_args(["--config", "atari_ppo.yaml"])
 
     # create environment, set environment parallelism to 9
     env = make(
-        "ALE/Pong-v5", env_num=9, cfg=cfg, asynchronous=True, env_wrappers=env_wrappers
+        "ALE/Pong-v5", env_num=16, cfg=cfg, asynchronous=True, env_wrappers=env_wrappers
     )
 
     # create the neural network
@@ -56,7 +56,7 @@ def train():
         env, cfg=cfg, device="cuda" if "macOS" not in get_system_info()["OS"] else "cpu"
     )
     # initialize the trainer
-    agent = Agent(net, use_wandb=True)
+    agent = Agent(net, use_wandb=True, project_name="Pong-v5")
     # start training, set total number of training steps to 20000
 
     agent.train(total_time_steps=5000000)
