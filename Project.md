@@ -7,7 +7,7 @@ If you use OpenRL in your research projects, feel free to tell us about it and j
 
 Description:  LLMArena is a novel and easily extensible framework for evaluating the diverse capabilities of LLM in multi-agent dynamic environments.
 
-- Paper: [LLMArena: Assessing Capabilities of Large Language Models in Dynamic Multi-Agent Environments](https://arxiv.org/abs/2402.16499)(AAMAS 2023)
+- Paper: [LLMArena: Assessing Capabilities of Large Language Models in Dynamic Multi-Agent Environments](https://arxiv.org/abs/2402.16499)
 - Authors: Junzhe Chen, Xuming Hu, Shuodi Liu, Shiyu Huang, Wei-Wei Tu, Zhaofeng He, Lijie Wen
 
 ### TiZero
