@@ -3,6 +3,13 @@
 Here is a list of research projects that use OpenRL. 
 If you use OpenRL in your research projects, feel free to tell us about it and join the list.
 
+### LLMArena
+
+Description:  LLMArena is a novel and easily extensible framework for evaluating the diverse capabilities of LLM in multi-agent dynamic environments.
+
+- Paper: [LLMArena: Assessing Capabilities of Large Language Models in Dynamic Multi-Agent Environments](https://arxiv.org/abs/2402.16499)(AAMAS 2023)
+- Authors: Junzhe Chen, Xuming Hu, Shuodi Liu, Shiyu Huang, Wei-Wei Tu, Zhaofeng He, Lijie Wen
+
 ### TiZero
 
 Description: TiZero is a reinforcement learning agent for Google Research Football full game, trained with distributed self-play.
@@ -18,7 +25,7 @@ However, in many practical applications, it is important to develop reasonable a
 In this paper, we propose an on-policy framework for discovering multiple strategies for the same task.
 Experimental results show that our method efficiently finds diverse strategies in a wide variety of reinforcement learning tasks.
 
-- Paper: [DGPO: Discovering Multiple Strategies with Diversity-Guided Policy Optimization](https://arxiv.org/abs/2207.05631)(AAAAI 2024)
+- Paper: [DGPO: Discovering Multiple Strategies with Diversity-Guided Policy Optimization](https://arxiv.org/abs/2207.05631)(AAAI 2024)
 - Authors: Wenze Chen, Shiyu Huang, Yuan Chiang, Tim Pearce, Wei-Wei Tu, Ting Chen, Jun Zhu
 
 
