@@ -101,6 +101,7 @@ OpenRL目前支持的环境（更多详情请参考 [Gallery](Gallery.md)）：
 - [GridWorld](./examples/gridworld/)
 - [Super Mario Bros](https://github.com/Kautenja/gym-super-mario-bros)
 - [Gym Retro](https://github.com/openai/retro)
+- [Crafter](https://github.com/danijar/crafter)
 
 该框架经过了[OpenRL-Lab](https://github.com/OpenRL-Lab)的多次迭代并应用于学术研究，目前已经成为了一个成熟的强化学习框架。
 OpenRL-Lab将持续维护和更新OpenRL，欢迎大家加入我们的[开源社区](./docs/CONTRIBUTING_zh.md)，一起为强化学习的发展做出贡献。
