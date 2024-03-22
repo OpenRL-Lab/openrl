@@ -47,7 +47,7 @@ def check_opponent_template(opponent_template: Union[str, Path]):
 
 
 def get_opponent_info(
-    info_path: Optional[Union[str, Path]]
+    info_path: Optional[Union[str, Path]],
 ) -> Optional[Dict[str, str]]:
     if info_path is None:
         return None

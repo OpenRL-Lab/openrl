@@ -243,8 +243,9 @@ class Board:
                         and self.state + state == 0
                     ):  # third claim or more
                         print(
-                            "snake {} meets third or more claim in grid ({}, {})"
-                            .format(key, x_, y_)
+                            "snake {} meets third or more claim in grid ({}, {})".format(
+                                key, x_, y_
+                            )
                         )
                         controversy = self.controversy[(x_, y_)]
                         pprint.pprint(controversy)

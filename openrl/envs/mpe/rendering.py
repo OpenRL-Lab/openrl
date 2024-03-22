@@ -58,8 +58,9 @@ def get_display(spec):
         return pyglet.canvas.Display(spec)
     else:
         raise error.Error(
-            "Invalid display specification: {}. (Must be a string like :0 or None.)"
-            .format(spec)
+            "Invalid display specification: {}. (Must be a string like :0 or None.)".format(
+                spec
+            )
         )
 
 
