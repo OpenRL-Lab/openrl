@@ -230,8 +230,9 @@ class VectorObservationWrapper(VecEnvWrapper):
             )
         else:
             raise ValueError(
-                "Invalid step return value, expected 4 or 5 values, got {} values"
-                .format(len(results))
+                "Invalid step return value, expected 4 or 5 values, got {} values".format(
+                    len(results)
+                )
             )
 
     def observation(self, observation: ObsType) -> ObsType:

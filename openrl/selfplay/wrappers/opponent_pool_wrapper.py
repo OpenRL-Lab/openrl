@@ -111,9 +111,10 @@ class OpponentPoolWrapper(BaseMultiPlayerWrapper):
             else:
                 loser_id = self.opponent.opponent_id
             loser_ids.append(loser_id)
-        assert set(winner_ids).isdisjoint(set(loser_ids)), (
-            "winners and losers must be disjoint, but get winners: {}, losers: {}"
-            .format(winner_ids, loser_ids)
+        assert set(winner_ids).isdisjoint(
+            set(loser_ids)
+        ), "winners and losers must be disjoint, but get winners: {}, losers: {}".format(
+            winner_ids, loser_ids
         )
         battle_info = {"winner_ids": winner_ids, "loser_ids": loser_ids}
         self.api_client.add_battle_result(battle_info)

@@ -126,6 +126,7 @@ Environments currently supported by OpenRL (for more details, please refer to [G
 - [GridWorld](./examples/gridworld/)
 - [Super Mario Bros](https://github.com/Kautenja/gym-super-mario-bros)
 - [Gym Retro](https://github.com/openai/retro)
+- [Crafter](https://github.com/danijar/crafter)
 
 This framework has undergone multiple iterations by the [OpenRL-Lab](https://github.com/OpenRL-Lab) team which has
 applied it in academic research.

@@ -342,9 +342,7 @@ class AsyncVectorEnv(BaseVecEnv):
             pipe.send(("step", action))
         self._state = AsyncState.WAITING_STEP
 
-    def step_fetch(
-        self, timeout: Optional[Union[int, float]] = None
-    ) -> Union[
+    def step_fetch(self, timeout: Optional[Union[int, float]] = None) -> Union[
         Tuple[Any, NDArray[Any], NDArray[Any], List[Dict[str, Any]]],
         Tuple[Any, NDArray[Any], NDArray[Any], NDArray[Any], List[Dict[str, Any]]],
     ]:
