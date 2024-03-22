@@ -18,12 +18,12 @@
 
 import numpy as np
 
+from openrl.configs.config import create_config_parser
 from openrl.envs.common import make
 from openrl.envs.wrappers import GIFWrapper
 from openrl.modules.common import PPONet as Net
 from openrl.runners.common import PPOAgent as Agent
 
-from openrl.configs.config import create_config_parser
 
 def render():
     # begin to test
@@ -32,7 +32,7 @@ def render():
         render_mode="human",
         env_num=1,
     )
-    
+
     # config
     cfg_parser = create_config_parser()
     cfg = cfg_parser.parse_args()
@@ -56,16 +56,18 @@ def render():
 
         if all(done):
             break
-        
-        img = obs["policy"][0,0]
+
+        img = obs["policy"][0, 0]
         img = img.transpose((1, 2, 0))
         trajectory.append(img)
-        
+
     # save the trajectory to gif
     import imageio
+
     imageio.mimsave("run_results/crafter.gif", trajectory, duration=0.01)
 
     env.close()
+
 
 if __name__ == "__main__":
     render()

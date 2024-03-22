@@ -18,11 +18,10 @@
 
 from typing import Any, Dict, List, Optional, Union
 
-import numpy as np
-import gymnasium as gym
-from gymnasium import Wrapper
-
 import crafter
+import gymnasium as gym
+import numpy as np
+from gymnasium import Wrapper
 
 
 class CrafterWrapper(Wrapper):
@@ -33,19 +32,19 @@ class CrafterWrapper(Wrapper):
         disable_env_checker: Optional[bool] = None,
         **kwargs
     ):
-        
         self.env_name = name
-        
+
         self.env = crafter.Env()
         self.env = crafter.Recorder(
-            self.env, "run_results/crafter_traj",
-            save_stats=False, # if True, save the stats of the environment to example/crafter/crafter_traj
+            self.env,
+            "run_results/crafter_traj",
+            save_stats=False,  # if True, save the stats of the environment to example/crafter/crafter_traj
             save_episode=False,
             save_video=False,
         )
-        
+
         super().__init__(self.env)
-        
+
         shape = self.env.observation_space.shape
         shape = (shape[2],) + shape[0:2]
         self.observation_space = gym.spaces.Box(
@@ -59,7 +58,7 @@ class CrafterWrapper(Wrapper):
         obs = self.convert_observation(obs)
 
         return obs, reward, done, truncated, info
-    
+
     def reset(
         self,
         seed: Optional[int] = None,
@@ -70,10 +69,9 @@ class CrafterWrapper(Wrapper):
         obs = self.convert_observation(obs)
 
         return obs, info
-    
+
     def convert_observation(self, observation: np.array):
         obs = np.asarray(observation, dtype=np.uint8)
         obs = obs.transpose((2, 0, 1))
 
         return obs
-

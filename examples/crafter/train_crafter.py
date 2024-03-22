@@ -18,12 +18,12 @@
 
 import numpy as np
 
+from openrl.configs.config import create_config_parser
 from openrl.envs.common import make
 from openrl.envs.wrappers import GIFWrapper
 from openrl.modules.common import PPONet as Net
 from openrl.runners.common import PPOAgent as Agent
 
-from openrl.configs.config import create_config_parser
 
 def train():
     # create environment
@@ -42,6 +42,7 @@ def train():
     # close the environment
     env.close()
     return agent
+
 
 if __name__ == "__main__":
     agent = train()

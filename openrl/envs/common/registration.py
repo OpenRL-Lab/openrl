@@ -150,11 +150,11 @@ def make(
             )
         elif id.startswith("Crafter"):
             from openrl.envs.crafter import make_crafter_envs
-            
+
             env_fns = make_crafter_envs(
                 id=id, env_num=env_num, render_mode=convert_render_mode, **kwargs
             )
-            
+
         elif (
             id in openrl.envs.pettingzoo_all_envs
             or id in openrl.envs.PettingZoo.registration.pettingzoo_env_dict.keys()
