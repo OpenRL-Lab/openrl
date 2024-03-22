@@ -29,7 +29,7 @@
 [![Embark](https://img.shields.io/badge/discord-OpenRL-%237289da.svg?logo=discord)](https://discord.gg/qMbVT2qBhr)
 [![slack badge](https://img.shields.io/badge/Slack-join-blueviolet?logo=slack&amp)](https://join.slack.com/t/openrlhq/shared_invite/zt-1tqwpvthd-Eeh0IxQ~DIaGqYXoW2IUQg)
 
-OpenRL-v0.1.10 is updated on Oct 27, 2023
+OpenRL-v0.2.1 is updated on Dec 20, 2023
 
 The main branch is the latest version of OpenRL, which is under active development. If you just want to have a try with
 OpenRL, you can switch to the stable branch.
@@ -51,6 +51,7 @@ OpenRL基于PyTorch进行开发，目标是为强化学习研究社区提供一�
 - 支持通过专家数据进行离线强化学习训练
 - 支持自博弈训练
 - 支持自然语言任务（如对话任务）的强化学习训练
+- 支持[DeepSpeed](https://github.com/microsoft/DeepSpeed)
 - 支持[竞技场](https://openrl-docs.readthedocs.io/zh/latest/arena/index.html)功能，可以在多智能体对抗性环境中方便地对各种智能体（甚至是[及第平台](https://openrl-docs.readthedocs.io/zh/latest/arena/index.html#openrl)上提交的智能体）进行评测。
 - 支持从[Hugging Face](https://huggingface.co/)上导入模型和数据。支持加载Hugging Face上[Stable-baselines3的模型](https://openrl-docs.readthedocs.io/zh/latest/sb3/index.html)来进行测试和训练。
 - 提供用户自有环境接入OpenRL的[详细教程](https://openrl-docs.readthedocs.io/zh/latest/custom_env/index.html).
@@ -96,6 +97,7 @@ OpenRL目前支持的环境（更多详情请参考 [Gallery](Gallery.md)）：
 - [DeepMind Control](https://shimmy.farama.org/environments/dm_control/)
 - [Snake](http://www.jidiai.cn/env_detail?envid=1)
 - [gym-pybullet-drones](https://github.com/utiasDSL/gym-pybullet-drones)
+- [EnvPool](https://github.com/sail-sg/envpool)
 - [GridWorld](./examples/gridworld/)
 - [Super Mario Bros](https://github.com/Kautenja/gym-super-mario-bros)
 - [Gym Retro](https://github.com/openai/retro)
@@ -128,18 +130,18 @@ OpenRL-Lab将持续维护和更新OpenRL，欢迎大家加入我们的[开源社
 
 这里我们提供了一个表格，比较了OpenRL和其他常用的强化学习库。 OpenRL采用模块化设计和高层次的抽象，使得用户可以通过统一的简单易用的接口完成各种任务的训练。
 
-|                               强化学习库                                |    自然语言任务/RLHF     |        多智能体训练        |        自博弈训练         |       离线强化学习       |        双语文档        | 
+|                               强化学习库                                |    自然语言任务/RLHF     |        多智能体训练        |        自博弈训练         |       离线强化学习       |     [DeepSpeed](https://github.com/microsoft/DeepSpeed)      | 
 |:------------------------------------------------------------------:|:------------------:|:--------------------:|:--------------------:|:------------------:|:------------------:| 
 |         **[OpenRL](https://github.com/OpenRL-Lab/openrl)**         | :heavy_check_mark: |  :heavy_check_mark:  |  :heavy_check_mark:  | :heavy_check_mark: | :heavy_check_mark: |
 |  [Stable Baselines3](https://github.com/DLR-RM/stable-baselines3)  |        :x:         |         :x:          |         :x:          |        :x:         |        :x:         |
 | [Ray/RLlib](https://github.com/ray-project/ray/tree/master/rllib/) |        :x:         |  :heavy_check_mark:  |  :heavy_check_mark:  | :heavy_check_mark: |        :x:         |
-|        [DI-engine](https://github.com/opendilab/DI-engine/)        |        :x:         |  :heavy_check_mark:  | not fullly supported | :heavy_check_mark: | :heavy_check_mark: |
-|           [Tianshou](https://github.com/thu-ml/tianshou)           |        :x:         | not fullly supported | not fullly supported | :heavy_check_mark: | :heavy_check_mark: |
+|        [DI-engine](https://github.com/opendilab/DI-engine/)        |        :x:         |  :heavy_check_mark:  | not fullly supported | :heavy_check_mark: |        :x:         |
+|           [Tianshou](https://github.com/thu-ml/tianshou)           |        :x:         | not fullly supported | not fullly supported | :heavy_check_mark: |        :x:         |
 |       [MARLlib](https://github.com/Replicable-MARL/MARLlib)        |        :x:         |  :heavy_check_mark:  | not fullly supported |        :x:         |        :x:         |
 |   [MAPPO Benchmark](https://github.com/marlbenchmark/on-policy)    |        :x:         |  :heavy_check_mark:  |         :x:          |        :x:         |        :x:         |
 |            [RL4LMs](https://github.com/allenai/RL4LMs)             | :heavy_check_mark: |         :x:          |         :x:          |        :x:         |        :x:         |
-|              [trlx](https://github.com/CarperAI/trlx)              | :heavy_check_mark: |         :x:          |         :x:          |        :x:         |        :x:         |
-|             [trl](https://github.com/huggingface/trl)              | :heavy_check_mark: |         :x:          |         :x:          |        :x:         |        :x:         |
+|              [trlx](https://github.com/CarperAI/trlx)              | :heavy_check_mark: |         :x:          |         :x:          |        :x:         | :heavy_check_mark: |
+|             [trl](https://github.com/huggingface/trl)              | :heavy_check_mark: |         :x:          |         :x:          |        :x:         | :heavy_check_mark: |
 |       [TimeChamber](https://github.com/inspirai/TimeChamber)       |        :x:         |         :x:          |  :heavy_check_mark:  |        :x:         |        :x:         |
 
 ## 安装
@@ -294,7 +296,7 @@ openrl --mode train --env CartPole-v1
 - 加入 [slack](https://join.slack.com/t/openrlhq/shared_invite/zt-1tqwpvthd-Eeh0IxQ~DIaGqYXoW2IUQg)
   群组，与我们一起讨论OpenRL的使用和开发。
 - 加入 [Discord](https://discord.gg/qMbVT2qBhr) 群组，与我们一起讨论OpenRL的使用和开发。
-- 发送邮件到: [huangshiyu@4paradigm.com](huangshiyu@4paradigm.com)
+- 发送邮件到: [huangsy1314@163.com](huangsy1314@163.com)
 - 加入 [GitHub Discussion](https://github.com/orgs/OpenRL-Lab/discussions)
 
 OpenRL框架目前还在持续开发和文档建设，欢迎加入我们让该项目变得更好：
@@ -309,7 +311,7 @@ OpenRL框架目前还在持续开发和文档建设，欢迎加入我们让该�
 - [Shiyu Huang](https://huangshiyu13.github.io/)([@huangshiyu13](https://github.com/huangshiyu13))
 - Wenze Chen([@Chen001117](https://github.com/Chen001117))
 
-欢迎更多的贡献者加入我们的维护团队 (发送邮件到[huangshiyu@4paradigm.com](huangshiyu@4paradigm.com)申请加入OpenRL团队)。
+欢迎更多的贡献者加入我们的维护团队 (发送邮件到[huangsy1314@163.com](huangsy1314@163.com)申请加入OpenRL团队)。
 
 ## 支持者
 
@@ -332,12 +334,11 @@ OpenRL框架目前还在持续开发和文档建设，欢迎加入我们让该�
 如果我们的工作对你有帮助，欢迎引用我们:
 
 ```latex
-@misc{openrl2023,
-    title={OpenRL},
-    author={OpenRL Contributors},
-    publisher = {GitHub},
-    howpublished = {\url{https://github.com/OpenRL-Lab/openrl}},
-    year={2023},
+@article{huang2023openrl,
+  title={OpenRL: A Unified Reinforcement Learning Framework},
+  author={Huang, Shiyu and Chen, Wentse and Sun, Yiwen and Bie, Fuqing and Tu, Wei-Wei},
+  journal={arXiv preprint arXiv:2312.16189},
+  year={2023}
 }
 ```
 

@@ -16,84 +16,74 @@
 
 """"""
 import numpy as np
+from make_env import make
 
+from examples.envpool.envpool_wrappers import VecAdapter, VecMonitor
 from openrl.configs.config import create_config_parser
-from openrl.envs.common import make
-from openrl.envs.wrappers.atari_wrappers import (
-    ClipRewardEnv,
-    FireResetEnv,
-    NoopResetEnv,
-    WarpFrame,
-)
-from openrl.envs.wrappers.image_wrappers import TransposeImage
-from openrl.envs.wrappers.monitor import Monitor
-from openrl.modules.common import PPONet as Net
+from openrl.modules.common.ppo_net import PPONet as Net
 from openrl.runners.common import PPOAgent as Agent
-from openrl.utils.util import get_system_info
-
-env_wrappers = [
-    Monitor,
-    NoopResetEnv,
-    FireResetEnv,
-    WarpFrame,
-    ClipRewardEnv,
-    TransposeImage,
-]
 
 
 def train():
+    # create the neural network
     cfg_parser = create_config_parser()
-    cfg = cfg_parser.parse_args(["--config", "atari_ppo.yaml"])
+    cfg = cfg_parser.parse_args()
 
     # create environment, set environment parallelism to 9
     env = make(
-        "ALE/Pong-v5", env_num=16, cfg=cfg, asynchronous=True, env_wrappers=env_wrappers
+        "CartPole-v1",
+        render_mode=None,
+        env_num=9,
+        asynchronous=False,
+        env_wrappers=[VecAdapter, VecMonitor],
+        env_type="gym",
     )
-
-    # create the neural network
 
     net = Net(
-        env, cfg=cfg, device="cuda" if "macOS" not in get_system_info()["OS"] else "cpu"
+        env,
+        cfg=cfg,
     )
     # initialize the trainer
-    agent = Agent(net, use_wandb=True, project_name="Pong-v5")
+    agent = Agent(net, use_wandb=False, project_name="CartPole-v1")
     # start training, set total number of training steps to 20000
+    agent.train(total_time_steps=20000)
 
-    agent.train(total_time_steps=5000000)
     env.close()
-    agent.save("./ppo_agent/")
     return agent
 
 
 def evaluation(agent):
     # begin to test
     # Create an environment for testing and set the number of environments to interact with to 9. Set rendering mode to group_human.
+    render_mode = "group_human"
+    render_mode = None
     env = make(
-        "ALE/Pong-v5",
-        render_mode=None if "Linux" in get_system_info()["OS"] else "group_human",
-        env_num=3,
-        asynchronous=False,
-        env_wrappers=env_wrappers,
+        "CartPole-v1",
+        env_wrappers=[VecAdapter, VecMonitor],
+        render_mode=render_mode,
+        env_num=9,
+        asynchronous=True,
+        env_type="gym",
     )
-
     # The trained agent sets up the interactive environment it needs.
     agent.set_env(env)
     # Initialize the environment and get initial observations and environmental information.
-
-    obs, info = env.reset(seed=0)
+    obs, info = env.reset()
     done = False
     step = 0
-    totoal_reward = 0
+    total_step, total_reward = 0, 0
     while not np.any(done):
         # Based on environmental observation input, predict next action.
         action, _ = agent.act(obs, deterministic=True)
         obs, r, done, info = env.step(action)
         step += 1
-        if step % 100 == 0:
+        total_step += 1
+        total_reward += np.mean(r)
+        if step % 50 == 0:
             print(f"{step}: reward:{np.mean(r)}")
-        totoal_reward += np.mean(r)
     env.close()
-    print(f"total reward: {totoal_reward}")
+    print("total step:", total_step)
+    print("total reward:", total_reward)
 
 
 if __name__ == "__main__":

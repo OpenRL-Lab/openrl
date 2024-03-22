@@ -18,16 +18,44 @@
 
 import os
 import sys
+from pathlib import Path
 
 import pytest
 
-from openrl.supports.opendata.utils.opendata_utils import data_abs_path
+from openrl.supports.opendata.utils.opendata_utils import data_abs_path, load_dataset
 
 
 @pytest.mark.unittest
-def test_data_abs_path():
+def test_data_abs_path(tmpdir):
     data_path = "./"
     assert data_abs_path(data_path) == data_path
+
+    data_server_dir = Path.home() / "data_server/"
+
+    new_create = False
+    if not data_server_dir.exists():
+        data_server_dir.mkdir()
+        new_create = True
+    data_abs_path("data_server://data_path")
+    if new_create:
+        data_server_dir.rmdir()
+    data_abs_path("data_server://data_path", str(tmpdir))
+
+
+@pytest.mark.unittest
+def test_load_dataset(tmpdir):
+    try:
+        load_dataset(str(tmpdir), "train")
+    except Exception as e:
+        pass
+    try:
+        load_dataset("data_server://data_path", "train")
+    except Exception as e:
+        pass
+    try:
+        load_dataset(str(tmpdir) + "/test", "train")
+    except Exception as e:
+        pass
 
 
 if __name__ == "__main__":

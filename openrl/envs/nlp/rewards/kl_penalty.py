@@ -35,11 +35,21 @@ class KLPenalty(nn.Module):
         ds_config: str = "default",
     ):
         super().__init__()
+
+        self.device = "cuda"
         self.use_deepspeed = use_deepspeed
+        self.use_half = False
+        self.use_data_parallel = not use_deepspeed
+        self.use_model_parallel = False
+        assert not (self.use_deepspeed and self.use_data_parallel)
+        assert not (self.use_deepspeed and self.use_model_parallel)
+        assert not (self.use_data_parallel and self.use_model_parallel)
 
         # reference model
-        self._apply_model_parallel = apply_model_parallel
         if ref_model == "builtin_ref":
+            self.device = "cpu"
+            self.use_data_parallel = False
+
             from transformers import GPT2Config, GPT2LMHeadModel
 
             config = GPT2Config()
@@ -64,11 +74,15 @@ class KLPenalty(nn.Module):
                     self.use_fp16 = False
 
             self._ref_engine, *_ = deepspeed.initialize(model=self, config=ds_config)
-        elif torch.cuda.is_available():
-            if self._apply_model_parallel and self._ref_net.is_parallelizable:
+        else:
+            if self.use_model_parallel:
                 self._ref_net.parallelize()
-            else:  # else defaults to data parallel
-                self._ref_net = torch.nn.DataParallel(self._ref_net)
+            elif self.use_data_parallel:  # else defaults to data parallel
+                if self.use_half:
+                    self._ref_net = self._ref_net.half()
+                else:
+                    self._ref_net = torch.nn.DataParallel(self._ref_net)
+                    self._ref_net = self._ref_net.to(self.device)
 
         # alpha adjustment
         self._alpha = 0.2
@@ -106,22 +120,27 @@ class KLPenalty(nn.Module):
             self._ref_net, input_ids, past_model_kwargs
         )
 
-        if self.use_deepspeed:
-            if self.use_fp16:
-                for key in ["input_ids", "position_ids"]:
-                    model_inputs[key] = model_inputs[key].half().int()
-                for key in ["attention_mask"]:
-                    model_inputs[key] = model_inputs[key].half()
+        if self.use_half:
+            for key in ["input_ids", "position_ids", "attention_mask"]:
+                if key in model_inputs:
+                    model_inputs[key] = model_inputs[key].int()
+        else:
+            for key in ["input_ids", "position_ids", "attention_mask"]:
+                if key in model_inputs:
+                    model_inputs[key] = model_inputs[key].long()
 
         with torch.no_grad():
             output = self._ref_net(output_hidden_states=True, **model_inputs)
             output["past_key_values"] = None
             next_token_logits = output.logits[:, -1, :]
+            if self.use_deepspeed and self.use_fp16:
+                next_token_logits = next_token_logits.double()
             dist = self._action_dist.proba_distribution(action_logits=next_token_logits)
             action_input = actions.to(next_token_logits.device)
             ref_log_prob = dist.log_prob(action_input)
 
         ref_log_prob = ref_log_prob.reshape(action_log_probs.shape)
+
         kl_div = action_log_probs.copy() - ref_log_prob.detach().cpu().numpy()
         rew = -self._alpha * kl_div
         infos = []
@@ -144,7 +163,7 @@ class KLPenalty(nn.Module):
             input_ids, **model_kwargs
         )
 
-        if self._apply_model_parallel and unwrap_model(model).is_parallelizable:
+        if self.use_model_parallel:
             # if model is in parallel mode, move the tensors to the first device
             model_inputs = {
                 key: (
@@ -155,8 +174,12 @@ class KLPenalty(nn.Module):
                 )
                 for key, value in model_inputs.items()
             }
-
-        if self.use_deepspeed:
+        elif self.use_data_parallel:
+            model_inputs = {
+                key: value.to(self.device) if isinstance(value, torch.Tensor) else value
+                for key, value in model_inputs.items()
+            }
+        elif self.use_deepspeed:
             model_inputs = {
                 key: value.to("cuda") if isinstance(value, torch.Tensor) else value
                 for key, value in model_inputs.items()

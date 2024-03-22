@@ -498,13 +498,14 @@ def create_config_parser():
     )
     parser.add_argument(
         "--use_popart",
-        action="store_true",
         default=False,
+        type=bool,
         help="by default False, use PopArt to normalize rewards.",
     )
     parser.add_argument(
         "--dual_clip_ppo",
         default=False,
+        type=bool,
         help="by default False, use dual-clip ppo.",
     )
     parser.add_argument(
@@ -725,13 +726,13 @@ def create_config_parser():
     parser.add_argument(
         "--max_grad_norm",
         type=float,
-        default=10.0,
-        help="max norm of gradients (default: 0.5)",
+        default=10,
+        help="max norm of gradients (default: 10)",
     )
     parser.add_argument(
         "--use_gae",
-        action="store_false",
         default=True,
+        type=bool,
         help="use generalized advantage estimation",
     )
     parser.add_argument(
@@ -748,8 +749,8 @@ def create_config_parser():
     )
     parser.add_argument(
         "--use_proper_time_limits",
-        action="store_true",
         default=False,
+        type=bool,
         help="compute returns taking into account time limits",
     )
     parser.add_argument(

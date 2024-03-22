@@ -36,7 +36,14 @@ class Intent:
 
         self._intent_coeff = intent_coeff
         self.use_deepspeed = use_deepspeed
+        self.use_half = False
+        self.use_data_parallel = not use_deepspeed  # default to use data parallel
+        self.use_model_parallel = False
+
         if intent_model == "builtin_intent":
+            self._device = "cpu"
+            self.use_data_parallel = False
+
             from transformers import GPT2Config, GPT2LMHeadModel
 
             class TestTokenizer:
@@ -62,6 +69,7 @@ class Intent:
             self._model = GPT2LMHeadModel(config)
 
         else:
+            self._device = "cuda"
             model_path = data_abs_path(intent_model)
             self._tokenizer = AutoTokenizer.from_pretrained(intent_model)
             self._model = AutoModelForSequenceClassification.from_pretrained(model_path)
@@ -77,19 +85,17 @@ class Intent:
                 with open(ds_config) as file:
                     ds_config = json.load(file)
 
-            self._device = "cuda"
-            self._model = self._model.to("cuda")
-            self._model, *_ = deepspeed.initialize(model=self._model, config=ds_config)
-        else:
-            if torch.cuda.is_available():
-                manager = LocalGPUManager()
-                manager.log_info()
-                self._device = f"cuda:{manager.get_gpu()}"
-            else:
-                self._device = "cpu"
-            print("Intent Model choose to use device:{}".format(self._device))
-
             self._model = self._model.to(self._device)
+            self._model, *_ = deepspeed.initialize(model=self._model, config=ds_config)
+            self.use_fp16 = ds_config["fp16"]["enabled"]
+        else:
+            if self.use_model_parallel:
+                self._model.parallelize()
+            elif self.use_data_parallel:
+                if self.use_half:
+                    self._model = self._model.half()
+                self._model = torch.nn.DataParallel(self._model)
+                self._model = self._model.to(self._device)
 
     def __call__(
         self,
@@ -119,6 +125,13 @@ class Intent:
         encoded = self._tokenizer(
             input_texts, return_tensors="pt", truncation=True, padding=True
         )
+
+        if self.use_half:
+            encoded.input_ids = encoded.input_ids.int()
+            encoded.attention_mask = encoded.attention_mask.int()
+        else:
+            encoded.input_ids = encoded.input_ids.long()
+            encoded.attention_mask = encoded.attention_mask.long()
 
         with torch.no_grad():
             outputs = self._model(

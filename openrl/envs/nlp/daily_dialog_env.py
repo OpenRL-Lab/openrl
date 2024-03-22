@@ -113,7 +113,7 @@ class DailyDialogEnv(Env):
         self.__time_step = None
         self.reward_function = None
 
-    def set_reward(self, reward_fn):
+    def set_reward(self, reward_fn=None):
         self.reward_function = reward_fn
 
     def step_word(self, word: str) -> Tuple[Dict[str, torch.tensor], int, bool, dict]:
