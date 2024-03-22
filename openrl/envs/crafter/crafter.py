@@ -39,7 +39,7 @@ class CrafterWrapper(Wrapper):
         self.env = crafter.Env()
         self.env = crafter.Recorder(
             self.env, "run_results/crafter_traj",
-            save_stats=True, # if True, save the stats of the environment to example/crafter/crafter_traj
+            save_stats=False, # if True, save the stats of the environment to example/crafter/crafter_traj
             save_episode=False,
             save_video=False,
         )
