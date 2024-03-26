@@ -3,6 +3,13 @@
 Here is a list of research projects that use OpenRL. 
 If you use OpenRL in your research projects, feel free to tell us about it and join the list.
 
+### MQE
+
+Description: the Multi-agent Quadruped Environment (MQE) is a novel platform designed to facilitate the development and evaluation of multi-agent reinforcement learning (MARL) algorithms in realistic and dynamic scenarios.
+
+- Paper: [MQE: Unleashing the Power of Interaction with Multi-agent Quadruped Environment](https://arxiv.org/abs/2403.16015)
+- Authors: Ziyan Xiong, Bo Chen, Shiyu Huang, Wei-Wei Tu, Zhaofeng He, Yang Gao
+
 ### LLMArena
 
 Description:  LLMArena is a novel and easily extensible framework for evaluating the diverse capabilities of LLM in multi-agent dynamic environments.
