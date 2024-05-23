@@ -1,7 +1,10 @@
 seed: 0
 lr: 7e-4
 critic_lr: 7e-4
-episode_length: 256
+episode_length: 512
+ppo_epoch: 5
+data_chunk_length: 8
+num_mini_batch: 8
 run_dir: ./run_results/
 experiment_name: train_crafter
 log_interval: 10
