@@ -18,6 +18,7 @@ Description: LLMArena is a novel and easily extensible framework for evaluating 
 
 - Paper: [LLMArena: Assessing Capabilities of Large Language Models in Dynamic Multi-Agent Environments](https://arxiv.org/abs/2402.16499)
 - Authors: Junzhe Chen, Xuming Hu, Shuodi Liu, Shiyu Huang, Wei-Wei Tu, Zhaofeng He, Lijie Wen
+- Code: https://github.com/THU-BPM/LLMArena
 
 ### TiZero
 
